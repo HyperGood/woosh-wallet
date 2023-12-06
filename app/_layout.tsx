@@ -1,9 +1,15 @@
 import { Feather } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useFonts } from 'expo-font';
 
 export default function Layout() {
   const router = useRouter();
+  const [fontsLoaded] = useFonts({
+    Satoshi: require('../assets/fonts/Satoshi-Regular.ttf'),
+    'Satoshi-Bold': require('../assets/fonts/Satoshi-Bold.ttf'),
+    FHOscar: require('../assets/fonts/FHOscar-Medium.otf'),
+  });
 
   const BackButton = () => (
     <TouchableOpacity onPress={router.back}>
@@ -13,6 +19,10 @@ export default function Layout() {
       </View>
     </TouchableOpacity>
   );
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <Stack>
