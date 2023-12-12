@@ -8,10 +8,13 @@ export const COLORS = {
   primary: {
     100: '#E5F7F1',
     200: '#C1EFE0',
-    400: '#17CE4A',
-    600: '#1FAE47',
+    400: '#28EB17',
+    600: '#00B935',
     800: '#1C7D2F',
     900: '#26362A',
+  },
+  secondary: {
+    400: '#68DBFF',
   },
   dark: '#19181D',
   light: '#F8FAF9',

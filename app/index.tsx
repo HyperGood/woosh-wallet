@@ -1,64 +1,56 @@
-<<<<<<< HEAD
-import { Feather } from '@expo/vector-icons';
-import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import Button from '../components/UI/Button';
-=======
-import { StyleSheet, Text, View } from 'react-native';
-
->>>>>>> parent of f5126bb (Add buttons and header styles)
 import { COLORS } from '../constants/global-styles';
-
-const Header = () => {
-  return (
-    <View>
-      <Text>Header</Text>
-    </View>
-  );
-};
-
-const Balance = () => {
-  return (
-    <View>
-      <Text>Balance</Text>
-    </View>
-  );
-};
-
-const Button = () => {
-  return (
-    <View>
-      <Text>Button</Text>
-    </View>
-  );
-};
-
-const PreviousTransactions = () => {
-  return (
-    <View>
-      <Text>Previous Transactions</Text>
-    </View>
-  );
-};
+import Header from '../components/UI/Header';
+import Balance from '../components/Balance';
+import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
 
 export default function Page() {
+  const handleButton = () => {
+    console.log('hi');
+  };
   return (
-    <View style={styles.container}>
-      <Header />
-      <Balance />
-      <View>
-        <Button />
-        <Button />
+    <ScrollView style={styles.wrapper}>
+      <View style={styles.container}>
+        <Header />
+
+        <Balance />
+        <View style={styles.buttonsContainer}>
+          <Button
+            title="Cobrar"
+            icon="arrow-down-left"
+            type="secondary"
+            swapIcon
+            onPress={handleButton}
+          />
+          <Button title="Enviar" icon="send" type="primary" onPress={handleButton} />
+        </View>
+        <PreviousTransactions />
       </View>
-      <PreviousTransactions />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: COLORS.dark,
+  },
+  flex1: {
+    flex: 1,
+    width: '100%',
+  },
   container: {
     flex: 1,
-    padding: 24,
-    backgroundColor: COLORS.dark,
+    alignItems: 'center',
+    paddingTop: 60,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    width: '100%',
+    marginBottom: 80,
+    paddingHorizontal: 12,
   },
 });

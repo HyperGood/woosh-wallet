@@ -6,19 +6,23 @@ import { COLORS } from '../../constants/global-styles';
 interface ButtonProps {
   onPress: () => void;
   title: string;
-  type?: 'primary';
+  type?: 'primary' | 'secondary';
   icon?: string;
+  swapIcon?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ onPress, title, type, icon }) => {
+const Button: React.FC<ButtonProps> = ({ onPress, title, type, icon, swapIcon = false }) => {
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.buttonContainer, type === 'primary' && styles.primaryButton]}>
-      <Text style={[styles.buttonText, type === 'primary' && styles.primaryText]}>{title}</Text>
-      {icon && (
-        <Feather name={icon} size={16} color={type === 'primary' ? COLORS.light : COLORS.dark} />
-      )}
+      style={[
+        styles.buttonContainer,
+        type === 'primary' && styles.primaryButton,
+        swapIcon && styles.swapIcon,
+        type === 'secondary' && styles.secondaryButton,
+      ]}>
+      <Text style={styles.buttonText}>{title}</Text>
+      {icon && <Feather name={icon} size={20} color={COLORS.dark} />}
     </Pressable>
   );
 };
@@ -26,19 +30,25 @@ const Button: React.FC<ButtonProps> = ({ onPress, title, type, icon }) => {
 const styles = StyleSheet.create({
   buttonContainer: {
     backgroundColor: COLORS.light,
-    borderRadius: 50,
-    padding: 24,
+    borderRadius: 100,
+    paddingHorizontal: 24,
+    paddingVertical: 28,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
     width: '100%',
+    flex: 1,
+  },
+  swapIcon: {
+    flexDirection: 'row-reverse',
   },
   buttonText: {
     fontSize: 24,
     color: COLORS.dark,
     fontFamily: 'Satoshi-Bold',
     alignSelf: 'center',
+    lineHeight: 24,
   },
   primaryButton: {
     elevation: 8,
@@ -51,8 +61,8 @@ const styles = StyleSheet.create({
     },
     backgroundColor: COLORS.primary[400],
   },
-  primaryText: {
-    color: COLORS.light,
+  secondaryButton: {
+    backgroundColor: COLORS.secondary[400],
   },
 });
 
