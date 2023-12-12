@@ -10,6 +10,7 @@ import kevin from './temp/kevin.jpg';
 const PreviousTransactions = () => {
   const previousTransactions = [
     {
+      id: Math.random().toString(),
       amount: 500,
       user: 'Marie',
       userImage: marie,
@@ -17,12 +18,14 @@ const PreviousTransactions = () => {
       date: '2023-12-12',
     },
     {
+      id: Math.random().toString(),
       amount: -50,
       user: '311-103-2131',
       description: 'Indrive',
       date: '2023-12-11',
     },
     {
+      id: Math.random().toString(),
       amount: -100,
       user: 'Kevin',
       userImage: kevin,
@@ -30,6 +33,7 @@ const PreviousTransactions = () => {
       date: '2023-12-10',
     },
     {
+      id: Math.random().toString(),
       amount: -250,
       user: 'Lilly',
       userImage: lilly,
@@ -46,7 +50,7 @@ const PreviousTransactions = () => {
       <View style={styles.cards}>
         <View style={styles.cardsLeft}>
           {leftTransactions.map((transaction, index) => (
-            <View style={[index === 0 && styles.rotateLeft]} key={index}>
+            <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
               <TransactionCardHome
                 amount={transaction.amount}
                 user={transaction.user}
@@ -59,7 +63,7 @@ const PreviousTransactions = () => {
         </View>
         <View style={styles.cardsRight}>
           {rightTransactions.map((transaction, index) => (
-            <View style={[index === 1 && styles.rotateRight]}>
+            <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
               <TransactionCardHome
                 amount={transaction.amount}
                 user={transaction.user}
@@ -84,8 +88,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.light,
     width: '100%',
     flex: 1,
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
+    borderRadius: 36,
     paddingVertical: 40,
   },
   title: {
