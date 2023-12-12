@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+import { Feather } from '@expo/vector-icons';
+import { Stack, useRouter } from 'expo-router';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+>>>>>>> parent of f5126bb (Add buttons and header styles)
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
@@ -21,12 +27,18 @@ const config = createConfig({
 });
 
 export default function Layout() {
+<<<<<<< HEAD
   const [fontsLoaded, fontError] = useFonts({
+=======
+  const router = useRouter();
+  const [fontsLoaded] = useFonts({
+>>>>>>> parent of f5126bb (Add buttons and header styles)
     Satoshi: require('../assets/fonts/Satoshi-Regular.ttf'),
     'Satoshi-Bold': require('../assets/fonts/Satoshi-Bold.ttf'),
     FHOscar: require('../assets/fonts/FHOscar-Medium.otf'),
   });
 
+<<<<<<< HEAD
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
@@ -36,16 +48,46 @@ export default function Layout() {
   useEffect(() => {
     if (fontError) throw fontError;
   }, [fontError]);
+=======
+  const BackButton = () => (
+    <TouchableOpacity onPress={router.back}>
+      <View style={styles.backButton}>
+        <Feather name="chevron-left" size={16} color="#007AFF" />
+        <Text style={styles.backButtonText}>Back</Text>
+      </View>
+    </TouchableOpacity>
+  );
+>>>>>>> parent of f5126bb (Add buttons and header styles)
 
   if (!fontsLoaded) {
     return null;
   }
 
   return (
+<<<<<<< HEAD
     <WagmiConfig config={config}>
       <Stack>
         <Stack.Screen name="index" options={{ title: 'Overview', headerShown: false }} />
       </Stack>
     </WagmiConfig>
+=======
+    <Stack>
+      <Stack.Screen name="index" options={{ title: 'Overview' }} />
+      <Stack.Screen
+        name="details"
+        options={{ title: 'Details', headerLeft: () => <BackButton /> }}
+      />
+    </Stack>
+>>>>>>> parent of f5126bb (Add buttons and header styles)
   );
 }
+
+const styles = StyleSheet.create({
+  backButton: {
+    flexDirection: 'row',
+  },
+  backButtonText: {
+    color: '#007AFF',
+    marginLeft: 4,
+  },
+});
