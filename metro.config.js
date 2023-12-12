@@ -8,4 +8,6 @@ const config = getDefaultConfig(__dirname, {
   isCSSEnabled: true,
 });
 
+config.resolver.extraNodeModules = require('node-libs-react-native');
+
 module.exports = config;

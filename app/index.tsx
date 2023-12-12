@@ -1,8 +1,8 @@
-import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import { COLORS } from '../constants/global-styles';
 import Button from '../components/UI/Button';
+import { COLORS } from '../constants/global-styles';
 
 const Header = () => {
   return (

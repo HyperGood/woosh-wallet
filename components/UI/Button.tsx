@@ -1,7 +1,7 @@
-import React from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/global-styles';
 import { Feather } from '@expo/vector-icons';
+import { Pressable, Text, StyleSheet } from 'react-native';
+
+import { COLORS } from '../../constants/global-styles';
 
 interface ButtonProps {
   onPress: () => void;

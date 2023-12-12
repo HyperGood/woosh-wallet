@@ -3,7 +3,6 @@
     "name": "woosh-mvp-mobile",
     "slug": "woosh-mvp-mobile",
     "version": "1.0.0",
-
     "scheme": "woosh-mvp-mobile",
     "web": {
       "bundler": "metro",
@@ -14,7 +13,6 @@
     "experiments": {
       "typedRoutes": true
     },
-
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -25,12 +23,21 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.hypergood.wooshmvpmobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "0115e554-889d-4722-9140-d898c364853e"
       }
     }
   }
