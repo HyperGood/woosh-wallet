@@ -1,10 +1,10 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { COLORS } from '../constants/global-styles';
-import Header from '../components/UI/Header';
 import Balance from '../components/Balance';
-import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
 import Button from '../components/UI/Button';
+import Header from '../components/UI/Header';
+import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
+import { COLORS } from '../constants/global-styles';
 
 const HomeScreen = () => {
   const handleButton = () => {

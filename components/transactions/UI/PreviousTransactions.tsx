@@ -1,47 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { COLORS } from '../../../constants/global-styles';
-import TransactionCardHome from './TransactionCardHome';
 import { Feather } from '@expo/vector-icons';
+import { StyleSheet, Text, View } from 'react-native';
 
-import lilly from './temp/lilly.jpg';
-import marie from './temp/marie.jpg';
-import kevin from './temp/kevin.jpg';
+import TransactionCardHome from './TransactionCardHome';
+import previousTransactions from './temp/previousTransactions';
+import { COLORS } from '../../../constants/global-styles';
 
 const PreviousTransactions = () => {
-  const previousTransactions = [
-    {
-      id: Math.random().toString(),
-      amount: 500,
-      user: 'Marie',
-      userImage: marie,
-      description: 'Feliz Cumpleaños',
-      date: '2023-12-12',
-    },
-    {
-      id: Math.random().toString(),
-      amount: -50,
-      user: '311-103-2131',
-      description: 'Indrive',
-      date: '2023-12-11',
-    },
-    {
-      id: Math.random().toString(),
-      amount: -100,
-      user: 'Kevin',
-      userImage: kevin,
-      description: 'Feliz Cumpleaños',
-      date: '2023-12-10',
-    },
-    {
-      id: Math.random().toString(),
-      amount: -250,
-      user: 'Lilly',
-      userImage: lilly,
-      description: 'Prestamo',
-      date: '2023-12-09',
-    },
-  ];
-
   const leftTransactions = [previousTransactions[0], previousTransactions[3]];
   const rightTransactions = [previousTransactions[1], previousTransactions[2]];
   return (
