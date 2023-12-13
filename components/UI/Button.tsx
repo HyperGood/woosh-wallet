@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     width: '100%',
+    flex: 1,
   },
   swapIcon: {
     flexDirection: 'row-reverse',

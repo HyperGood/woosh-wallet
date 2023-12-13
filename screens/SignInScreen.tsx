@@ -7,7 +7,9 @@ const SignInScreen = () => {
   return (
     <View style={styles.wrapper}>
       <Text style={styles.title}>La manera mas facil de pagarle a tus amigos</Text>
-      <Button title="Iniciar sesion" onPress={() => {}} />
+      <View style={styles.buttonContainer}>
+        <Button title="Iniciar sesion" onPress={() => {}} />
+      </View>
     </View>
   );
 };
@@ -18,6 +20,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.dark,
     justifyContent: 'center',
     padding: 24,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    width: '100%',
   },
   title: {
     fontSize: 48,
