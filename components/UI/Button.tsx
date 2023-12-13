@@ -22,7 +22,7 @@ const Button: React.FC<ButtonProps> = ({ onPress, title, type, icon, swapIcon = 
         type === 'secondary' && styles.secondaryButton,
       ]}>
       <Text style={styles.buttonText}>{title}</Text>
-      {icon && <Feather name={icon} size={20} color={COLORS.dark} />}
+      {icon && <Feather name={icon as any} size={20} color={COLORS.dark} />}
     </Pressable>
   );
 };
@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     width: '100%',
-    flex: 1,
   },
   swapIcon: {
     flexDirection: 'row-reverse',

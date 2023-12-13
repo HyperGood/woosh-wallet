@@ -46,7 +46,7 @@ const PreviousTransactions = () => {
   const rightTransactions = [previousTransactions[1], previousTransactions[2]];
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Previous Transactions</Text>
+      <Text style={styles.title}>Mis Transacciones</Text>
       <View style={styles.cards}>
         <View style={styles.cardsLeft}>
           {leftTransactions.map((transaction, index) => (
