@@ -10,10 +10,15 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@react-native-async-storage/async-storage": "1.18.2",
     "@react-navigation/native": "^6.1.7",
     "@turnkey/http": "^2.5.0",
     "@zerodev/wagmi": "^4.4.0",
     "expo": "~49.0.11",
+    "expo-app-loading": "^2.1.1",
+    "expo-apple-authentication": "~6.1.0",
+    "expo-constants": "~14.4.2",
+    "expo-crypto": "~12.4.1",
     "expo-dev-client": "~2.4.12",
     "expo-font": "~11.4.0",
     "expo-linking": "~5.0.2",
@@ -32,11 +37,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-web": "~0.19.6",
     "viem": "^1.19.11",
-    "wagmi": "^1.4.8",
-    "expo-constants": "~14.4.2",
-    "expo-crypto": "~12.4.1",
-    "expo-apple-authentication": "~6.1.0",
-    "@react-native-async-storage/async-storage": "1.18.2"
+    "wagmi": "^1.4.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

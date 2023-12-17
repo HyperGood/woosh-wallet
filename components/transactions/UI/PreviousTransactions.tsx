@@ -10,7 +10,10 @@ const PreviousTransactions = () => {
   const rightTransactions = [previousTransactions[1], previousTransactions[2]];
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mis Transacciones</Text>
+      <View style={styles.titleWrapper}>
+        <Text style={styles.title}>Mis</Text>
+        <Text style={styles.title}>Transacciones</Text>
+      </View>
       <View style={styles.cards}>
         <View style={styles.cardsLeft}>
           {leftTransactions.map((transaction, index) => (
@@ -55,12 +58,14 @@ const styles = StyleSheet.create({
     borderRadius: 36,
     paddingVertical: 40,
   },
+  titleWrapper: {
+    marginHorizontal: 20,
+    marginBottom: 32,
+  },
   title: {
     fontSize: 40,
     fontFamily: 'Satoshi-Bold',
     color: COLORS.dark,
-    marginHorizontal: 20,
-    marginBottom: 32,
   },
   cards: {
     paddingLeft: 10,

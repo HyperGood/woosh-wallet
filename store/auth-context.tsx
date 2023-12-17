@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ReactNode, createContext, useState } from 'react';
+import { ReactNode, createContext, useContext, useState } from 'react';
 
 interface AuthContextType {
   token: string | null;
@@ -15,11 +15,16 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
-interface AuthContextProviderProps {
+export function useSession() {
+  const value = useContext(AuthContext);
+  return value;
+}
+
+interface SessionProviderProps {
   children: ReactNode;
 }
 
-function AuthContextProvider({ children }: AuthContextProviderProps) {
+function SessionProvider({ children }: SessionProviderProps) {
   const [authToken, setAuthToken] = useState<string | null>(null);
 
   function authenticate(token: string) {
@@ -42,4 +47,4 @@ function AuthContextProvider({ children }: AuthContextProviderProps) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export default AuthContextProvider;
+export default SessionProvider;

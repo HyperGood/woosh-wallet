@@ -1,11 +1,13 @@
-import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
+import { Slot } from 'expo-router';
 //import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 //import { optimism, optimismGoerli } from 'wagmi/chains';
 //import { alchemyProvider } from 'wagmi/providers/alchemy';
 //import { publicProvider } from 'wagmi/providers/public';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+
+import SessionProvider from '../store/auth-context';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,8 +44,8 @@ export default function Layout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: 'Overview', headerShown: false }} />
-    </Stack>
+    <SessionProvider>
+      <Slot />
+    </SessionProvider>
   );
 }
