@@ -34,7 +34,9 @@
     "viem": "^1.19.11",
     "wagmi": "^1.4.8",
     "expo-constants": "~14.4.2",
-    "expo-crypto": "~12.4.1"
+    "expo-crypto": "~12.4.1",
+    "expo-apple-authentication": "~6.1.0",
+    "@react-native-async-storage/async-storage": "1.18.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
