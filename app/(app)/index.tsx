@@ -2,7 +2,6 @@ import { View, StyleSheet } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
 import HomeScreen from '../../screens/HomeScreen';
-import SuccessScreen from '../../screens/send/SuccessScreen';
 
 export default function Page() {
   return (

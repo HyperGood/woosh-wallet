@@ -1,7 +1,7 @@
 // // ⚠️ Important: `@walletconnect/react-native-compat` needs to be imported before other `wagmi` packages.
 // // This is because it applies a polyfill necessary for the TextEncoder API.
-
-// import { getRandomValues as expoCryptoGetRandomValues } from 'expo-crypto';
+import 'fast-text-encoding';
+import { getRandomValues as expoCryptoGetRandomValues } from 'expo-crypto';
 
 // // Polyfills for Alchemy SDK
 // if (typeof btoa === 'undefined') {
@@ -20,19 +20,19 @@
 
 // // Apply only with Expo SDK 48
 
-// class Crypto {
-//   getRandomValues = expoCryptoGetRandomValues;
-// }
+class Crypto {
+  getRandomValues = expoCryptoGetRandomValues;
+}
 
-// // eslint-disable-next-line no-undef
-// const webCrypto = typeof crypto !== 'undefined' ? crypto : new Crypto();
+// eslint-disable-next-line no-undef
+const webCrypto = typeof crypto !== 'undefined' ? crypto : new Crypto();
 
-// (() => {
-//   if (typeof crypto === 'undefined') {
-//     Object.defineProperty(window, 'crypto', {
-//       configurable: true,
-//       enumerable: true,
-//       get: () => webCrypto,
-//     });
-//   }
-// })();
+(() => {
+  if (typeof crypto === 'undefined') {
+    Object.defineProperty(window, 'crypto', {
+      configurable: true,
+      enumerable: true,
+      get: () => webCrypto,
+    });
+  }
+})();

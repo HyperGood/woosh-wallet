@@ -13,9 +13,14 @@ export default function Page() {
       <View style={styles.buttonContainer}>
         <Button
           title="Iniciar sesion"
-          onPress={() => {
-            authenticate('1');
-            router.replace('/');
+          onPress={async () => {
+            try {
+              await authenticate();
+              router.replace('/');
+            } catch (error) {
+              console.error(error);
+              // Handle error
+            }
           }}
         />
       </View>
