@@ -1,19 +1,17 @@
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { COLORS } from '../../constants/global-styles';
-import HomeScreen from '../../screens/HomeScreen';
-import SuccessScreen from '../../screens/send/SuccessScreen';
-
-export default function Page() {
+import { COLORS } from '../../../constants/global-styles';
+import SelectContact from '../../../screens/send/SelectContact';
+const index = () => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <HomeScreen />
+        <SelectContact />
       </View>
     </View>
   );
-}
-
+};
+export default index;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
