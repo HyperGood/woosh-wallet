@@ -8,6 +8,7 @@ import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
 import SessionProvider from '../store/auth-context';
+import SmartAccountProvider from '../store/smart-account-context';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -46,7 +47,9 @@ export default function Layout() {
   return (
     <WagmiConfig config={config}>
       <SessionProvider>
-        <Slot />
+        <SmartAccountProvider>
+          <Slot />
+        </SmartAccountProvider>
       </SessionProvider>
     </WagmiConfig>
   );
