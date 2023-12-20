@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createPublicClient, formatEther, http } from 'viem';
 import { optimismGoerli } from 'viem/chains';
 
 import IconButton from './UI/IconButton';
+import { storage } from '../app/_layout';
 import { COLORS } from '../constants/global-styles';
 import useAddress from '../hooks/useAddress';
 import { useTokenPrices } from '../hooks/useTokenPrices';
@@ -14,7 +15,7 @@ import { useAccount } from '../store/smart-account-context';
 */
 const Balance = () => {
   const { address } = useAddress();
-  const { fiatBalance, tokenBalance, setFiatBalance, setTokenBalance } = useAccount();
+  const { setFiatBalance, setTokenBalance } = useAccount();
   const token = 'ETH';
   const tokensData = useTokenPrices();
   const ethMXPrice = tokensData?.ethereum?.mxn ?? 0;
@@ -23,15 +24,27 @@ const Balance = () => {
     transport: http(`https://opt-goerli.g.alchemy.com/v2/${process.env.EXPO_PUBLIC_ALCHEMY_ID}`),
   });
 
+  const [storedTokenBalance, setStoredTokenBalance] = useState(
+    storage.getNumber('tokenBalance') || 0
+  );
+  const [storedEthMXPrice, setStoredEthMXPrice] = useState(storage.getNumber('ethMXPrice') || 0);
+
+  const fiatBalance = storedEthMXPrice * storedTokenBalance;
+
   useEffect(() => {
     if (address)
       (async () => {
         const balance = await client.getBalance({
           address,
         });
-        console.log(balance);
-        setTokenBalance(Number(formatEther(balance)));
-        setFiatBalance(Number(formatEther(balance)) * ethMXPrice);
+        const formattedBalance = Number(formatEther(balance));
+        setTokenBalance(formattedBalance);
+        setFiatBalance(formattedBalance * ethMXPrice);
+        storage.set('tokenBalance', formattedBalance);
+        storage.set('fiatBalance', formattedBalance * ethMXPrice);
+        storage.set('ethMXPrice', ethMXPrice);
+        setStoredTokenBalance(formattedBalance);
+        setStoredEthMXPrice(ethMXPrice);
       })();
   }, [address]);
 
@@ -50,7 +63,7 @@ const Balance = () => {
         </View>
       </View>
       <Text style={styles.tokenBalance}>
-        {tokenBalance} {token}
+        {storedTokenBalance} {token}
       </Text>
     </View>
   );

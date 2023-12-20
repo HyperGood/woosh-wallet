@@ -1,8 +1,8 @@
 import { Stack } from 'expo-router';
-
-import EnterAmount from '../../../screens/send/EnterAmount';
 import { StyleSheet, View } from 'react-native';
+
 import { COLORS } from '../../../constants/global-styles';
+import EnterAmount from '../../../screens/send/EnterAmount';
 
 const enterAmount = () => {
   return (

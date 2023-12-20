@@ -11,6 +11,7 @@ import {
 } from 'viem';
 import { optimismGoerli } from 'viem/chains';
 
+import { storage } from '../../app/_layout';
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import NumberPad from '../../components/UI/NumberPad';
@@ -21,16 +22,18 @@ import { useAccount } from '../../store/smart-account-context';
 
 const EnterAmount = () => {
   const [amount, setAmount] = useState('0');
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState('');
   const { address } = useAddress();
   const { ecdsaProvider, setFiatBalance, setTokenBalance } = useAccount();
-  const ethMXPrice = 37801.33;
+  const ethMXPrice = storage.getNumber('ethMXPrice') || 0;
   const client = createPublicClient({
     chain: optimismGoerli,
     transport: http(`https://opt-goerli.g.alchemy.com/v2/${process.env.EXPO_PUBLIC_ALCHEMY_ID}`),
   });
 
   const deposit = async () => {
-    console.log('Depositting');
+    setIsSending(true);
     try {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       if (hasHardware) {
@@ -51,21 +54,27 @@ const EnterAmount = () => {
         });
         console.log('User Op Hash: ', hash);
         Alert.alert('Transaction Successful!! User Op Hash: ', hash);
+        setIsSending(false);
         //refetch balance
         if (address) {
           const balance = await client.getBalance({
             address,
           });
-          console.log(balance);
-          setTokenBalance(Number(formatEther(balance)));
-          setFiatBalance(Number(formatEther(balance)) * ethMXPrice);
+          const formattedBalance = Number(formatEther(balance));
+          setTokenBalance(formattedBalance);
+          setFiatBalance(formattedBalance * ethMXPrice);
+          storage.set('tokenBalance', formattedBalance);
         } else {
           Alert.alert('Authentication Failed!!');
+          setError("Authentication Failed!! Couldn't send transaction");
+          setIsSending(false);
         }
       }
     } catch (e) {
       console.log(e);
       Alert.alert('Transaction Failed!!');
+      setError("Couldn't send transaction");
+      setIsSending(false);
     }
   };
 
@@ -79,10 +88,16 @@ const EnterAmount = () => {
             <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} />
             <Text style={styles.recipientName}>Janet</Text>
           </View>
-          <NumberPad onChange={setAmount} />
-          <View style={styles.buttonWrapper}>
-            <Button title="Send" type="primary" onPress={deposit} />
-          </View>
+          {isSending && !error ? (
+            <Text style={{ color: 'white' }}>Sending...</Text>
+          ) : (
+            <>
+              <NumberPad onChange={setAmount} />
+              <View style={styles.buttonWrapper}>
+                <Button title="Send" type="primary" onPress={deposit} />
+              </View>
+            </>
+          )}
         </View>
       </View>
     </ScrollView>

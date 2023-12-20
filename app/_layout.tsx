@@ -2,26 +2,14 @@ import { useFonts } from 'expo-font';
 import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-import { optimism, optimismGoerli } from 'wagmi/chains';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
-import { publicProvider } from 'wagmi/providers/public';
+import { MMKV } from 'react-native-mmkv';
 
 import SessionProvider from '../store/auth-context';
 import SmartAccountProvider from '../store/smart-account-context';
 
+export const storage = new MMKV();
+
 SplashScreen.preventAutoHideAsync();
-
-export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [process.env.EXPO_PUBLIC_TESTNET === 'true' ? optimismGoerli : optimism],
-  [alchemyProvider({ apiKey: process.env.EXPO_PUBLIC_ALCHEMY_ID || '' }), publicProvider()]
-);
-
-const config = createConfig({
-  autoConnect: false,
-  publicClient,
-  webSocketPublicClient,
-});
 
 export default function Layout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -45,12 +33,10 @@ export default function Layout() {
   }
 
   return (
-    <WagmiConfig config={config}>
-      <SessionProvider>
-        <SmartAccountProvider>
-          <Slot />
-        </SmartAccountProvider>
-      </SessionProvider>
-    </WagmiConfig>
+    <SessionProvider>
+      <SmartAccountProvider>
+        <Slot />
+      </SmartAccountProvider>
+    </SessionProvider>
   );
 }
