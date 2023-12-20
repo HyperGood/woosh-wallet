@@ -6,6 +6,7 @@ import { optimismGoerli } from 'viem/chains';
 import IconButton from './UI/IconButton';
 import { COLORS } from '../constants/global-styles';
 import useAddress from '../hooks/useAddress';
+import { useTokenPrices } from '../hooks/useTokenPrices';
 import { useAccount } from '../store/smart-account-context';
 
 /*TODO:
@@ -15,7 +16,8 @@ const Balance = () => {
   const { address } = useAddress();
   const { fiatBalance, tokenBalance, setFiatBalance, setTokenBalance } = useAccount();
   const token = 'ETH';
-  const ethMXPrice = 37801.33;
+  const tokensData = useTokenPrices();
+  const ethMXPrice = tokensData?.ethereum?.mxn ?? 0;
   const client = createPublicClient({
     chain: optimismGoerli,
     transport: http(`https://opt-goerli.g.alchemy.com/v2/${process.env.EXPO_PUBLIC_ALCHEMY_ID}`),
