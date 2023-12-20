@@ -46,10 +46,10 @@ function SessionProvider({ children }: SessionProviderProps) {
                 setAuthToken(privateKey);
                 resolve(true);
               } else {
-                reject('Failed to generate private key');
+                reject(new Error('Failed to generate private key'));
               }
             } else {
-              reject('Authentication failed');
+              reject(new Error('Authentication failed'));
             }
           });
         }

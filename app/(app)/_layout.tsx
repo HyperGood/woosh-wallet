@@ -4,11 +4,16 @@ import { Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { useSession } from '../../store/auth-context';
+import { useAccount } from '../../store/smart-account-context';
 
 export default function Layout() {
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const { token } = useSession();
+  const { setEcdsaProvider } = useAccount();
+
+  //TODO:
+  //1. Save ecdsaProvider in context
 
   useEffect(() => {
     if (token) {
@@ -19,6 +24,7 @@ export default function Layout() {
             projectId: process.env.EXPO_PUBLIC_ZERODEV_ID || '',
             owner: LocalAccountSigner.privateKeyToAccountSigner(token as `0x${string}`),
           });
+          setEcdsaProvider(ecdsaProvider);
           setAddress(await ecdsaProvider.getAddress());
           setLoading(false);
         } catch (e) {
