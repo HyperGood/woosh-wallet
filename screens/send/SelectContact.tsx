@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
@@ -5,11 +6,7 @@ import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
 
-interface SelectContactProps {
-  onNext: () => void;
-}
-
-const SelectContact = ({ onNext }: SelectContactProps) => {
+const SelectContact = () => {
   return (
     <View style={styles.wrapper}>
       <BackButton />
@@ -19,7 +16,9 @@ const SelectContact = ({ onNext }: SelectContactProps) => {
           <Input placeholder="Enter a phone number" onChangeText={() => {}} value="" />
         </View>
         <View style={styles.buttonWrapper}>
-          <Button title="Next" type="primary" onPress={onNext} />
+          <Link href="/(app)/send/enterAmount" asChild>
+            <Button title="Next" type="primary" onPress={() => {}} />
+          </Link>
         </View>
       </View>
     </View>

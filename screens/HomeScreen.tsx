@@ -42,7 +42,7 @@ const HomeScreen = () => {
             swapIcon
             onPress={deployAccount}
           />
-          <Link href="/(app)/send" asChild>
+          <Link href="/(app)/send/selectContact" asChild>
             <Button title="Enviar" icon="send" type="primary" onPress={() => {}} />
           </Link>
         </View>
