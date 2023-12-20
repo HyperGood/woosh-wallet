@@ -34,8 +34,10 @@ function SessionProvider({ children }: SessionProviderProps) {
     return new Promise((resolve, reject) => {
       SecureStore.getItemAsync('token').then((storedToken) => {
         if (storedToken) {
-          setAuthToken(storedToken);
-          resolve(true);
+          LocalAuthentication.authenticateAsync().then((result) => {
+            setAuthToken(storedToken);
+            resolve(true);
+          });
         } else {
           //if not generate a new one using local auth and generatePrivateKey from viem/accounts and store it in SecureStorage
           LocalAuthentication.authenticateAsync().then((result) => {

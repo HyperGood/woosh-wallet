@@ -98,6 +98,7 @@ const NumberPad = ({ onChange }: NumberPadProps) => {
               {numbers.slice(rowIndex * 3, rowIndex * 3 + 3).map((number, index) => (
                 <Pressable
                   key={index}
+                  style={({ pressed }) => pressed && styles.pressedNumber}
                   onPress={() =>
                     number === 'delete' ? onBackspacePress() : onNumberPress(number)
                   }>
@@ -150,6 +151,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 40,
     marginTop: 24,
+  },
+  pressedNumber: {
+    opacity: 0.6,
   },
   row: {
     flexDirection: 'row',
