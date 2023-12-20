@@ -1,26 +1,26 @@
 import { useFonts } from 'expo-font';
 import { Slot } from 'expo-router';
-//import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-//import { optimism, optimismGoerli } from 'wagmi/chains';
-//import { alchemyProvider } from 'wagmi/providers/alchemy';
-//import { publicProvider } from 'wagmi/providers/public';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { optimism, optimismGoerli } from 'wagmi/chains';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { publicProvider } from 'wagmi/providers/public';
 
 import SessionProvider from '../store/auth-context';
 
 SplashScreen.preventAutoHideAsync();
 
-// export const { chains, publicClient, webSocketPublicClient } = configureChains(
-//   [process.env.EXPO_PUBLIC_TESTNET === 'true' ? optimismGoerli : optimism],
-//   [alchemyProvider({ apiKey: process.env.EXPO_PUBLIC_ALCHEMY_ID || '' }), publicProvider()]
-// );
+export const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [process.env.EXPO_PUBLIC_TESTNET === 'true' ? optimismGoerli : optimism],
+  [alchemyProvider({ apiKey: process.env.EXPO_PUBLIC_ALCHEMY_ID || '' }), publicProvider()]
+);
 
-// const config = createConfig({
-//   autoConnect: false,
-//   publicClient,
-//   webSocketPublicClient,
-// });
+const config = createConfig({
+  autoConnect: false,
+  publicClient,
+  webSocketPublicClient,
+});
 
 export default function Layout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -44,8 +44,10 @@ export default function Layout() {
   }
 
   return (
-    <SessionProvider>
-      <Slot />
-    </SessionProvider>
+    <WagmiConfig config={config}>
+      <SessionProvider>
+        <Slot />
+      </SessionProvider>
+    </WagmiConfig>
   );
 }
