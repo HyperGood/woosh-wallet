@@ -1,7 +1,7 @@
 import 'fast-text-encoding';
 import { Buffer } from 'buffer';
 import { getRandomValues as expoCryptoGetRandomValues } from 'expo-crypto';
-
+import '@ethersproject/shims';
 // // Polyfills for Alchemy SDK
 if (typeof btoa === 'undefined') {
   global.btoa = function (str) {

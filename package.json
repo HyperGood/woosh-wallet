@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@alchemy/aa-core": "^0.1.0-alpha.23",
+    "@ethersproject/shims": "^5.7.0",
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/native": "^6.1.7",
     "@turnkey/http": "^2.5.0",

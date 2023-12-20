@@ -1,32 +1,16 @@
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { encodeFunctionData, parseEther, parseUnits, zeroAddress } from 'viem';
 
 import Balance from '../components/Balance';
 import Button from '../components/UI/Button';
 import Header from '../components/UI/Header';
 import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
 import { COLORS } from '../constants/global-styles';
-import { useAccount } from '../store/smart-account-context';
-import { encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 import { depositVaultAbi } from '../references/depositVault-abi';
+import { useAccount } from '../store/smart-account-context';
 
 const HomeScreen = () => {
-  const [address, setAddress] = useState('');
-
   const { ecdsaProvider } = useAccount();
-
-  const handleButton = () => {
-    try {
-      console.log('Getting address');
-      if (!ecdsaProvider) throw new Error('No ecdsaProvider');
-      ecdsaProvider?.getAddress().then((address) => {
-        console.log('Address: ', address);
-        setAddress(address);
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   const testDeposit = async () => {
     try {
@@ -41,8 +25,27 @@ const HomeScreen = () => {
         }),
       });
       console.log('User Op Hash: ', hash);
+      Alert.alert('Transaction Successful!! User Op Hash: ', hash);
     } catch (e) {
       console.log(e);
+      Alert.alert('Transaction Failed!!');
+    }
+  };
+
+  //Deploy Account
+  const deployAccount = async () => {
+    try {
+      if (!ecdsaProvider) throw new Error('No ecdsaProvider');
+      const { hash } = await ecdsaProvider.sendUserOperation({
+        target: zeroAddress,
+        value: parseEther('0'),
+        data: '0x',
+      });
+      console.log('User Op Hash: ', hash);
+      Alert.alert('Transaction Successful!! User Op Hash: ', hash);
+    } catch (e) {
+      console.log(e);
+      Alert.alert('Transaction Failed!!');
     }
   };
 
@@ -50,15 +53,14 @@ const HomeScreen = () => {
     <ScrollView style={styles.wrapper}>
       <View style={styles.container}>
         <Header />
-        <Text style={{ color: 'white' }}>{address}</Text>
         <Balance />
         <View style={styles.buttonsContainer}>
           <Button
-            title="Cobrar"
+            title="Deploy Account"
             icon="arrow-down-left"
             type="secondary"
             swapIcon
-            onPress={handleButton}
+            onPress={deployAccount}
           />
           <Button title="Enviar" icon="send" type="primary" onPress={testDeposit} />
         </View>
