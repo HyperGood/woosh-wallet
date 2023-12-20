@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createPublicClient, formatEther, http } from 'viem';
 import { optimismGoerli } from 'viem/chains';
@@ -6,14 +6,14 @@ import { optimismGoerli } from 'viem/chains';
 import IconButton from './UI/IconButton';
 import { COLORS } from '../constants/global-styles';
 import useAddress from '../hooks/useAddress';
+import { useAccount } from '../store/smart-account-context';
 
 /*TODO:
 1. Store the last balance in the user's local storage
 */
 const Balance = () => {
   const { address } = useAddress();
-  const [balance, setBalance] = useState(0);
-  const [tokenBalance, setTokenBalance] = useState(0);
+  const { fiatBalance, tokenBalance, setFiatBalance, setTokenBalance } = useAccount();
   const token = 'ETH';
   const ethMXPrice = 37801.33;
   const client = createPublicClient({
@@ -29,7 +29,7 @@ const Balance = () => {
         });
         console.log(balance);
         setTokenBalance(Number(formatEther(balance)));
-        setBalance(Number(formatEther(balance)) * ethMXPrice);
+        setFiatBalance(Number(formatEther(balance)) * ethMXPrice);
       })();
   }, [address]);
 
@@ -40,8 +40,8 @@ const Balance = () => {
     <View style={styles.wrapper}>
       <View style={styles.container}>
         <Text style={styles.number}>
-          ${balance.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.
-          <Text style={styles.decimal}>{(balance % 1).toFixed(2).slice(2)}</Text>
+          ${fiatBalance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.
+          <Text style={styles.decimal}>{(fiatBalance % 1).toFixed(2).slice(2)}</Text>
         </Text>
         <View style={styles.buttonContainer}>
           <IconButton icon="plus" onPress={handleButton} />

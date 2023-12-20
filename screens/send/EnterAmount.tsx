@@ -1,25 +1,33 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import NumberPad from '../../components/UI/NumberPad';
 import { COLORS } from '../../constants/global-styles';
-const EnterAmount = () => {
+
+interface EnterAmountProps {
+  onAmountChange: (amount: string) => void;
+  deposit: () => void;
+}
+
+const EnterAmount = ({ onAmountChange, deposit }: EnterAmountProps) => {
   return (
-    <View style={styles.wrapper}>
-      <BackButton />
-      <View>
-        <Text style={styles.title}>Sending To</Text>
-        <View style={styles.recipient}>
-          <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} />
-          <Text style={styles.recipientName}>Janet</Text>
-        </View>
-        <NumberPad />
-        <View style={styles.buttonWrapper}>
-          <Button title="Send" type="primary" onPress={() => {}} />
+    <ScrollView style={{ flex: 1, width: '100%' }}>
+      <View style={styles.wrapper}>
+        <BackButton />
+        <View>
+          <Text style={styles.title}>Sending To</Text>
+          <View style={styles.recipient}>
+            <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} />
+            <Text style={styles.recipientName}>Janet</Text>
+          </View>
+          <NumberPad onChange={onAmountChange} />
+          <View style={styles.buttonWrapper}>
+            <Button title="Send" type="primary" onPress={deposit} />
+          </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 export default EnterAmount;

@@ -1,13 +1,18 @@
 import { Feather } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
+
 const BackButton = () => {
+  function goBack() {
+    router.back();
+  }
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container} onPress={goBack}>
       <Feather name="corner-up-left" size={16} color={COLORS.light} />
       <Text style={styles.text}>Back</Text>
-    </View>
+    </Pressable>
   );
 };
 export default BackButton;

@@ -4,24 +4,35 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 
 import Input from './Input';
 import { COLORS } from '../../constants/global-styles';
+import { useAccount } from '../../store/smart-account-context';
 
-const NumberPad = () => {
+interface NumberPadProps {
+  onChange: (amount: string) => void;
+}
+
+const NumberPad = ({ onChange }: NumberPadProps) => {
   const [amount, setAmount] = useState('0');
   const [cents, setCents] = useState('00');
   const [isDecimal, setIsDecimal] = useState(false);
+  const { tokenBalance } = useAccount();
+  const currency = 'ETH';
 
   const onNumberPress = (number: string) => {
     if (number === '.') {
       setIsDecimal(true);
     } else if (isDecimal) {
       setCents((prevCents) => {
-        const newCents = prevCents === '00' ? number : prevCents + number;
-        return newCents.length <= 6 ? newCents : prevCents;
+        const newCents = prevCents === '00' && number !== '0' ? number : prevCents + number;
+        const finalAmount = amount + '.' + newCents;
+        onChange(finalAmount);
+        return newCents;
       });
     } else {
       setAmount((prevAmount) => {
         const newAmount = prevAmount === '0' ? number : prevAmount + number;
-        return parseFloat(newAmount) <= 99999.99 ? newAmount : prevAmount;
+        const finalAmount = parseFloat(newAmount) <= tokenBalance ? newAmount : prevAmount;
+        onChange(finalAmount); // call the passed callback function
+        return finalAmount;
       });
     }
   };
@@ -29,18 +40,20 @@ const NumberPad = () => {
   const onBackspacePress = () => {
     if (isDecimal) {
       setCents((prevCents) => {
-        if (prevCents.length > 1) {
-          return prevCents.slice(0, -1);
-        } else {
-          setIsDecimal(false);
-          return '00';
-        }
+        const newCents = prevCents.slice(0, -1);
+        const finalAmount = amount + (newCents ? '.' + newCents : '');
+        onChange(finalAmount); // call the passed callback function
+        return newCents || '00';
       });
       if (cents === '0') {
         setIsDecimal(false);
       }
     } else {
-      setAmount((prevAmount) => prevAmount.slice(0, -1) || '0');
+      setAmount((prevAmount) => {
+        const newAmount = prevAmount.slice(0, -1) || '0';
+        onChange(newAmount); // call the passed callback function
+        return newAmount;
+      });
     }
   };
 
@@ -50,16 +63,30 @@ const NumberPad = () => {
     return amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
+  const setAmountToMax = () => {
+    const [wholePart, decimalPart] = tokenBalance.toString().split('.');
+    setAmount(wholePart);
+    setCents(decimalPart || '00');
+    setIsDecimal(!!decimalPart);
+    onChange(tokenBalance.toString());
+  };
+
   return (
     <View>
       <View style={styles.amountWrapper}>
+        <Pressable onPress={setAmountToMax}>
+          <Text style={styles.balance}>
+            You have: {currency === 'ETH' ? 'Ξ' : '$'} {tokenBalance}
+          </Text>
+        </Pressable>
         <Text style={styles.amount}>
-          ${formatAmount(amount)}.
+          {currency === 'ETH' ? 'Ξ' : '$'}
+          {formatAmount(amount)}.
           <Text style={styles.cents}>{cents.length < 2 ? cents.padEnd(2, '0') : cents}</Text>
         </Text>
 
         <View style={styles.currencyWrapper}>
-          <Text style={styles.currencyText}>MXN</Text>
+          <Text style={styles.currencyText}>{currency}</Text>
         </View>
       </View>
       <Input placeholder="Add a note or concept" value="" onChangeText={() => {}} />
@@ -140,6 +167,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   opacity: {
+    opacity: 0.6,
+  },
+  balance: {
+    fontSize: 16,
+    fontFamily: 'Satoshi-Bold',
+    color: COLORS.light,
     opacity: 0.6,
   },
 });

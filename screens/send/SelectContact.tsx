@@ -5,7 +5,11 @@ import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
 
-const SelectContact = () => {
+interface SelectContactProps {
+  onNext: () => void;
+}
+
+const SelectContact = ({ onNext }: SelectContactProps) => {
   return (
     <View style={styles.wrapper}>
       <BackButton />
@@ -15,7 +19,7 @@ const SelectContact = () => {
           <Input placeholder="Enter a phone number" onChangeText={() => {}} value="" />
         </View>
         <View style={styles.buttonWrapper}>
-          <Button title="Next" type="primary" onPress={() => {}} />
+          <Button title="Next" type="primary" onPress={onNext} />
         </View>
       </View>
     </View>
