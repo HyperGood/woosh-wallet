@@ -1,18 +1,34 @@
 import * as LocalAuthentication from 'expo-local-authentication';
+import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
-import { encodeFunctionData, parseUnits, zeroAddress } from 'viem';
+import {
+  createPublicClient,
+  encodeFunctionData,
+  formatEther,
+  http,
+  parseUnits,
+  zeroAddress,
+} from 'viem';
+import { optimismGoerli } from 'viem/chains';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import NumberPad from '../../components/UI/NumberPad';
 import { COLORS } from '../../constants/global-styles';
+import useAddress from '../../hooks/useAddress';
 import { depositVaultAbi } from '../../references/depositVault-abi';
 import { useAccount } from '../../store/smart-account-context';
-import { useState } from 'react';
 
 const EnterAmount = () => {
-  const { ecdsaProvider } = useAccount();
   const [amount, setAmount] = useState('0');
+  const { address } = useAddress();
+  const { ecdsaProvider, setFiatBalance, setTokenBalance } = useAccount();
+  const ethMXPrice = 37801.33;
+  const client = createPublicClient({
+    chain: optimismGoerli,
+    transport: http(`https://opt-goerli.g.alchemy.com/v2/${process.env.EXPO_PUBLIC_ALCHEMY_ID}`),
+  });
+
   const deposit = async () => {
     console.log('Depositting');
     try {
@@ -35,8 +51,17 @@ const EnterAmount = () => {
         });
         console.log('User Op Hash: ', hash);
         Alert.alert('Transaction Successful!! User Op Hash: ', hash);
-      } else {
-        Alert.alert('Authentication Failed!!');
+        //refetch balance
+        if (address) {
+          const balance = await client.getBalance({
+            address,
+          });
+          console.log(balance);
+          setTokenBalance(Number(formatEther(balance)));
+          setFiatBalance(Number(formatEther(balance)) * ethMXPrice);
+        } else {
+          Alert.alert('Authentication Failed!!');
+        }
       }
     } catch (e) {
       console.log(e);
