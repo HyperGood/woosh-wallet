@@ -12,9 +12,6 @@ export default function Layout() {
   const { token } = useSession();
   const { setEcdsaProvider } = useAccount();
 
-  //TODO:
-  //1. Save ecdsaProvider in context
-
   useEffect(() => {
     if (token) {
       (async () => {

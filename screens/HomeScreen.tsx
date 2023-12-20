@@ -7,11 +7,14 @@ import Header from '../components/UI/Header';
 import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
 import { COLORS } from '../constants/global-styles';
 import { useAccount } from '../store/smart-account-context';
+import { encodeFunctionData, parseUnits, zeroAddress } from 'viem';
+import { depositVaultAbi } from '../references/depositVault-abi';
 
 const HomeScreen = () => {
   const [address, setAddress] = useState('');
 
   const { ecdsaProvider } = useAccount();
+
   const handleButton = () => {
     try {
       console.log('Getting address');
@@ -20,6 +23,24 @@ const HomeScreen = () => {
         console.log('Address: ', address);
         setAddress(address);
       });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const testDeposit = async () => {
+    try {
+      if (!ecdsaProvider) throw new Error('No ecdsaProvider');
+      const { hash } = await ecdsaProvider.sendUserOperation({
+        target: '0x835d70aa12353f3866b118F8c9b70685Db44ad4D',
+        value: parseUnits('0.001', 18),
+        data: encodeFunctionData({
+          abi: depositVaultAbi,
+          functionName: 'deposit',
+          args: [parseUnits('0', 18), zeroAddress],
+        }),
+      });
+      console.log('User Op Hash: ', hash);
     } catch (e) {
       console.log(e);
     }
@@ -39,7 +60,7 @@ const HomeScreen = () => {
             swapIcon
             onPress={handleButton}
           />
-          <Button title="Enviar" icon="send" type="primary" onPress={handleButton} />
+          <Button title="Enviar" icon="send" type="primary" onPress={testDeposit} />
         </View>
         <PreviousTransactions />
       </View>
