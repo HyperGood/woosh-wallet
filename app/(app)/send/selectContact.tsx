@@ -1,16 +1,13 @@
-import { Stack } from 'expo-router';
-
-import EnterAmount from '../../../screens/send/EnterAmount';
 import { StyleSheet, View } from 'react-native';
+
 import { COLORS } from '../../../constants/global-styles';
-import SelectContact from '../../../screens/send/SelectContact';
+import SelectContactScreen from '../../../screens/send/SelectContactScreen';
 
 const enterAmount = () => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <Stack.Screen />
-        <SelectContact />
+        <SelectContactScreen />
       </View>
     </View>
   );

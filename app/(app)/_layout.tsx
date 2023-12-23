@@ -3,8 +3,8 @@ import { ECDSAProvider } from '@zerodev/sdk';
 import { Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 
-import { useSession } from '../../store/auth-context';
-import { useAccount } from '../../store/smart-account-context';
+import { useSession } from '../../store/AuthContext';
+import { useAccount } from '../../store/SmartAccountContext';
 
 export default function Layout() {
   const [address, setAddress] = useState('');

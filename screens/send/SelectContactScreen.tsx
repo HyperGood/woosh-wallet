@@ -1,30 +1,43 @@
 import { Link } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
+import { useTransaction } from '../../store/TransactionContext';
 
-const SelectContact = () => {
+const SelectContactScreen = () => {
+  const { setTransactionData } = useTransaction();
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  const handleNext = () => {
+    setTransactionData({ recipient: phoneNumber, amount: '', data: '' });
+  };
+
   return (
     <View style={styles.wrapper}>
       <BackButton />
       <View style={{ flex: 1, justifyContent: 'space-between' }}>
         <View>
           <Text style={styles.title}>A quien le enviaras?</Text>
-          <Input placeholder="Enter a phone number" onChangeText={() => {}} value="" />
+          <Input
+            placeholder="Enter a phone number"
+            onChangeText={setPhoneNumber}
+            value={phoneNumber}
+          />
         </View>
         <View style={styles.buttonWrapper}>
           <Link href="/(app)/send/enterAmount" asChild>
-            <Button title="Next" type="primary" onPress={() => {}} />
+            <Button title="Next" type="primary" onPress={handleNext} />
           </Link>
         </View>
       </View>
     </View>
   );
 };
-export default SelectContact;
+export default SelectContactScreen;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,

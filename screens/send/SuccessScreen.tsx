@@ -1,11 +1,20 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/UI/Button';
 import TransactionCardHome from '../../components/transactions/UI/TransactionCardHome';
 import { COLORS } from '../../constants/global-styles';
+import { useTransaction } from '../../store/TransactionContext';
 
 const SuccessScreen = () => {
+  const { transactionData } = useTransaction();
+  if (!transactionData) {
+    return null; // or some fallback component
+  }
+  const { recipient } = transactionData;
+  const amount = Number(transactionData.amount);
+  const date = new Date().toLocaleDateString();
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -13,9 +22,13 @@ const SuccessScreen = () => {
         style={styles.background}
         end={{ x: 0.3, y: 0.7 }}
       />
+      <Link href="/(app)">
+        <Text style={styles.description}>Go home</Text>
+      </Link>
       <Text style={styles.title}>Sent! 🥳</Text>
       <Text style={styles.description}>A claim link has been sent to </Text>
-      <TransactionCardHome amount={1000} user="User" description="For cookies" date="01/12/21" />
+      <TransactionCardHome amount={amount} user={recipient} description="" date={date} />
+      <Text style={styles.description}>Secret: ""</Text>
       <View style={styles.buttonWrapper}>
         <Button title="Share" type="primary" icon="share" onPress={() => {}} />
       </View>

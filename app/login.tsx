@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/UI/Button';
 import { COLORS } from '../constants/global-styles';
-import { useSession } from '../store/auth-context';
+import { useSession } from '../store/AuthContext';
 
 export default function Page() {
   const { authenticate } = useSession();

@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 
 import Input from './Input';
 import { COLORS } from '../../constants/global-styles';
-import { useAccount } from '../../store/smart-account-context';
+import { useUserBalance } from '../../hooks/useUserBalance';
 
 interface NumberPadProps {
   onChange: (amount: string) => void;
@@ -14,8 +14,8 @@ const NumberPad = ({ onChange }: NumberPadProps) => {
   const [amount, setAmount] = useState('0');
   const [cents, setCents] = useState('00');
   const [isDecimal, setIsDecimal] = useState(false);
-  const { tokenBalance } = useAccount();
   const currency = 'ETH';
+  const { tokenBalance } = useUserBalance();
 
   const onNumberPress = (number: string) => {
     if (number === '.') {

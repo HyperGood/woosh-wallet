@@ -1,22 +1,24 @@
 import { ECDSAProvider } from '@zerodev/sdk';
-import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 interface SmartAccountContextType {
   ecdsaProvider: ECDSAProvider | null;
   setEcdsaProvider: Dispatch<SetStateAction<ECDSAProvider | null>>;
-  fiatBalance: number;
-  setFiatBalance: Dispatch<SetStateAction<number>>;
-  tokenBalance: number;
-  setTokenBalance: Dispatch<SetStateAction<number>>;
+  address: `0x${string}` | null;
 }
 
 export const SmartAccountContext = createContext<SmartAccountContextType>({
   ecdsaProvider: null,
   setEcdsaProvider: () => {},
-  fiatBalance: 0,
-  setFiatBalance: () => {},
-  tokenBalance: 0,
-  setTokenBalance: () => {},
+  address: null,
 });
 
 export function useAccount() {
@@ -30,16 +32,20 @@ interface SmartAccountProviderProps {
 
 function SmartAccountProvider({ children }: SmartAccountProviderProps) {
   const [ecdsaProvider, setEcdsaProvider] = useState<ECDSAProvider | null>(null);
-  const [fiatBalance, setFiatBalance] = useState<number>(0);
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
+  const [address, setAddress] = useState<`0x${string}` | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      if (!ecdsaProvider) return;
+      const address = await ecdsaProvider.getAddress();
+      setAddress(address);
+    })();
+  }, [ecdsaProvider]);
 
   const value = {
     ecdsaProvider,
     setEcdsaProvider,
-    fiatBalance,
-    setFiatBalance,
-    tokenBalance,
-    setTokenBalance,
+    address,
   };
 
   return <SmartAccountContext.Provider value={value}>{children}</SmartAccountContext.Provider>;

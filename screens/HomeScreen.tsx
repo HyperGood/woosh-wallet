@@ -7,7 +7,7 @@ import Button from '../components/UI/Button';
 import Header from '../components/UI/Header';
 import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
 import { COLORS } from '../constants/global-styles';
-import { useAccount } from '../store/smart-account-context';
+import { useAccount } from '../store/SmartAccountContext';
 
 const HomeScreen = () => {
   const { ecdsaProvider } = useAccount();

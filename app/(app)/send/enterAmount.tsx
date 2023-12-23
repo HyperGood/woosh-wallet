@@ -1,4 +1,3 @@
-import { Stack } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
@@ -8,7 +7,6 @@ const enterAmount = () => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <Stack.Screen />
         <EnterAmount />
       </View>
     </View>

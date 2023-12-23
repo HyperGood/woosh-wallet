@@ -4,8 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { MMKV } from 'react-native-mmkv';
 
-import SessionProvider from '../store/auth-context';
-import SmartAccountProvider from '../store/smart-account-context';
+import SessionProvider from '../store/AuthContext';
+import SmartAccountProvider from '../store/SmartAccountContext';
 
 export const storage = new MMKV();
 
