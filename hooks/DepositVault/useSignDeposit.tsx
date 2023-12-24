@@ -6,9 +6,10 @@ import { optimismGoerli } from 'viem/chains';
 import publicClient from '../../constants/viemPublicClient';
 import { Addresses, contractAddress } from '../../references/depositVault-abi';
 import { useAccount } from '../../store/SmartAccountContext';
+import { useTransaction } from '../../store/TransactionContext';
 
 export const useSignDeposit = () => {
-  const [signature, setSignature] = useState<string>();
+  const { signature, setSignature } = useTransaction();
   const [isSigning, setIsSigning] = useState(false);
   const [signError, setSignError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
@@ -36,10 +37,12 @@ export const useSignDeposit = () => {
           console.log('DepositIndex: ', Number(depositIndex));
           console.log('Amount: ', depositAmount);
           resolve({ depositIndex, depositAmount });
+          unwatch();
         },
         onError: (error) => {
           console.log('Error: ', error);
           reject(error);
+          unwatch();
         },
       });
     });
@@ -76,8 +79,9 @@ export const useSignDeposit = () => {
         primaryType: 'Withdrawal',
       };
 
-      const signature = await ecdsaProvider?.signTypedData(typedData);
-      setSignature(signature);
+      const signedDeposit = (await ecdsaProvider?.signTypedData(typedData)) || '';
+      setSignature(signedDeposit);
+      console.log('Signature in useSignDeposit: ', signature);
     } catch (e) {
       setSignError(e);
       console.log('Error: ', e);
@@ -87,5 +91,5 @@ export const useSignDeposit = () => {
     }
   };
 
-  return { signDeposit, signature, isSigning, signError };
+  return { signDeposit, isSigning, signError };
 };

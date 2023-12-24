@@ -8,7 +8,8 @@ import { COLORS } from '../../constants/global-styles';
 import { useTransaction } from '../../store/TransactionContext';
 
 const SuccessScreen = () => {
-  const { transactionData } = useTransaction();
+  const { transactionData, signature } = useTransaction();
+  console.log(signature);
   if (!transactionData) {
     return null; // or some fallback component
   }
@@ -28,7 +29,7 @@ const SuccessScreen = () => {
       <Text style={styles.title}>Sent! 🥳</Text>
       <Text style={styles.description}>A claim link has been sent to </Text>
       <TransactionCardHome amount={amount} user={recipient} description="" date={date} />
-      <Text style={styles.description}>Secret: ""</Text>
+      <Text style={styles.description}>Secret: {signature}</Text>
       <View style={styles.buttonWrapper}>
         <Button title="Share" type="primary" icon="share" onPress={() => {}} />
       </View>
