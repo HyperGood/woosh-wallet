@@ -6,21 +6,26 @@ import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import NumberPad from '../../components/UI/NumberPad';
 import { COLORS } from '../../constants/global-styles';
-import { useDepositVault } from '../../hooks/useDepositVault';
+import { useDeposit } from '../../hooks/DepositVault/useDeposit';
+import { useSignDeposit } from '../../hooks/DepositVault/useSignDeposit';
 import { useUserBalance } from '../../hooks/useUserBalance';
 import { useTransaction } from '../../store/TransactionContext';
 
 const EnterAmount = () => {
   const [amount, setAmount] = useState('0');
-  const { deposit, isDepositing, depositError, depositHash } = useDepositVault();
+  const { deposit, isDepositing, depositError, depositHash } = useDeposit();
+  const { signDeposit } = useSignDeposit();
   const { refetchBalance } = useUserBalance();
   const { transactionData, setTransactionData } = useTransaction();
 
   useEffect(() => {
-    if (depositHash) {
-      refetchBalance();
-      router.push('/(app)/send/success');
-    }
+    (async () => {
+      if (depositHash) {
+        refetchBalance();
+        await signDeposit();
+        router.push('/(app)/send/success');
+      }
+    })();
   }, [depositHash]);
 
   useEffect(() => {

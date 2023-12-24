@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 import { encodeFunctionData, parseUnits, zeroAddress } from 'viem';
 
-import { useUserBalance } from './useUserBalance';
-import { depositVaultAbi } from '../references/depositVault-abi';
-import { useAccount } from '../store/SmartAccountContext';
+import { depositVaultAbi } from '../../references/depositVault-abi';
+import { useAccount } from '../../store/SmartAccountContext';
+import { useUserBalance } from '../useUserBalance';
 
-export const useDepositVault = () => {
+export const useDeposit = () => {
   const [depositHash, setDepositHash] = useState<string | null>(null);
   const [isDepositing, setIsDepositing] = useState(false);
   const [depositError, setDepositError] = useState<any>(null);
