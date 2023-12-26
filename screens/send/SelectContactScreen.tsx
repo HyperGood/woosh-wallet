@@ -1,3 +1,4 @@
+import firestore from '@react-native-firebase/firestore';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -9,11 +10,21 @@ import { COLORS } from '../../constants/global-styles';
 import { useTransaction } from '../../store/TransactionContext';
 
 const SelectContactScreen = () => {
+  const usersCollection = firestore().collection('Users');
   const { setTransactionData } = useTransaction();
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const handleNext = () => {
     setTransactionData({ recipient: phoneNumber, amount: '', data: '' });
+  };
+
+  const writeData = async () => {
+    const userDocument = usersCollection.doc('kEcbFLTpFsew2BwBOnOs');
+    console.log(userDocument);
+    // await ref.add({
+    //   name: phoneNumber,
+    // });
+    // setPhoneNumber('');
   };
 
   return (
@@ -30,7 +41,7 @@ const SelectContactScreen = () => {
         </View>
         <View style={styles.buttonWrapper}>
           <Link href="/(app)/send/enterAmount" asChild>
-            <Button title="Next" type="primary" onPress={handleNext} />
+            <Button title="Next" type="primary" onPress={writeData} />
           </Link>
         </View>
       </View>

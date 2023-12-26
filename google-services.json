@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "741237653274",
+    "project_id": "wooshmvp",
+    "storage_bucket": "wooshmvp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741237653274:android:274adb351e800381fc36a3",
+        "android_client_info": {
+          "package_name": "com.hypergood.wooshmvp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBns58eDKei0qnfoevSpTdbzkP4C73kiuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
