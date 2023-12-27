@@ -4,6 +4,7 @@ import { Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { useSession } from '../../store/AuthContext';
+import { ContactProvider } from '../../store/ContactsContext';
 import { useAccount } from '../../store/SmartAccountContext';
 
 export default function Layout() {
@@ -40,10 +41,12 @@ export default function Layout() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    />
+    <ContactProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+    </ContactProvider>
   );
 }

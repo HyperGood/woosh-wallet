@@ -31,11 +31,13 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                 <Link href={`/claim/${transaction.id}`}>
                   <TransactionCardHome
                     amount={transaction.amount}
-                    user={transaction.recipient}
+                    recipientName={transaction.recipientName}
+                    recipientPhone={transaction.recipientPhone}
                     userImage={transaction.userImage}
                     description={transaction.description}
                     date={transaction.createdAt.toDate().toDateString()}
                     claimed={transaction.claimed}
+                    sender={transaction.sender}
                   />
                 </Link>
               ) : (
@@ -50,11 +52,13 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
               <Link href={`/claim/${transaction.id}`}>
                 <TransactionCardHome
                   amount={transaction.amount}
-                  user={transaction.recipient}
+                  recipientName={transaction.recipientName}
+                  recipientPhone={transaction.recipientPhone}
                   userImage={transaction.userImage}
                   description={transaction.description}
                   date={transaction.createdAt.toDate().toDateString()}
                   claimed={transaction.claimed}
+                  sender={transaction.sender}
                 />
               </Link>
             </View>

@@ -59,9 +59,10 @@ const AllTransactionsScreen = () => {
                 <TransactionCard
                   key={transaction.id}
                   amount={Number(transaction.amount)}
-                  user={transaction.recipient || ''}
+                  user={transaction.recipientName || ''}
                   description={transaction.description}
                   date={transaction.createdAt.toDate().toDateString()}
+                  sender={transaction.sender}
                 />
               ))}
             </View>

@@ -31,7 +31,7 @@ const EnterAmountScreen = () => {
 
   useEffect(() => {
     setTransactionData(
-      transactionData ? { ...transactionData, amount } : { recipient: '', token: 'ETH', amount }
+      transactionData ? { ...transactionData, amount } : { recipientName: '', token: 'ETH', amount }
     );
   }, [amount]);
 
@@ -42,8 +42,9 @@ const EnterAmountScreen = () => {
         <View>
           <Text style={styles.title}>Sending To</Text>
           <View style={styles.recipient}>
-            <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} />
-            <Text style={styles.recipientName}>Janet</Text>
+            {/* <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} /> */}
+            <Text style={styles.recipientName}>{transactionData?.recipientName}</Text>
+            <Text style={styles.recipientPhone}>{transactionData?.recipientPhone}</Text>
           </View>
           {isDepositing && !depositError ? (
             <Text style={{ color: 'white' }}>Sending...</Text>
@@ -77,16 +78,20 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   recipient: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginHorizontal: 16,
-    gap: 12,
+    gap: 8,
     marginBottom: 16,
   },
   recipientName: {
-    fontSize: 24,
+    fontSize: 32,
     fontFamily: 'Satoshi-Bold',
     color: COLORS.light,
+  },
+  recipientPhone: {
+    fontSize: 16,
+    fontFamily: 'Satoshi-Bold',
+    color: COLORS.light,
+    opacity: 0.6,
   },
   image: {
     width: 48,

@@ -46,7 +46,8 @@
     "react-native-screens": "~3.22.0",
     "react-native-web": "~0.19.6",
     "viem": "^1.19.11",
-    "wagmi": "^1.4.8"
+    "wagmi": "^1.4.8",
+    "expo-contacts": "~12.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

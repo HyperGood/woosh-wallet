@@ -57,6 +57,8 @@
         </dict>
       </dict>
     </dict>
+    <key>NSContactsUsageDescription</key>
+    <string>Allow Woosh to access your contacts so you can send funds to anyone in your contacts list.</string>
     <key>NSFaceIDUsageDescription</key>
     <string>Allow Woosh to use Face ID</string>
     <key>NSUserActivityTypes</key>

@@ -3,7 +3,8 @@ import { createContext, useState, useContext, ReactNode, Dispatch, SetStateActio
 import { Transaction } from '../models/Transaction';
 
 interface TransactionData extends Partial<Transaction> {
-  recipient?: string;
+  recipientName?: string;
+  recipientPhone?: string;
   amount?: string;
   token?: string;
   depositIndex?: number;

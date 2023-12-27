@@ -27,6 +27,12 @@
             "useFrameworks": "static"
           }
         }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow Woosh to access your contacts so you can send funds to anyone in your contacts list."
+        }
       ]
     ],
     "experiments": {

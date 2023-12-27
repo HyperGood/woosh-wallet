@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
+import { useAccount } from '../../../store/SmartAccountContext';
 
 interface TranscationCardProps {
   amount: number;
@@ -8,14 +9,17 @@ interface TranscationCardProps {
   userImage?: any;
   description?: string;
   date: string;
+  sender?: string;
 }
 const TransactionCard: React.FC<TranscationCardProps> = ({
   amount,
   user,
   userImage,
   description,
+  sender,
   date,
 }) => {
+  const { address } = useAccount();
   return (
     <View style={styles.container}>
       <View>
@@ -25,8 +29,8 @@ const TransactionCard: React.FC<TranscationCardProps> = ({
         </View>
         <Text style={styles.description}>{description}</Text>
       </View>
-      <Text style={[styles.amount, amount > 0 && styles.positive]}>
-        {amount > 0 && '+'}${amount}
+      <Text style={[styles.amount, sender !== address && styles.positive]}>
+        {sender === address && '-'}${amount}
       </Text>
     </View>
   );

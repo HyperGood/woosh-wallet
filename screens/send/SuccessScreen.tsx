@@ -35,7 +35,7 @@ const SuccessScreen = () => {
   if (!transactionData) {
     return null; // or some fallback component
   }
-  const { recipient } = transactionData;
+  const { recipientName, recipientPhone } = transactionData;
   const amount = Number(transactionData.amount);
   const date = new Date().toLocaleDateString();
   return (
@@ -50,7 +50,13 @@ const SuccessScreen = () => {
       </Link>
       <Text style={styles.title}>Sent! 🥳</Text>
       <Text style={styles.description}>A claim link has been sent to </Text>
-      <TransactionCardHome amount={amount} user={recipient || ''} description="" date={date} />
+      <TransactionCardHome
+        amount={amount}
+        recipientName={recipientName || ''}
+        recipientPhone={recipientPhone || ''}
+        description=""
+        date={date}
+      />
       <Text style={styles.description}>Secret: {signature}</Text>
       <View style={styles.buttonWrapper}>
         <Button title="Share" type="primary" icon="share" onPress={() => {}} />
