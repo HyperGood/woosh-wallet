@@ -11,7 +11,7 @@ import { useSignDeposit } from '../../hooks/DepositVault/useSignDeposit';
 import { useUserBalance } from '../../hooks/useUserBalance';
 import { useTransaction } from '../../store/TransactionContext';
 
-const EnterAmount = () => {
+const EnterAmountScreen = () => {
   const [amount, setAmount] = useState('0');
   const { deposit, isDepositing, depositError, depositHash } = useDeposit();
   const { signDeposit } = useSignDeposit();
@@ -20,9 +20,10 @@ const EnterAmount = () => {
 
   useEffect(() => {
     (async () => {
-      if (depositHash) {
+      if (depositHash && transactionData) {
         refetchBalance();
         await signDeposit();
+        setTransactionData({ ...transactionData, transactionHash: depositHash });
         router.push('/(app)/send/success');
       }
     })();
@@ -30,7 +31,7 @@ const EnterAmount = () => {
 
   useEffect(() => {
     setTransactionData(
-      transactionData ? { ...transactionData, amount } : { recipient: '', data: '', amount }
+      transactionData ? { ...transactionData, amount } : { recipient: '', token: 'ETH', amount }
     );
   }, [amount]);
 
@@ -59,7 +60,7 @@ const EnterAmount = () => {
     </ScrollView>
   );
 };
-export default EnterAmount;
+export default EnterAmountScreen;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,

@@ -1,15 +1,37 @@
+import firestore from '@react-native-firebase/firestore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
+import { useCallback, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/UI/Button';
 import TransactionCardHome from '../../components/transactions/UI/TransactionCardHome';
 import { COLORS } from '../../constants/global-styles';
+import { useAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
 
 const SuccessScreen = () => {
   const { transactionData, signature } = useTransaction();
-  console.log(signature);
+  const { address } = useAccount();
+
+  useEffect(() => {
+    if (!transactionData) {
+      console.log('No transaction data found');
+      return;
+    }
+    console.log('Sending transaction to firestore...');
+    firestore()
+      .collection('transactions')
+      .add({
+        ...transactionData,
+        sender: address,
+        createdAt: new Date(),
+      })
+      .then(() => {
+        console.log('Transaction added!');
+      });
+  }, [transactionData]);
+
   if (!transactionData) {
     return null; // or some fallback component
   }
@@ -28,7 +50,7 @@ const SuccessScreen = () => {
       </Link>
       <Text style={styles.title}>Sent! 🥳</Text>
       <Text style={styles.description}>A claim link has been sent to </Text>
-      <TransactionCardHome amount={amount} user={recipient} description="" date={date} />
+      <TransactionCardHome amount={amount} user={recipient || ''} description="" date={date} />
       <Text style={styles.description}>Secret: {signature}</Text>
       <View style={styles.buttonWrapper}>
         <Button title="Share" type="primary" icon="share" onPress={() => {}} />

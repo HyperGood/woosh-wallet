@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 24,
     marginHorizontal: 16,
+    color: COLORS.light,
   },
 });
 

@@ -9,7 +9,7 @@ import { useAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
 
 export const useSignDeposit = () => {
-  const { signature, setSignature } = useTransaction();
+  const { signature, setSignature, setTransactionData, transactionData } = useTransaction();
   const [isSigning, setIsSigning] = useState(false);
   const [signError, setSignError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
@@ -81,6 +81,10 @@ export const useSignDeposit = () => {
 
       const signedDeposit = (await ecdsaProvider?.signTypedData(typedData)) || '';
       setSignature(signedDeposit);
+      setTransactionData({
+        ...transactionData,
+        depositIndex: Number(depositIndex),
+      });
       console.log('Signature in useSignDeposit: ', signature);
     } catch (e) {
       setSignError(e);

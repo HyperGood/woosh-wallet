@@ -1,9 +1,13 @@
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
 
-interface TransactionData {
-  recipient: string;
-  amount: string;
-  data: string;
+import { Transaction } from '../models/Transaction';
+
+interface TransactionData extends Partial<Transaction> {
+  recipient?: string;
+  amount?: string;
+  token?: string;
+  depositIndex?: number;
+  transactionHash?: string;
 }
 
 interface TransactionContextType {

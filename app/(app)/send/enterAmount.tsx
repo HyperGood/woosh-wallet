@@ -1,13 +1,13 @@
 import { StyleSheet, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
-import EnterAmount from '../../../screens/send/EnterAmount';
+import EnterAmountScreen from '../../../screens/send/EnterAmountScreen';
 
 const enterAmount = () => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <EnterAmount />
+        <EnterAmountScreen />
       </View>
     </View>
   );
