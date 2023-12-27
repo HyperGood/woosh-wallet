@@ -1,7 +1,9 @@
-import { Link } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { parseEther, zeroAddress } from 'viem';
 
+import { fetchTransactions } from '../api/firestoreService';
 import Balance from '../components/Balance';
 import Button from '../components/UI/Button';
 import Header from '../components/UI/Header';
@@ -10,6 +12,7 @@ import { COLORS } from '../constants/global-styles';
 import { useAccount } from '../store/SmartAccountContext';
 
 const HomeScreen = () => {
+  const [transactions, setTransactions] = useState<any>();
   const { ecdsaProvider } = useAccount();
 
   //Deploy Account
@@ -29,6 +32,15 @@ const HomeScreen = () => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const transactions = await fetchTransactions();
+        setTransactions(transactions);
+      })();
+    }, [])
+  );
+
   return (
     <ScrollView style={styles.wrapper}>
       <View style={styles.container}>
@@ -46,7 +58,7 @@ const HomeScreen = () => {
             <Button title="Enviar" icon="send" type="primary" onPress={() => {}} />
           </Link>
         </View>
-        <PreviousTransactions />
+        <PreviousTransactions transactions={transactions} />
       </View>
     </ScrollView>
   );

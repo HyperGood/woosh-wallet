@@ -1,12 +1,14 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
+import { Link } from 'expo-router';
 interface TranscationCardProps {
   amount: number;
   user: string;
   userImage?: any;
   description?: string;
   date: string;
+  claimed?: boolean;
 }
 const TransactionCardHome: React.FC<TranscationCardProps> = ({
   amount,
@@ -14,6 +16,7 @@ const TransactionCardHome: React.FC<TranscationCardProps> = ({
   userImage,
   description,
   date,
+  claimed,
 }) => {
   return (
     <View style={styles.container}>
@@ -22,6 +25,7 @@ const TransactionCardHome: React.FC<TranscationCardProps> = ({
       <Text style={styles.user}>{user}</Text>
       <Text style={styles.description}>{description}</Text>
       <Text style={styles.date}>{date}</Text>
+      <Text> {claimed ? 'Claimed' : 'Not Claimed'}</Text>
     </View>
   );
 };

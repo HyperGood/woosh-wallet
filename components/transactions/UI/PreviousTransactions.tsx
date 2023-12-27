@@ -1,13 +1,22 @@
 import { Feather } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import TransactionCardHome from './TransactionCardHome';
-import previousTransactions from './temp/previousTransactions';
 import { COLORS } from '../../../constants/global-styles';
 
-const PreviousTransactions = () => {
-  const leftTransactions = [previousTransactions[0], previousTransactions[3]];
-  const rightTransactions = [previousTransactions[1], previousTransactions[2]];
+interface PreviousTransactionsProps {
+  transactions: any;
+}
+
+const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
+  if (!transactions || transactions.length === 0) {
+    return <Text>No Transactions Found</Text>;
+  }
+  const leftTransactions =
+    transactions[0] && transactions[2] ? [transactions[0], transactions[2]] : [transactions[0]];
+  const rightTransactions =
+    transactions[1] && transactions[3] ? [transactions[1], transactions[3]] : [transactions[1]];
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
@@ -18,34 +27,47 @@ const PreviousTransactions = () => {
         <View style={styles.cardsLeft}>
           {leftTransactions.map((transaction, index) => (
             <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
-              <TransactionCardHome
-                amount={transaction.amount}
-                user={transaction.user}
-                userImage={transaction.userImage}
-                description={transaction.description}
-                date={transaction.date}
-              />
+              {transaction.id ? (
+                <Link href={`/claim/${transaction.id}`}>
+                  <TransactionCardHome
+                    amount={transaction.amount}
+                    user={transaction.recipient}
+                    userImage={transaction.userImage}
+                    description={transaction.description}
+                    date={transaction.createdAt.toDate().toDateString()}
+                    claimed={transaction.claimed}
+                  />
+                </Link>
+              ) : (
+                <div>No transaction ID found</div>
+              )}
             </View>
           ))}
         </View>
         <View style={styles.cardsRight}>
           {rightTransactions.map((transaction, index) => (
             <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
-              <TransactionCardHome
-                amount={transaction.amount}
-                user={transaction.user}
-                userImage={transaction.userImage}
-                description={transaction.description}
-                date={transaction.date}
-              />
+              <Link href={`/claim/${transaction.id}`}>
+                <TransactionCardHome
+                  amount={transaction.amount}
+                  user={transaction.recipient}
+                  userImage={transaction.userImage}
+                  description={transaction.description}
+                  date={transaction.createdAt.toDate().toDateString()}
+                  claimed={transaction.claimed}
+                />
+              </Link>
             </View>
           ))}
         </View>
       </View>
-      <View style={styles.viewAllButton}>
-        <Text style={styles.viewAllText}>Ver Todas Mis Transacciones</Text>
-        <Feather name="arrow-up-right" size={16} color={COLORS.dark} />
-      </View>
+
+      <Link href="/(app)/transactions" asChild>
+        <Pressable style={styles.viewAllButton}>
+          <Text style={styles.viewAllText}>Ver Todas Mis Transacciones</Text>
+          <Feather name="arrow-up-right" size={16} color={COLORS.dark} />
+        </Pressable>
+      </Link>
     </View>
   );
 };
