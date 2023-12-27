@@ -1,15 +1,21 @@
 import firestore from '@react-native-firebase/firestore';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, ActivityIndicator, SafeAreaView, View, StyleSheet } from 'react-native';
-import Button from '../../components/UI/Button';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
+
 import { COLORS } from '../../constants/global-styles';
-import BackButton from '../../components/UI/BackButton';
+import ClaimScreen from '../../screens/claim/ClaimScreen';
+import IntroScreen from '../../screens/claim/IntroScreen';
+import OnboardingScreen from '../../screens/claim/OnboardingScreen';
 
 export default function Page() {
   const { id } = useLocalSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [transactionData, setTransactionData] = useState<any>(null);
+  const [activeScreen, setActiveScreen] = useState('intro');
+
+  const goToOnboarding = () => setActiveScreen('onboarding');
+  const goToClaim = () => setActiveScreen('claim');
 
   //Use a useEffect to fetch the data from Firestore
   useEffect(() => {
@@ -30,21 +36,34 @@ export default function Page() {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  return (
-    <View style={styles.wrapper}>
-      <SafeAreaView style={styles.container}>
-        <BackButton />
+  if (activeScreen === 'intro') {
+    return (
+      <View style={styles.wrapper}>
+        <IntroScreen
+          sender={transactionData.sender}
+          amount={transactionData.amount}
+          token={transactionData.token}
+          onButtonClick={goToOnboarding}
+        />
+      </View>
+    );
+  }
 
-        <Text style={styles.title}>{transactionData.sender} sent you</Text>
-        <Text style={styles.title}>
-          {transactionData.amount} {transactionData.token}
-        </Text>
-        <View style={{ flexDirection: 'row' }}>
-          <Button title="Claim" onPress={() => {}} type="primary" />
-        </View>
-      </SafeAreaView>
-    </View>
-  );
+  if (activeScreen === 'onboarding') {
+    return (
+      <View style={styles.wrapper}>
+        <OnboardingScreen onButtonClick={goToClaim} />
+      </View>
+    );
+  }
+
+  if (activeScreen === 'claim') {
+    return (
+      <View style={styles.wrapper}>
+        <ClaimScreen backFunction={goToOnboarding} />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -53,20 +72,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    marginHorizontal: 16,
-  },
-  title: {
-    fontSize: 48,
-    color: COLORS.light,
-    fontFamily: 'Satoshi-Bold',
-    letterSpacing: -0.02,
-    lineHeight: 52,
-    marginHorizontal: 32,
-    marginBottom: 16,
   },
 });

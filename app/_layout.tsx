@@ -2,6 +2,7 @@ import { useFonts } from 'expo-font';
 import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { StatusBar } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 
 import SessionProvider from '../store/AuthContext';
@@ -35,6 +36,7 @@ export default function Layout() {
   return (
     <SessionProvider>
       <SmartAccountProvider>
+        <StatusBar barStyle="light-content" />
         <Slot />
       </SmartAccountProvider>
     </SessionProvider>
