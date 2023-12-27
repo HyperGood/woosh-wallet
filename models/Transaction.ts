@@ -9,7 +9,8 @@ export interface Transaction {
   amountInUSD: number;
   claimed: boolean;
   claimedBy?: string;
-  createdAt: Date;
-  claimedAt?: Date;
+  createdAt: any;
+  claimedAt?: any;
   txId: string;
+  description?: string;
 }

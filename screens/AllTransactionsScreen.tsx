@@ -5,28 +5,23 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { fetchTransactions } from '../api/firestoreService';
 import TransactionCard from '../components/transactions/UI/TransactionCard';
 import { COLORS } from '../constants/global-styles';
-
-type Transaction = {
-  id: string;
-  amount: number;
-  recipient: string;
-  userImage: string;
-  description: string;
-  createdAt: {
-    toDate: () => Date;
-  };
-};
+import { Transaction } from '../models/Transaction';
 
 const AllTransactionsScreen = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Partial<Transaction>[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       (async () => {
         const transactions = await fetchTransactions();
-        transactions?.sort(
-          (a, b) => b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime()
-        );
+        transactions?.sort((a, b) => {
+          if (a.createdAt && b.createdAt) {
+            return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
+          } else {
+            return 0;
+          }
+        });
+        console.log(transactions);
         setTransactions(transactions);
       })();
     }, [])
@@ -34,11 +29,13 @@ const AllTransactionsScreen = () => {
 
   const groupedTransactions = transactions.reduce<Record<string, Transaction[]>>(
     (groups, transaction) => {
-      const date = transaction.createdAt.toDate().toDateString();
-      if (!groups[date]) {
-        groups[date] = [];
+      if (transaction.createdAt && transaction.id) {
+        const date = transaction.createdAt.toDate().toDateString();
+        if (!groups[date]) {
+          groups[date] = [];
+        }
+        groups[date].push(transaction as Transaction);
       }
-      groups[date].push(transaction);
       return groups;
     },
     {}
@@ -61,9 +58,8 @@ const AllTransactionsScreen = () => {
               {groupedTransactions[date].map((transaction) => (
                 <TransactionCard
                   key={transaction.id}
-                  amount={transaction.amount}
-                  user={transaction.recipient}
-                  userImage={transaction.userImage}
+                  amount={Number(transaction.amount)}
+                  user={transaction.recipient || ''}
                   description={transaction.description}
                   date={transaction.createdAt.toDate().toDateString()}
                 />
