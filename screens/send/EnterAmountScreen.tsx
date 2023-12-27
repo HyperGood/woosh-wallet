@@ -13,6 +13,7 @@ import { useTransaction } from '../../store/TransactionContext';
 
 const EnterAmountScreen = () => {
   const [amount, setAmount] = useState('0');
+  const [description, setDescription] = useState('');
   const { deposit, isDepositing, depositError, depositHash } = useDeposit();
   const { signDeposit } = useSignDeposit();
   const { refetchBalance } = useUserBalance();
@@ -31,7 +32,9 @@ const EnterAmountScreen = () => {
 
   useEffect(() => {
     setTransactionData(
-      transactionData ? { ...transactionData, amount } : { recipientName: '', token: 'ETH', amount }
+      transactionData
+        ? { ...transactionData, amount, description }
+        : { recipientName: '', token: 'ETH', amount, description }
     );
   }, [amount]);
 
@@ -50,9 +53,20 @@ const EnterAmountScreen = () => {
             <Text style={{ color: 'white' }}>Sending...</Text>
           ) : (
             <>
-              <NumberPad onChange={setAmount} />
+              <NumberPad
+                onChange={setAmount}
+                description={description}
+                setDescription={setDescription}
+              />
               <View style={styles.buttonWrapper}>
-                <Button title="Send" type="primary" onPress={() => deposit(amount)} />
+                <Button
+                  title="Send"
+                  type="primary"
+                  onPress={() => {
+                    deposit(amount);
+                    setDescription('');
+                  }}
+                />
               </View>
             </>
           )}

@@ -8,11 +8,14 @@ import { useUserBalance } from '../../hooks/useUserBalance';
 
 interface NumberPadProps {
   onChange: (amount: string) => void;
+  description: string;
+  setDescription: (description: string) => void;
 }
 
-const NumberPad = ({ onChange }: NumberPadProps) => {
+const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) => {
   const [amount, setAmount] = useState('0');
   const [cents, setCents] = useState('00');
+
   const [isDecimal, setIsDecimal] = useState(false);
   const currency = 'ETH';
   const { tokenBalance } = useUserBalance();
@@ -89,7 +92,11 @@ const NumberPad = ({ onChange }: NumberPadProps) => {
           <Text style={styles.currencyText}>{currency}</Text>
         </View>
       </View>
-      <Input placeholder="Add a note or concept" value="" onChangeText={() => {}} />
+      <Input
+        placeholder="Add a note or concept"
+        value={description}
+        onChangeText={setDescription}
+      />
       <View style={styles.numberPad}>
         {Array(4)
           .fill(0)

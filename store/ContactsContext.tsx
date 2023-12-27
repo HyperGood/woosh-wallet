@@ -39,8 +39,12 @@ export const ContactProvider = ({ children }: ContactProviderProps) => {
           fields: [Contacts.Fields.PhoneNumbers],
         });
 
-        if (data.length > 0) {
-          setContacts(data);
+        const contactsWithPhoneNumbers = data.filter(
+          (contact) => contact.phoneNumbers && contact.phoneNumbers.length > 0
+        );
+
+        if (contactsWithPhoneNumbers.length > 0) {
+          setContacts(contactsWithPhoneNumbers);
           storage.set('hasRequestedContacts', 'true');
         }
       }

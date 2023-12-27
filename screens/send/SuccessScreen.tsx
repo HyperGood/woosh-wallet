@@ -35,7 +35,7 @@ const SuccessScreen = () => {
   if (!transactionData) {
     return null; // or some fallback component
   }
-  const { recipientName, recipientPhone } = transactionData;
+  const { recipientName, recipientPhone, description } = transactionData;
   const amount = Number(transactionData.amount);
   const date = new Date().toLocaleDateString();
   return (
@@ -54,7 +54,7 @@ const SuccessScreen = () => {
         amount={amount}
         recipientName={recipientName || ''}
         recipientPhone={recipientPhone || ''}
-        description=""
+        description={description}
         date={date}
       />
       <Text style={styles.description}>Secret: {signature}</Text>
