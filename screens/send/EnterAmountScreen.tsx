@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
@@ -23,8 +23,13 @@ const EnterAmountScreen = () => {
     (async () => {
       if (depositHash && transactionData) {
         refetchBalance();
-        await signDeposit();
-        setTransactionData({ ...transactionData, transactionHash: depositHash });
+        const updatedTransactionData = await signDeposit();
+        if (typeof updatedTransactionData === 'object' && updatedTransactionData !== null) {
+          setTransactionData({ ...updatedTransactionData, transactionHash: depositHash });
+        } else {
+          // Handle the case where updatedTransactionData is not an object
+          console.log('Updated transaction is not an object: ', updatedTransactionData);
+        }
         router.push('/(app)/send/success');
       }
     })();

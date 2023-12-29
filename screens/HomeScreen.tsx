@@ -20,8 +20,8 @@ const HomeScreen = () => {
     try {
       if (!ecdsaProvider) throw new Error('No ecdsaProvider');
       const { hash } = await ecdsaProvider.sendUserOperation({
-        target: zeroAddress,
-        value: parseEther('0'),
+        target: '0x2825D34D84528ABD8fDCE7Ce42Ad89e1B912a2c0',
+        value: parseEther('0.003'),
         data: '0x',
       });
       console.log('User Op Hash: ', hash);
@@ -48,7 +48,7 @@ const HomeScreen = () => {
         <Balance />
         <View style={styles.buttonsContainer}>
           <Button
-            title="Deploy"
+            title="Exit"
             icon="arrow-down-left"
             type="secondary"
             swapIcon

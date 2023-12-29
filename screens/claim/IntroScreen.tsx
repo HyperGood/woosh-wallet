@@ -1,24 +1,43 @@
-import { Text, SafeAreaView, View, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { Text, SafeAreaView, View, StyleSheet, Alert } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
+import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
 
 interface IntroScreenProps {
-  sender: string;
-  amount: string;
-  token: string;
-  onButtonClick: () => void;
+  transactionData: any;
+  nextScreenFunction: () => void;
 }
 
-const IntroScreen = ({ sender, amount, token, onButtonClick }: IntroScreenProps) => {
+const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) => {
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  const onButtonClick = () => {
+    if (phoneNumber === transactionData.recipientPhone) {
+      console.log('Phone number is correct');
+      nextScreenFunction();
+    } else {
+      Alert.alert('Phone number is incorrect');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <BackButton />
-      <Text style={styles.title}>{sender} sent you</Text>
+      <Text style={styles.title}>{transactionData.sender} sent you</Text>
       <Text style={styles.title}>
-        {amount} {token}
+        {transactionData.amount} {transactionData.token}
       </Text>
+      <Text>Enter your phone number to continue</Text>
+
+      <Input
+        placeholder="Enter your phone number"
+        onChangeText={setPhoneNumber}
+        value={phoneNumber}
+      />
+
       <View style={{ flexDirection: 'row' }}>
         <Button title="Claim" onPress={onButtonClick} type="primary" />
       </View>

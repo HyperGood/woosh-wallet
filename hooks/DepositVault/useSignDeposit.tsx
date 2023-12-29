@@ -9,7 +9,7 @@ import { useAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
 
 export const useSignDeposit = () => {
-  const { signature, setSignature, setTransactionData, transactionData } = useTransaction();
+  const { setSignature, setTransactionData } = useTransaction();
   const [isSigning, setIsSigning] = useState(false);
   const [signError, setSignError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
@@ -53,39 +53,45 @@ export const useSignDeposit = () => {
     try {
       const { depositIndex, depositAmount } = await getDepositInfo();
 
-      const domain = {
-        name: 'DepositVault',
-        version: '1.0.0',
-        chainId,
-        verifyingContract: depositVaultAddress,
-      } as const;
+      return new Promise(async (resolve, reject) => {
+        setTransactionData((prevData) => {
+          const updatedData = {
+            ...prevData,
+            depositIndex: Number(depositIndex),
+          };
+          // Resolve the Promise with the updated data
+          resolve(updatedData);
+          return updatedData;
+        });
 
-      const types = {
-        Withdrawal: [
-          { name: 'amount', type: 'uint256' },
-          { name: 'depositIndex', type: 'uint256' },
-        ],
-      };
+        const domain = {
+          name: 'DepositVault',
+          version: '1.0.0',
+          chainId,
+          verifyingContract: depositVaultAddress,
+        } as const;
 
-      const message = {
-        amount: parseEther(depositAmount?.toString() || '0'),
-        depositIndex,
-      } as const;
+        const types = {
+          Withdrawal: [
+            { name: 'amount', type: 'uint256' },
+            { name: 'depositIndex', type: 'uint256' },
+          ],
+        };
 
-      const typedData = {
-        domain,
-        types,
-        message,
-        primaryType: 'Withdrawal',
-      };
+        const message = {
+          amount: parseEther(depositAmount?.toString() || '0'),
+          depositIndex,
+        } as const;
 
-      const signedDeposit = (await ecdsaProvider?.signTypedData(typedData)) || '';
-      setSignature(signedDeposit);
-      setTransactionData({
-        ...transactionData,
-        depositIndex: Number(depositIndex),
+        const typedData = {
+          domain,
+          types,
+          message,
+          primaryType: 'Withdrawal',
+        };
+        const signedDeposit = (await ecdsaProvider?.signTypedData(typedData)) || '';
+        setSignature(signedDeposit);
       });
-      console.log('Signature in useSignDeposit: ', signature);
     } catch (e) {
       setSignError(e);
       console.log('Error: ', e);

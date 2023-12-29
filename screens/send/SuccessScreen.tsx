@@ -1,18 +1,21 @@
 import firestore from '@react-native-firebase/firestore';
+import * as Clipboard from 'expo-clipboard';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
-import { useCallback, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/UI/Button';
 import TransactionCardHome from '../../components/transactions/UI/TransactionCardHome';
 import { COLORS } from '../../constants/global-styles';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
+import { useUserData } from '../../store/UserDataContext';
 
 const SuccessScreen = () => {
   const { transactionData, signature } = useTransaction();
   const { address } = useAccount();
+  const { userData } = useUserData();
 
   useEffect(() => {
     if (!transactionData) {
@@ -24,20 +27,25 @@ const SuccessScreen = () => {
       .collection('transactions')
       .add({
         ...transactionData,
-        sender: address,
+        sender: userData.name || address,
         createdAt: new Date(),
       })
       .then(() => {
         console.log('Transaction added!');
       });
-  }, [transactionData]);
+  }, []);
 
   if (!transactionData) {
-    return null; // or some fallback component
+    return null;
   }
   const { recipientName, recipientPhone, description } = transactionData;
   const amount = Number(transactionData.amount);
   const date = new Date().toLocaleDateString();
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(signature);
+    Alert.alert('Copied to clipboard!');
+  };
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -57,7 +65,9 @@ const SuccessScreen = () => {
         description={description}
         date={date}
       />
-      <Text style={styles.description}>Secret: {signature}</Text>
+      <Pressable onPress={copyToClipboard}>
+        <Text style={styles.description}>Secret: {signature}</Text>
+      </Pressable>
       <View style={styles.buttonWrapper}>
         <Button title="Share" type="primary" icon="share" onPress={() => {}} />
       </View>

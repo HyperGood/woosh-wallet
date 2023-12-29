@@ -7,6 +7,7 @@ import { MMKV } from 'react-native-mmkv';
 
 import SessionProvider from '../store/AuthContext';
 import SmartAccountProvider from '../store/SmartAccountContext';
+import UserDataProvider from '../store/UserDataContext';
 
 export const storage = new MMKV();
 
@@ -36,8 +37,10 @@ export default function Layout() {
   return (
     <SessionProvider>
       <SmartAccountProvider>
-        <StatusBar barStyle="light-content" />
-        <Slot />
+        <UserDataProvider>
+          <StatusBar barStyle="light-content" />
+          <Slot />
+        </UserDataProvider>
       </SmartAccountProvider>
     </SessionProvider>
   );

@@ -6,12 +6,15 @@ import { useEffect, useState } from 'react';
 import { useSession } from '../../store/AuthContext';
 import { ContactProvider } from '../../store/ContactsContext';
 import { useAccount } from '../../store/SmartAccountContext';
+import { useUserData } from '../../store/UserDataContext';
+import { fetchUserByEthAddress } from '../../api/firestoreService';
 
 export default function Layout() {
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const { token } = useSession();
   const { setEcdsaProvider } = useAccount();
+  const { setUserData } = useUserData();
 
   useEffect(() => {
     if (token) {
@@ -34,6 +37,11 @@ export default function Layout() {
 
   useEffect(() => {
     console.log('Address: ', address);
+    if (address) {
+      fetchUserByEthAddress(address).then((user) => {
+        setUserData(user);
+      });
+    }
   }, [address]);
 
   if (!token) {

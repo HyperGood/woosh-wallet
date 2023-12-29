@@ -1,4 +1,6 @@
-import { router } from 'expo-router';
+import firestore from '@react-native-firebase/firestore';
+import { Link, router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/UI/Button';
@@ -7,6 +9,21 @@ import { useSession } from '../store/AuthContext';
 
 export default function Page() {
   const { authenticate } = useSession();
+  const [id, setID] = useState<any>('');
+
+  useEffect(() => {
+    //Get the last transaction from firestore
+    (async () => {
+      const lastTransaction = await firestore()
+        .collection('transactions')
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .get();
+      const id = lastTransaction.docs[0].id;
+      setID(id);
+    })();
+  }, []);
+
   return (
     <View style={styles.wrapper}>
       <Text style={styles.title}>La manera mas facil de pagarle a tus amigos</Text>
@@ -23,6 +40,14 @@ export default function Page() {
             }
           }}
         />
+        <Link
+          href={{
+            pathname: '/claim/[id]',
+            params: { id: id || '' },
+          }}
+          asChild>
+          <Button title="Go to most recent transaction" onPress={() => {}} />
+        </Link>
       </View>
     </View>
   );

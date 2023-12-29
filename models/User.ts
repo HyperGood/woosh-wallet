@@ -2,7 +2,7 @@ export interface User {
   id: string;
   name: string;
   username: string;
-  address: string;
+  ethAddress: string;
   phone?: string;
   image?: string;
   // You can also include references to sub-collections if needed

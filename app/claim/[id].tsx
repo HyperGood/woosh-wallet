@@ -39,12 +39,7 @@ export default function Page() {
   if (activeScreen === 'intro') {
     return (
       <View style={styles.wrapper}>
-        <IntroScreen
-          sender={transactionData.sender}
-          amount={transactionData.amount}
-          token={transactionData.token}
-          onButtonClick={goToOnboarding}
-        />
+        <IntroScreen transactionData={transactionData} nextScreenFunction={goToOnboarding} />
       </View>
     );
   }
@@ -52,7 +47,7 @@ export default function Page() {
   if (activeScreen === 'onboarding') {
     return (
       <View style={styles.wrapper}>
-        <OnboardingScreen onButtonClick={goToClaim} />
+        <OnboardingScreen nextScreenFunction={goToClaim} />
       </View>
     );
   }
@@ -60,7 +55,11 @@ export default function Page() {
   if (activeScreen === 'claim') {
     return (
       <View style={styles.wrapper}>
-        <ClaimScreen backFunction={goToOnboarding} />
+        <ClaimScreen
+          backFunction={goToOnboarding}
+          transactionData={transactionData}
+          id={Array.isArray(id) ? id[0] : id}
+        />
       </View>
     );
   }
