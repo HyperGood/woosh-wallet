@@ -1,24 +1,17 @@
-import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
-//import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-//import { optimism, optimismGoerli } from 'wagmi/chains';
-//import { alchemyProvider } from 'wagmi/providers/alchemy';
-//import { publicProvider } from 'wagmi/providers/public';
+import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { StatusBar } from 'react-native';
+import { MMKV } from 'react-native-mmkv';
+
+import SessionProvider from '../store/AuthContext';
+import SmartAccountProvider from '../store/SmartAccountContext';
+import UserDataProvider from '../store/UserDataContext';
+
+export const storage = new MMKV();
 
 SplashScreen.preventAutoHideAsync();
-
-// export const { chains, publicClient, webSocketPublicClient } = configureChains(
-//   [process.env.EXPO_PUBLIC_TESTNET === 'true' ? optimismGoerli : optimism],
-//   [alchemyProvider({ apiKey: process.env.EXPO_PUBLIC_ALCHEMY_ID || '' }), publicProvider()]
-// );
-
-// const config = createConfig({
-//   autoConnect: false,
-//   publicClient,
-//   webSocketPublicClient,
-// });
 
 export default function Layout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -42,8 +35,13 @@ export default function Layout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: 'Overview', headerShown: false }} />
-    </Stack>
+    <SessionProvider>
+      <SmartAccountProvider>
+        <UserDataProvider>
+          <StatusBar barStyle="light-content" />
+          <Slot />
+        </UserDataProvider>
+      </SmartAccountProvider>
+    </SessionProvider>
   );
 }

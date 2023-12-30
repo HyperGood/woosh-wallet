@@ -1,27 +1,38 @@
+import { Link } from 'expo-router';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
+import { useAccount } from '../../../store/SmartAccountContext';
 interface TranscationCardProps {
   amount: number;
-  user: string;
+  recipientName?: string;
+  recipientPhone: string;
   userImage?: any;
   description?: string;
   date: string;
+  claimed?: boolean;
+  sender?: string;
 }
 const TransactionCardHome: React.FC<TranscationCardProps> = ({
   amount,
-  user,
+  recipientName,
+  recipientPhone,
   userImage,
   description,
   date,
+  claimed,
+  sender,
 }) => {
+  const { address } = useAccount();
   return (
     <View style={styles.container}>
-      <Text style={[styles.amount, amount > 0 && styles.positive]}>${amount}</Text>
+      <Text style={[styles.amount, sender !== address && styles.positive]}>${amount}</Text>
       {userImage && <Image source={userImage} style={styles.userImage} />}
-      <Text style={styles.user}>{user}</Text>
+      <Text style={styles.recipientName}>{recipientName}</Text>
+      <Text style={styles.recipientPhone}>{recipientPhone}</Text>
       <Text style={styles.description}>{description}</Text>
       <Text style={styles.date}>{date}</Text>
+      <Text> {claimed ? 'Claimed' : 'Not Claimed'}</Text>
     </View>
   );
 };
@@ -40,9 +51,16 @@ const styles = StyleSheet.create({
     color: COLORS.gray[600],
     marginBottom: 16,
   },
-  user: {
+  recipientName: {
     fontFamily: 'Satoshi-Bold',
-    fontSize: 24,
+    fontSize: 20,
+    letterSpacing: -0.02,
+    color: COLORS.gray[600],
+    marginBottom: 4,
+  },
+  recipientPhone: {
+    fontFamily: 'Satoshi',
+    fontSize: 14,
     letterSpacing: -0.02,
     color: COLORS.gray[600],
     marginBottom: 4,

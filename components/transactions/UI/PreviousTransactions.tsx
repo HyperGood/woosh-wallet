@@ -1,48 +1,77 @@
 import { Feather } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import TransactionCardHome from './TransactionCardHome';
-import previousTransactions from './temp/previousTransactions';
 import { COLORS } from '../../../constants/global-styles';
 
-const PreviousTransactions = () => {
-  const leftTransactions = [previousTransactions[0], previousTransactions[3]];
-  const rightTransactions = [previousTransactions[1], previousTransactions[2]];
+interface PreviousTransactionsProps {
+  transactions: any;
+}
+
+const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
+  if (!transactions || transactions.length === 0) {
+    return <Text>No Transactions Found</Text>;
+  }
+  const leftTransactions =
+    transactions[0] && transactions[2] ? [transactions[0], transactions[2]] : [transactions[0]];
+  const rightTransactions =
+    transactions[1] && transactions[3] ? [transactions[1], transactions[3]] : [transactions[1]];
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mis Transacciones</Text>
+      <View style={styles.titleWrapper}>
+        <Text style={styles.title}>Mis</Text>
+        <Text style={styles.title}>Transacciones</Text>
+      </View>
       <View style={styles.cards}>
         <View style={styles.cardsLeft}>
           {leftTransactions.map((transaction, index) => (
             <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
-              <TransactionCardHome
-                amount={transaction.amount}
-                user={transaction.user}
-                userImage={transaction.userImage}
-                description={transaction.description}
-                date={transaction.date}
-              />
+              {transaction.id ? (
+                <Link href={`/claim/${transaction.id}`}>
+                  <TransactionCardHome
+                    amount={transaction.amount}
+                    recipientName={transaction.recipientName}
+                    recipientPhone={transaction.recipientPhone}
+                    userImage={transaction.userImage}
+                    description={transaction.description}
+                    date={transaction.createdAt.toDate().toDateString()}
+                    claimed={transaction.claimed}
+                    sender={transaction.sender}
+                  />
+                </Link>
+              ) : (
+                <div>No transaction ID found</div>
+              )}
             </View>
           ))}
         </View>
         <View style={styles.cardsRight}>
           {rightTransactions.map((transaction, index) => (
             <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
-              <TransactionCardHome
-                amount={transaction.amount}
-                user={transaction.user}
-                userImage={transaction.userImage}
-                description={transaction.description}
-                date={transaction.date}
-              />
+              <Link href={`/claim/${transaction.id}`}>
+                <TransactionCardHome
+                  amount={transaction.amount}
+                  recipientName={transaction.recipientName}
+                  recipientPhone={transaction.recipientPhone}
+                  userImage={transaction.userImage}
+                  description={transaction.description}
+                  date={transaction.createdAt.toDate().toDateString()}
+                  claimed={transaction.claimed}
+                  sender={transaction.sender}
+                />
+              </Link>
             </View>
           ))}
         </View>
       </View>
-      <View style={styles.viewAllButton}>
-        <Text style={styles.viewAllText}>Ver Todas Mis Transacciones</Text>
-        <Feather name="arrow-up-right" size={16} color={COLORS.dark} />
-      </View>
+
+      <Link href="/(app)/transactions" asChild>
+        <Pressable style={styles.viewAllButton}>
+          <Text style={styles.viewAllText}>Ver Todas Mis Transacciones</Text>
+          <Feather name="arrow-up-right" size={16} color={COLORS.dark} />
+        </Pressable>
+      </Link>
     </View>
   );
 };
@@ -55,12 +84,14 @@ const styles = StyleSheet.create({
     borderRadius: 36,
     paddingVertical: 40,
   },
+  titleWrapper: {
+    marginHorizontal: 20,
+    marginBottom: 32,
+  },
   title: {
     fontSize: 40,
     fontFamily: 'Satoshi-Bold',
     color: COLORS.dark,
-    marginHorizontal: 20,
-    marginBottom: 32,
   },
   cards: {
     paddingLeft: 10,

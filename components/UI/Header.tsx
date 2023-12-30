@@ -6,7 +6,7 @@ const Header = () => {
   const imageSrc = '../../assets/images/temp/janet.jpg';
   return (
     <View style={styles.container}>
-      <Image style={styles.imageContainer} source={require(imageSrc)} />
+      <Image style={styles.image} source={require(imageSrc)} />
       <Text style={styles.username}>${username}</Text>
     </View>
   );
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 40,
   },
-  imageContainer: {
+  image: {
     width: 48,
     height: 48,
     borderRadius: 24,

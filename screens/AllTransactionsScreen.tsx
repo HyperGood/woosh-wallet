@@ -1,59 +1,68 @@
-import { Feather } from '@expo/vector-icons';
+import { Link, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { fetchTransactions } from '../api/firestoreService';
 import TransactionCard from '../components/transactions/UI/TransactionCard';
-import previousTransactions from '../components/transactions/UI/temp/previousTransactions';
 import { COLORS } from '../constants/global-styles';
+import { Transaction } from '../models/Transaction';
 
 const AllTransactionsScreen = () => {
-  //Group transactions by date
-  const transactionsByDate = previousTransactions.reduce<{
-    [date: string]: typeof previousTransactions;
-  }>((acc, transaction) => {
-    const date = new Date(transaction.date).toDateString();
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push(transaction);
-    return acc;
-  }, {});
+  const [transactions, setTransactions] = useState<Partial<Transaction>[]>([]);
 
-  // Sort dates in descending order
-  const sortedDates = Object.keys(transactionsByDate).sort(
-    (a, b) => new Date(b).getTime() - new Date(a).getTime()
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const transactions = await fetchTransactions();
+        transactions?.sort((a, b) => {
+          if (a.createdAt && b.createdAt) {
+            return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
+          } else {
+            return 0;
+          }
+        });
+        console.log(transactions);
+        setTransactions(transactions);
+      })();
+    }, [])
+  );
+
+  const groupedTransactions = transactions.reduce<Record<string, Transaction[]>>(
+    (groups, transaction) => {
+      if (transaction.createdAt && transaction.id) {
+        const date = transaction.createdAt.toDate().toDateString();
+        if (!groups[date]) {
+          groups[date] = [];
+        }
+        groups[date].push(transaction as Transaction);
+      }
+      return groups;
+    },
+    {}
   );
 
   return (
     <View style={styles.wrapper}>
+      <Link href="/(app)" asChild>
+        <Text style={{ color: COLORS.light, marginTop: 100, marginLeft: 20 }}>Go home</Text>
+      </Link>
       <FlatList
         style={styles.container}
         contentContainerStyle={{ paddingBottom: 80 }}
-        ListHeaderComponent={
-          <>
-            <View style={styles.header}>
-              <View style={styles.backButton}>
-                <Feather name="corner-down-left" color={COLORS.dark} size={16} />
-                <Text>Regresar</Text>
-              </View>
-              <Text style={styles.title}>Todas Mis Transacciones</Text>
-              <Text style={styles.filter}>Este Mes</Text>
-            </View>
-          </>
-        }
-        data={sortedDates}
+        data={Object.keys(groupedTransactions)}
         keyExtractor={(item) => item}
         renderItem={({ item: date }) => (
           <View style={styles.transactionsGroup}>
             <Text style={styles.date}>{date}</Text>
             <View style={styles.transactionsWrapper}>
-              {transactionsByDate[date].map((transaction) => (
+              {groupedTransactions[date].map((transaction) => (
                 <TransactionCard
                   key={transaction.id}
-                  amount={transaction.amount}
-                  user={transaction.user}
-                  userImage={transaction.userImage}
+                  amount={Number(transaction.amount)}
+                  user={transaction.recipientName || ''}
                   description={transaction.description}
-                  date={transaction.date}
+                  date={transaction.createdAt.toDate().toDateString()}
+                  sender={transaction.sender}
                 />
               ))}
             </View>

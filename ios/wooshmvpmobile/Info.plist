@@ -4,6 +4,8 @@
   <dict>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
+    <key>CFBundleAllowMixedLocalizations</key>
+    <true/>
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
@@ -55,6 +57,10 @@
         </dict>
       </dict>
     </dict>
+    <key>NSContactsUsageDescription</key>
+    <string>Allow Woosh to access your contacts so you can send funds to anyone in your contacts list.</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>Allow Woosh to use Face ID</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>

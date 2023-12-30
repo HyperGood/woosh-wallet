@@ -1,38 +1,33 @@
-// // ⚠️ Important: `@walletconnect/react-native-compat` needs to be imported before other `wagmi` packages.
-// // This is because it applies a polyfill necessary for the TextEncoder API.
-
-// import { getRandomValues as expoCryptoGetRandomValues } from 'expo-crypto';
-
+import 'fast-text-encoding';
+import { Buffer } from 'buffer';
+import { getRandomValues as expoCryptoGetRandomValues } from 'expo-crypto';
+import '@ethersproject/shims';
 // // Polyfills for Alchemy SDK
-// if (typeof btoa === 'undefined') {
-//   global.btoa = function (str) {
-//     return new Buffer(str, 'binary').toString('base64');
-//   };
-// }
+if (typeof btoa === 'undefined') {
+  global.btoa = function (str) {
+    return new Buffer(str, 'binary').toString('base64');
+  };
+}
 
-// if (typeof atob === 'undefined') {
-//   global.atob = function (b64Encoded) {
-//     return new Buffer(b64Encoded, 'base64').toString('binary');
-//   };
-// }
+if (typeof atob === 'undefined') {
+  global.atob = function (b64Encoded) {
+    return new Buffer(b64Encoded, 'base64').toString('binary');
+  };
+}
 
-// // src/crypto-polyfill.js
+class Crypto {
+  getRandomValues = expoCryptoGetRandomValues;
+}
 
-// // Apply only with Expo SDK 48
+// eslint-disable-next-line no-undef
+const webCrypto = typeof crypto !== 'undefined' ? crypto : new Crypto();
 
-// class Crypto {
-//   getRandomValues = expoCryptoGetRandomValues;
-// }
-
-// // eslint-disable-next-line no-undef
-// const webCrypto = typeof crypto !== 'undefined' ? crypto : new Crypto();
-
-// (() => {
-//   if (typeof crypto === 'undefined') {
-//     Object.defineProperty(window, 'crypto', {
-//       configurable: true,
-//       enumerable: true,
-//       get: () => webCrypto,
-//     });
-//   }
-// })();
+(() => {
+  if (typeof crypto === 'undefined') {
+    Object.defineProperty(window, 'crypto', {
+      configurable: true,
+      enumerable: true,
+      get: () => webCrypto,
+    });
+  }
+})();
