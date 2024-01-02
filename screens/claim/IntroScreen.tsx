@@ -26,19 +26,23 @@ const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) 
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>{transactionData.sender} sent you</Text>
-      <Text style={styles.title}>
-        {transactionData.amount} {transactionData.token}
-      </Text>
-      <Text style={styles.description}>Enter your phone number to continue</Text>
+      <View style={styles.headerContainer}>
+        <View style={styles.textContainer}>
+          <Text style={styles.welcomeTitle}>Welcome to Woosh!</Text>
+          <Text style={styles.title}>{transactionData.sender} sent you</Text>
+          <Text style={styles.title}>
+            {transactionData.amount} {transactionData.token}
+          </Text>
+          <Text style={styles.description}>Enter your phone number to continue</Text>
+        </View>
 
-      <Input
-        placeholder="Enter your phone number"
-        onChangeText={setPhoneNumber}
-        value={phoneNumber}
-      />
-
-      <View style={{ flexDirection: 'row' }}>
+        <Input
+          placeholder="Enter your phone number"
+          onChangeText={setPhoneNumber}
+          value={phoneNumber}
+        />
+      </View>
+      <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>
         <Button title="Claim" onPress={onButtonClick} type="primary" />
       </View>
     </SafeAreaView>
@@ -46,21 +50,20 @@ const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) 
 };
 export default IntroScreen;
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: COLORS.dark,
-    justifyContent: 'center',
-    padding: 24,
-  },
   container: {
     flex: 1,
     alignItems: 'flex-start',
-    justifyContent: 'center',
-    marginHorizontal: 16,
+    justifyContent: 'space-between',
     width: '100%',
+  },
+  headerContainer: {
+    width: '100%',
+    paddingTop: 64,
   },
   description: {
     color: 'white',
+    fontSize: 17,
+    fontFamily: 'Satoshi',
   },
   title: {
     fontSize: 48,
@@ -68,7 +71,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Satoshi-Bold',
     letterSpacing: -0.02,
     lineHeight: 52,
-    marginHorizontal: 32,
-    marginBottom: 16,
+    maxWidth: 300,
+  },
+  textContainer: {
+    marginHorizontal: 16,
+    marginBottom: 32,
+    gap: 4,
+  },
+  welcomeTitle: {
+    fontSize: 20,
+    color: COLORS.light,
+    fontFamily: 'Satoshi-Bold',
+    letterSpacing: -0.02,
+    lineHeight: 52,
+    maxWidth: 300,
   },
 });

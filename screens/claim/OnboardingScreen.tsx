@@ -57,9 +57,11 @@ const OnboardingScreen = ({ nextScreenFunction }: OnboardingScreenProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Onboarding</Text>
-      <Input placeholder="Enter your name" onChangeText={setName} value={name} />
-      <Input placeholder="Enter your username" onChangeText={setUsername} value={username} />
+      <View>
+        <Text style={styles.title}>Onboarding</Text>
+        <Input placeholder="Enter your name" onChangeText={setName} value={name} />
+        <Input placeholder="Enter your username" onChangeText={setUsername} value={username} />
+      </View>
       <View style={{ flexDirection: 'row' }}>
         <Button title="Next" onPress={onButtonClick} type="primary" />
       </View>
@@ -70,9 +72,10 @@ export default OnboardingScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
     width: '100%',
     alignItems: 'flex-start',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     marginHorizontal: 16,
   },
   title: {
