@@ -73,12 +73,6 @@ const ClaimScreen = ({ backFunction, transactionData, id }: ClaimScreenProps) =>
 };
 export default ClaimScreen;
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: COLORS.dark,
-    justifyContent: 'center',
-    padding: 24,
-  },
   container: {
     flex: 1,
     width: '100%',

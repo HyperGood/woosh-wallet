@@ -16,15 +16,14 @@ interface OnboardingScreenProps {
 
 const OnboardingScreen = ({ nextScreenFunction }: OnboardingScreenProps) => {
   const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
   const [username, setUsername] = useState('');
-  const { authenticate, token } = useSession();
+  const { authenticate } = useSession();
   const { setEcdsaProvider } = useAccount();
 
   const onButtonClick = async () => {
     try {
       //Generate new private key
-      await authenticate();
+      const token = await authenticate();
       console.log('Authenticated');
       //Wait for token to be set
       if (!token) {
@@ -36,21 +35,22 @@ const OnboardingScreen = ({ nextScreenFunction }: OnboardingScreenProps) => {
         owner: LocalAccountSigner.privateKeyToAccountSigner(token as `0x${string}`),
       });
       setEcdsaProvider(ecdsaProvider);
-      setAddress(await ecdsaProvider.getAddress());
-      console.log('Zerodev set');
-      console.log(address);
+      const address = await ecdsaProvider.getAddress();
+      console.log('Zerodev Provider set');
+      console.log('Address: ', address);
       //Wait for address to be set
       //Save user data to Firestore
       firestore().collection('users').add({
         name,
         username,
         ethAddress: address,
+        createdAt: firestore.FieldValue.serverTimestamp(),
       });
       console.log('Database set');
       //Go to claim screen
       nextScreenFunction();
     } catch (error) {
-      console.error(error);
+      console.error('Error in onboarding screen', error);
       // Handle error
     }
   };
@@ -68,14 +68,9 @@ const OnboardingScreen = ({ nextScreenFunction }: OnboardingScreenProps) => {
 };
 export default OnboardingScreen;
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: COLORS.dark,
-    justifyContent: 'center',
-    padding: 24,
-  },
   container: {
     flex: 1,
+    width: '100%',
     alignItems: 'flex-start',
     justifyContent: 'center',
     marginHorizontal: 16,
