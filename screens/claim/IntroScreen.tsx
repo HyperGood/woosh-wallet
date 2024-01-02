@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Text, SafeAreaView, View, StyleSheet, Alert } from 'react-native';
 
-import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
@@ -10,6 +9,8 @@ interface IntroScreenProps {
   transactionData: any;
   nextScreenFunction: () => void;
 }
+
+//TODO: Add onboarding slides
 
 const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -25,12 +26,11 @@ const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) 
 
   return (
     <SafeAreaView style={styles.container}>
-      <BackButton />
       <Text style={styles.title}>{transactionData.sender} sent you</Text>
       <Text style={styles.title}>
         {transactionData.amount} {transactionData.token}
       </Text>
-      <Text>Enter your phone number to continue</Text>
+      <Text style={styles.description}>Enter your phone number to continue</Text>
 
       <Input
         placeholder="Enter your phone number"
@@ -57,6 +57,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
     marginHorizontal: 16,
+    width: '100%',
+  },
+  description: {
+    color: 'white',
   },
   title: {
     fontSize: 48,

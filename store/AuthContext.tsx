@@ -6,14 +6,14 @@ import { generatePrivateKey } from 'viem/accounts';
 interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
-  authenticate: () => void;
+  authenticate: () => Promise<string | boolean>;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   token: '',
   isAuthenticated: false,
-  authenticate: () => {},
+  authenticate: () => Promise.resolve(false),
   logout: () => {},
 });
 
@@ -29,24 +29,24 @@ interface SessionProviderProps {
 function SessionProvider({ children }: SessionProviderProps) {
   const [authToken, setAuthToken] = useState<string | null>(null);
 
-  async function authenticate() {
+  async function authenticate(): Promise<string | boolean> {
     //check if there's an existing token in SecureStorage
     return new Promise((resolve, reject) => {
       SecureStore.getItemAsync('token').then((storedToken) => {
         if (storedToken) {
           LocalAuthentication.authenticateAsync().then((result) => {
             setAuthToken(storedToken);
-            resolve(true);
+            resolve(storedToken);
           });
         } else {
           //if not generate a new one using local auth and generatePrivateKey from viem/accounts and store it in SecureStorage
-          LocalAuthentication.authenticateAsync().then((result) => {
+          LocalAuthentication.authenticateAsync().then(async (result) => {
             if (result.success) {
               const privateKey = generatePrivateKey();
               if (privateKey) {
-                SecureStore.setItemAsync('token', privateKey);
+                await SecureStore.setItemAsync('token', privateKey);
                 setAuthToken(privateKey);
-                resolve(true);
+                resolve(privateKey);
               } else {
                 reject(new Error('Failed to generate private key'));
               }
