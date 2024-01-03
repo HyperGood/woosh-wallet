@@ -42,6 +42,7 @@ const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) 
           value={phoneNumber}
         />
       </View>
+
       <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>
         <Button title="Claim" onPress={onButtonClick} type="primary" />
       </View>

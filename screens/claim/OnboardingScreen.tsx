@@ -3,24 +3,52 @@ import firestore from '@react-native-firebase/firestore';
 import { ECDSAProvider } from '@zerodev/sdk';
 import { useState } from 'react';
 import { Text, SafeAreaView, StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
+import LoadingIndicator from '../../components/UI/LoadingIndicator';
 import { COLORS } from '../../constants/global-styles';
 import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
 
 interface OnboardingScreenProps {
   nextScreenFunction: () => void;
+  dbName?: string;
 }
 
-const OnboardingScreen = ({ nextScreenFunction }: OnboardingScreenProps) => {
-  const [name, setName] = useState('');
+const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps) => {
+  const [name, setName] = useState(dbName || '');
   const [username, setUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { authenticate } = useSession();
   const { setEcdsaProvider } = useAccount();
 
+  const fadeOutAnim = useSharedValue(1);
+  const fadeInAnim = useSharedValue(0);
+
+  const fadeOutAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: fadeOutAnim.value,
+    };
+  });
+
+  const fadeInAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: fadeInAnim.value,
+    };
+  });
+
   const onButtonClick = async () => {
+    fadeOutAnim.value = withTiming(0, { duration: 500 }); // Start fade out
+    fadeInAnim.value = withDelay(500, withTiming(1, { duration: 200 })); // Start fade in
+
+    setIsLoading(true);
     try {
       //Generate new private key
       const token = await authenticate();
@@ -28,6 +56,7 @@ const OnboardingScreen = ({ nextScreenFunction }: OnboardingScreenProps) => {
       //Wait for token to be set
       if (!token) {
         console.log('No token');
+        setIsLoading(false);
         return;
       }
       const ecdsaProvider = await ECDSAProvider.init({
@@ -51,20 +80,40 @@ const OnboardingScreen = ({ nextScreenFunction }: OnboardingScreenProps) => {
       nextScreenFunction();
     } catch (error) {
       console.error('Error in onboarding screen', error);
+      setIsLoading(false);
       // Handle error
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
+      <Animated.View style={[{ width: '100%', marginTop: 64, gap: 16 }, fadeOutAnimatedStyle]}>
         <Text style={styles.title}>Onboarding</Text>
         <Input placeholder="Enter your name" onChangeText={setName} value={name} />
         <Input placeholder="Enter your username" onChangeText={setUsername} value={username} />
-      </View>
-      <View style={{ flexDirection: 'row' }}>
-        <Button title="Next" onPress={onButtonClick} type="primary" />
-      </View>
+      </Animated.View>
+      {isLoading ? (
+        <Animated.View
+          style={[
+            {
+              flex: 1,
+              width: '100%',
+            },
+            fadeInAnimatedStyle,
+          ]}>
+          <View style={{ flexDirection: 'row', gap: 16 }}>
+            {isLoading && <LoadingIndicator isLoading={isLoading} />}
+
+            <Text style={{ color: COLORS.light, fontSize: 24, marginTop: 16 }}>
+              Creating your account...
+            </Text>
+          </View>
+        </Animated.View>
+      ) : (
+        <View style={{ flexDirection: 'row' }}>
+          <Button title="Next" onPress={onButtonClick} type="primary" />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -72,11 +121,9 @@ export default OnboardingScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     width: '100%',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginHorizontal: 16,
   },
   title: {
     fontSize: 48,

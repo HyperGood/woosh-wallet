@@ -16,6 +16,7 @@ export const useWithdraw = () => {
     try {
       if (!ecdsaProvider) throw new Error('No ecdsaProvider');
       if (!isHex(secret)) throw new Error('Secret is not a hexadecimal string');
+      console.log('Withdrawing');
       const { hash } = await ecdsaProvider.sendUserOperation({
         target: '0x835d70aa12353f3866b118F8c9b70685Db44ad4D',
         data: encodeFunctionData({
@@ -24,6 +25,7 @@ export const useWithdraw = () => {
           args: [BigInt(depositIndex), secret, address],
         }),
       });
+      console.log('Withdraw hash: ', hash);
       setWithdrawHash(hash);
       Alert.alert('Transaction Successful!! User Op Hash: ', hash);
       setIsWithdrawing(false);

@@ -47,7 +47,7 @@ export default function Page() {
   if (activeScreen === 'onboarding') {
     return (
       <View style={styles.wrapper}>
-        <OnboardingScreen nextScreenFunction={goToClaim} />
+        <OnboardingScreen nextScreenFunction={goToClaim} dbName={transactionData.recipientName} />
       </View>
     );
   }
