@@ -2,13 +2,15 @@ import { LocalAccountSigner } from '@alchemy/aa-core';
 import firestore from '@react-native-firebase/firestore';
 import { ECDSAProvider } from '@zerodev/sdk';
 import { useState } from 'react';
-import { Text, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Text, SafeAreaView, StyleSheet, View, Pressable, Image } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+import * as ImagePicker from 'expo-image-picker';
+import storage from '@react-native-firebase/storage';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
@@ -24,10 +26,12 @@ interface OnboardingScreenProps {
 
 const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps) => {
   const [name, setName] = useState(dbName || '');
+  const [image, setImage] = useState<any>(null);
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { authenticate } = useSession();
   const { setEcdsaProvider } = useAccount();
+  const reference = storage().ref(`avatars/${name}.jpg`);
 
   const fadeOutAnim = useSharedValue(1);
   const fadeInAnim = useSharedValue(0);
@@ -69,15 +73,22 @@ const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps)
       console.log('Address: ', address);
       //Wait for address to be set
       //Save user data to Firestore
+
+      console.log('Saving profile picture');
+
+      const task = await reference.putFile(image);
+      task.state === 'success' && console.log('Profile picture uploaded');
+      const url = await reference.getDownloadURL();
       firestore().collection('users').add({
         name,
         username,
         ethAddress: address,
         createdAt: firestore.FieldValue.serverTimestamp(),
+        profilePicture: url,
       });
       console.log('Database set');
       //Go to claim screen
-      nextScreenFunction();
+      //nextScreenFunction();
     } catch (error) {
       console.error('Error in onboarding screen', error);
       setIsLoading(false);
@@ -85,12 +96,43 @@ const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps)
     }
   };
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View style={[{ width: '100%', marginTop: 64, gap: 16 }, fadeOutAnimatedStyle]}>
+      <Animated.View
+        style={[
+          { width: '100%', marginTop: 64, gap: 16, alignItems: 'center' },
+          fadeOutAnimatedStyle,
+        ]}>
         <Text style={styles.title}>Onboarding</Text>
         <Input placeholder="Enter your name" onChangeText={setName} value={name} />
         <Input placeholder="Enter your username" onChangeText={setUsername} value={username} />
+        <View style={{ width: '100%', padding: 16, gap: 16, alignItems: 'center' }}>
+          <Text style={{ color: COLORS.light, fontSize: 24, fontFamily: 'Satoshi-Bold' }}>
+            Set Your Profile picture
+          </Text>
+          <Pressable style={styles.imagePicker} onPress={pickImage}>
+            {image ? (
+              <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
+            ) : (
+              <Text>Upload a profile picture</Text>
+            )}
+          </Pressable>
+        </View>
       </Animated.View>
       {isLoading ? (
         <Animated.View
@@ -133,5 +175,14 @@ const styles = StyleSheet.create({
     lineHeight: 52,
     marginHorizontal: 32,
     marginBottom: 16,
+  },
+  imagePicker: {
+    height: 250,
+    aspectRatio: 1,
+    backgroundColor: COLORS.gray[600],
+    borderRadius: 125,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
 });

@@ -18,6 +18,12 @@
           "faceIDPermission": "Allow Woosh to use Face ID"
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos so you can select a profile picture."
+        }
+      ],
       "@react-native-firebase/app",
       "expo-build-properties",
       [
