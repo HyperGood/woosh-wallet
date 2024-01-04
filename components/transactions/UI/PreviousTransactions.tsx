@@ -11,7 +11,11 @@ interface PreviousTransactionsProps {
 
 const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
   if (!transactions || transactions.length === 0) {
-    return <Text>No Transactions Found</Text>;
+    return (
+      <View style={styles.emptyStateContainer}>
+        <Text style={styles.emptyStateText}>Your transactions will appear here</Text>
+      </View>
+    );
   }
   const leftTransactions =
     transactions[0] && transactions[2] ? [transactions[0], transactions[2]] : [transactions[0]];
@@ -77,6 +81,23 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
 };
 export default PreviousTransactions;
 const styles = StyleSheet.create({
+  emptyStateContainer: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.light,
+    borderRadius: 16,
+    padding: 40,
+  },
+  emptyStateText: {
+    fontSize: 24,
+    fontFamily: 'Satoshi-Bold',
+    color: COLORS.dark,
+    textAlign: 'center',
+    opacity: 0.6,
+  },
+
   container: {
     backgroundColor: COLORS.light,
     width: '100%',

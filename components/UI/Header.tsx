@@ -1,13 +1,17 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
+import { useUserData } from '../../store/UserDataContext';
 const Header = () => {
-  const username = 'janetbermudez';
+  const { userData } = useUserData();
+  const username = userData.username || 'username';
   const imageSrc = '../../assets/images/temp/janet.jpg';
   return (
     <View style={styles.container}>
       <Image style={styles.image} source={require(imageSrc)} />
-      <Text style={styles.username}>${username}</Text>
+      <View>
+        <Text style={styles.username}>${username}</Text>
+      </View>
     </View>
   );
 };
