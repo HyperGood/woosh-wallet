@@ -3,17 +3,15 @@ import { ECDSAProvider } from '@zerodev/sdk';
 import { Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 
+import { fetchUserByEthAddress } from '../../api/firestoreService';
 import { useSession } from '../../store/AuthContext';
 import { ContactProvider } from '../../store/ContactsContext';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
-import { fetchUserByEthAddress } from '../../api/firestoreService';
-import LoadingIndicator from '../../components/UI/LoadingIndicator';
 
 export default function Layout() {
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
-  const [userDataLoading, setUserDataLoading] = useState(true);
   const { token } = useSession();
   const { setEcdsaProvider } = useAccount();
   const { setUserData } = useUserData();
@@ -40,21 +38,14 @@ export default function Layout() {
   useEffect(() => {
     console.log('Address: ', address);
     if (address) {
-      setUserDataLoading(true);
-
       fetchUserByEthAddress(address).then((user) => {
         setUserData(user);
-        setUserDataLoading(false);
       });
     }
   }, [address]);
 
   if (!token) {
     return <Redirect href="/login" />;
-  }
-
-  if (loading || userDataLoading) {
-    return <LoadingIndicator isLoading />;
   }
 
   return (

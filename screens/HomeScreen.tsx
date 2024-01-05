@@ -11,7 +11,7 @@ import { COLORS } from '../constants/global-styles';
 
 const HomeScreen = () => {
   const [transactions, setTransactions] = useState<any>();
-
+  //const [loadingTransactions, setLoadingTransactions] = useState(true);
   const requestFunds = async () => {
     console.log('requesting');
   };
@@ -32,7 +32,7 @@ const HomeScreen = () => {
         <Balance />
         <View style={styles.buttonsContainer}>
           <Button
-            title="Exit"
+            title="Request"
             icon="arrow-down-left"
             type="secondary"
             swapIcon

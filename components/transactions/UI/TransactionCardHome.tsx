@@ -1,8 +1,16 @@
 import { Link } from 'expo-router';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-import { COLORS } from '../../../constants/global-styles';
+import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
 import { useAccount } from '../../../store/SmartAccountContext';
+import { Skeleton } from 'moti/skeleton';
+import Animated, {
+  FadeIn,
+  BounceIn,
+  withTiming,
+  withDelay,
+  withSpring,
+} from 'react-native-reanimated';
 interface TranscationCardProps {
   amount: number;
   recipientName?: string;
@@ -12,6 +20,7 @@ interface TranscationCardProps {
   date: string;
   claimed?: boolean;
   sender?: string;
+  index?: number;
 }
 const TransactionCardHome: React.FC<TranscationCardProps> = ({
   amount,
@@ -22,18 +31,42 @@ const TransactionCardHome: React.FC<TranscationCardProps> = ({
   date,
   claimed,
   sender,
+  index = 0,
 }) => {
   const { address } = useAccount();
+
+  const entering = (targetValues: any) => {
+    'worklet';
+    const animations = {
+      originX: withTiming(targetValues.originX, { duration: 3000 }),
+      transform: [
+        {
+          scale: withDelay(index * 400, withSpring(1, { mass: 1.1, damping: 11, stiffness: 100 })),
+        },
+      ],
+    };
+    const initialValues = {
+      originX: -200,
+      transform: [{ scale: 0 }],
+    };
+    return {
+      initialValues,
+      animations,
+    };
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={[styles.amount, sender !== address && styles.positive]}>${amount}</Text>
-      {userImage && <Image source={userImage} style={styles.userImage} />}
-      <Text style={styles.recipientName}>{recipientName}</Text>
-      <Text style={styles.recipientPhone}>{recipientPhone}</Text>
-      <Text style={styles.description}>{description}</Text>
-      <Text style={styles.date}>{date}</Text>
-      <Text> {claimed ? 'Claimed' : 'Not Claimed'}</Text>
-    </View>
+    <Skeleton height={200} width={200} {...SkeletonCommonProps}>
+      <Animated.View style={styles.container} entering={entering}>
+        <Text style={[styles.amount, sender !== address && styles.positive]}>${amount}</Text>
+        {userImage && <Image source={userImage} style={styles.userImage} />}
+        <Text style={styles.recipientName}>{recipientName}</Text>
+        <Text style={styles.recipientPhone}>{recipientPhone}</Text>
+        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.date}>{date}</Text>
+        <Text> {claimed ? 'Claimed' : 'Not Claimed'}</Text>
+      </Animated.View>
+    </Skeleton>
   );
 };
 export default TransactionCardHome;

@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Skeleton } from 'moti/skeleton';
 
 import TransactionCardHome from './TransactionCardHome';
 import { COLORS } from '../../../constants/global-styles';
@@ -27,6 +28,7 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
         <Text style={styles.title}>Mis</Text>
         <Text style={styles.title}>Transacciones</Text>
       </View>
+
       <View style={styles.cards}>
         <View style={styles.cardsLeft}>
           {leftTransactions.map((transaction, index) => (
@@ -42,6 +44,7 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                     date={transaction.createdAt.toDate().toDateString()}
                     claimed={transaction.claimed}
                     sender={transaction.sender}
+                    index={index}
                   />
                 </Link>
               ) : (
@@ -63,6 +66,7 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                   date={transaction.createdAt.toDate().toDateString()}
                   claimed={transaction.claimed}
                   sender={transaction.sender}
+                  index={index + 1}
                 />
               </Link>
             </View>

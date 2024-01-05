@@ -19,3 +19,11 @@ export const COLORS = {
   dark: '#19181D',
   light: '#F8FAF9',
 };
+
+export const SkeletonCommonProps = {
+  transition: {
+    type: 'timing',
+    duration: 2000,
+  },
+  colorMode: 'dark',
+} as const;

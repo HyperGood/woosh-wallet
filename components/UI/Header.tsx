@@ -1,16 +1,22 @@
 import storage from '@react-native-firebase/storage';
+import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import placeholderUser from '../../assets/images/profile.png';
-import { COLORS } from '../../constants/global-styles';
+import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import { useUserData } from '../../store/UserDataContext';
+
 const Header = () => {
   const { userData } = useUserData();
 
-  if (!userData) {
-    throw new Error('User data is not available');
-  }
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (userData) {
+      setIsLoading(false);
+    }
+  }, [userData]);
 
   const username = userData?.username || 'username';
   const name = userData?.name;
@@ -30,15 +36,22 @@ const Header = () => {
 
     fetchImage();
   }, [reference]);
+
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.image}
-        source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}
-      />
-      <View>
-        <Text style={styles.username}>${username}</Text>
-      </View>
+      <Skeleton.Group show={isLoading}>
+        <Skeleton height={48} width={48} radius="round" {...SkeletonCommonProps}>
+          <Image
+            style={styles.image}
+            source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}
+          />
+        </Skeleton>
+        <Skeleton height={24} width={200} {...SkeletonCommonProps}>
+          <View>
+            <Text style={styles.username}>${username}</Text>
+          </View>
+        </Skeleton>
+      </Skeleton.Group>
     </View>
   );
 };
