@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text, SafeAreaView, View, StyleSheet, Alert } from 'react-native';
 
+import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
@@ -8,11 +9,10 @@ import { COLORS } from '../../constants/global-styles';
 interface IntroScreenProps {
   transactionData: any;
   nextScreenFunction: () => void;
+  backFuncion: () => void;
 }
 
-//TODO: Add onboarding slides
-
-const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) => {
+const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: IntroScreenProps) => {
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const onButtonClick = () => {
@@ -27,6 +27,7 @@ const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
+        <BackButton backFunction={backFuncion} />
         <View style={styles.textContainer}>
           <Text style={styles.welcomeTitle}>Welcome to Woosh!</Text>
           <Text style={styles.title}>{transactionData.sender} sent you</Text>
@@ -44,7 +45,7 @@ const IntroScreen = ({ transactionData, nextScreenFunction }: IntroScreenProps) 
       </View>
 
       <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>
-        <Button title="Claim" onPress={onButtonClick} type="primary" />
+        <Button title="Next" onPress={onButtonClick} type="primary" />
       </View>
     </SafeAreaView>
   );

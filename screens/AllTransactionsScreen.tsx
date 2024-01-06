@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { fetchTransactions } from '../api/firestoreService';
-import TransactionCard from '../components/transactions/UI/TransactionCard';
+import TransactionCard from '../components/transactions/UI/CompactTransactionCard';
 import { COLORS } from '../constants/global-styles';
 import { Transaction } from '../models/Transaction';
 

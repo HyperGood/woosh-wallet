@@ -4,9 +4,17 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
 
-const BackButton = () => {
+interface BackButtonProps {
+  backFunction?: () => void;
+}
+
+const BackButton = ({ backFunction }: BackButtonProps) => {
   function goBack() {
-    router.back();
+    if (backFunction) {
+      backFunction();
+    } else {
+      router.back();
+    }
   }
   return (
     <Pressable style={styles.container} onPress={goBack}>

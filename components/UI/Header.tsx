@@ -11,6 +11,7 @@ const Header = () => {
   const { userData } = useUserData();
 
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingUserImage, setLoadingUserImage] = useState(true);
 
   useEffect(() => {
     if (userData) {
@@ -24,11 +25,12 @@ const Header = () => {
   const [imageSrc, setImageSrc] = useState<any>(placeholderUser);
 
   useEffect(() => {
+    setLoadingUserImage(true);
     const fetchImage = async () => {
       try {
         const url = await reference.getDownloadURL();
-        console.log(url);
         setImageSrc(url);
+        setLoadingUserImage(false);
       } catch (error) {
         console.error('Error fetching image:', error);
       }
@@ -39,19 +41,22 @@ const Header = () => {
 
   return (
     <View style={styles.container}>
-      <Skeleton.Group show={isLoading}>
-        <Skeleton height={48} width={48} radius="round" {...SkeletonCommonProps}>
-          <Image
-            style={styles.image}
-            source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}
-          />
-        </Skeleton>
-        <Skeleton height={24} width={200} {...SkeletonCommonProps}>
-          <View>
-            <Text style={styles.username}>${username}</Text>
-          </View>
-        </Skeleton>
-      </Skeleton.Group>
+      <Skeleton
+        show={loadingUserImage}
+        height={48}
+        width={48}
+        radius="round"
+        {...SkeletonCommonProps}>
+        <Image
+          style={styles.image}
+          source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}
+        />
+      </Skeleton>
+      <Skeleton show={isLoading} height={24} width={200} {...SkeletonCommonProps}>
+        <View>
+          <Text style={styles.username}>${username}</Text>
+        </View>
+      </Skeleton>
     </View>
   );
 };

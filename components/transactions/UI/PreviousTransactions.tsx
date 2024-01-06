@@ -1,9 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Skeleton } from 'moti/skeleton';
 
-import TransactionCardHome from './TransactionCardHome';
+import TransactionCardHome from './HomeTransactionCard';
 import { COLORS } from '../../../constants/global-styles';
 
 interface PreviousTransactionsProps {
@@ -38,13 +37,11 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                   <TransactionCardHome
                     amount={transaction.amount}
                     recipientName={transaction.recipientName}
-                    recipientPhone={transaction.recipientPhone}
-                    userImage={transaction.userImage}
+                    recipientImage={transaction.userImage}
                     description={transaction.description}
                     date={transaction.createdAt.toDate().toDateString()}
                     claimed={transaction.claimed}
                     sender={transaction.sender}
-                    index={index}
                   />
                 </Link>
               ) : (
@@ -60,13 +57,11 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                 <TransactionCardHome
                   amount={transaction.amount}
                   recipientName={transaction.recipientName}
-                  recipientPhone={transaction.recipientPhone}
-                  userImage={transaction.userImage}
+                  recipientImage={transaction.userImage}
                   description={transaction.description}
                   date={transaction.createdAt.toDate().toDateString()}
                   claimed={transaction.claimed}
                   sender={transaction.sender}
-                  index={index + 1}
                 />
               </Link>
             </View>

@@ -40,14 +40,14 @@ export default function Page() {
             }
           }}
         />
-        {/* <Link
+        <Link
           href={{
             pathname: '/claim/[id]',
             params: { id: id || '' },
           }}
           asChild>
           <Button title="Go to most recent transaction" onPress={() => {}} />
-        </Link> */}
+        </Link>
       </View>
     </View>
   );

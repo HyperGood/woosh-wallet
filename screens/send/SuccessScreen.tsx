@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/UI/Button';
-import TransactionCardHome from '../../components/transactions/UI/TransactionCardHome';
+import DefaultTransactionCard from '../../components/transactions/UI/DefaultTransactionCard';
 import { COLORS } from '../../constants/global-styles';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
@@ -38,7 +38,7 @@ const SuccessScreen = () => {
   if (!transactionData) {
     return null;
   }
-  const { recipientName, recipientPhone, description } = transactionData;
+  const { recipientName, description } = transactionData;
   const amount = Number(transactionData.amount);
   const date = new Date().toLocaleDateString();
 
@@ -58,10 +58,9 @@ const SuccessScreen = () => {
       </Link>
       <Text style={styles.title}>Sent! 🥳</Text>
       <Text style={styles.description}>A claim link has been sent to </Text>
-      <TransactionCardHome
+      <DefaultTransactionCard
         amount={amount}
         recipientName={recipientName || ''}
-        recipientPhone={recipientPhone || ''}
         description={description}
         date={date}
       />

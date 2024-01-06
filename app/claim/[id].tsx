@@ -1,19 +1,22 @@
 import firestore from '@react-native-firebase/firestore';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
 import ClaimScreen from '../../screens/claim/ClaimScreen';
 import IntroScreen from '../../screens/claim/IntroScreen';
 import OnboardingScreen from '../../screens/claim/OnboardingScreen';
+import WelcomeScreen from '../../screens/claim/WelcomeScreen';
 
 export default function Page() {
   const { id } = useLocalSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [transactionData, setTransactionData] = useState<any>(null);
-  const [activeScreen, setActiveScreen] = useState('intro');
+  const [activeScreen, setActiveScreen] = useState('welcome');
 
+  const goToWelcome = () => setActiveScreen('welcome');
+  const goToIntro = () => setActiveScreen('intro');
   const goToOnboarding = () => setActiveScreen('onboarding');
   const goToClaim = () => setActiveScreen('claim');
 
@@ -32,14 +35,26 @@ export default function Page() {
     })();
   }, []);
 
-  if (isLoading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+  if (activeScreen === 'welcome') {
+    return (
+      <View style={styles.wrapper}>
+        <WelcomeScreen
+          loadingTransactionData={isLoading}
+          transactionData={transactionData}
+          nextScreenFunction={goToIntro}
+        />
+      </View>
+    );
   }
 
   if (activeScreen === 'intro') {
     return (
       <View style={styles.wrapper}>
-        <IntroScreen transactionData={transactionData} nextScreenFunction={goToOnboarding} />
+        <IntroScreen
+          backFuncion={goToWelcome}
+          transactionData={transactionData}
+          nextScreenFunction={goToOnboarding}
+        />
       </View>
     );
   }

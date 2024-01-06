@@ -1,81 +1,50 @@
 import { Link } from 'expo-router';
+import { Skeleton } from 'moti/skeleton';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
 import { useAccount } from '../../../store/SmartAccountContext';
-import { Skeleton } from 'moti/skeleton';
-import Animated, {
-  FadeIn,
-  BounceIn,
-  withTiming,
-  withDelay,
-  withSpring,
-} from 'react-native-reanimated';
+
 interface TranscationCardProps {
   amount: number;
   recipientName?: string;
-  recipientPhone: string;
-  userImage?: any;
+  recipientImage?: any;
   description?: string;
   date: string;
   claimed?: boolean;
   sender?: string;
-  index?: number;
 }
-const TransactionCardHome: React.FC<TranscationCardProps> = ({
+const HomeTransactionCard: React.FC<TranscationCardProps> = ({
   amount,
   recipientName,
-  recipientPhone,
-  userImage,
+  recipientImage,
   description,
   date,
   claimed,
   sender,
-  index = 0,
 }) => {
   const { address } = useAccount();
 
-  const entering = (targetValues: any) => {
-    'worklet';
-    const animations = {
-      originX: withTiming(targetValues.originX, { duration: 3000 }),
-      transform: [
-        {
-          scale: withDelay(index * 400, withSpring(1, { mass: 1.1, damping: 11, stiffness: 100 })),
-        },
-      ],
-    };
-    const initialValues = {
-      originX: -200,
-      transform: [{ scale: 0 }],
-    };
-    return {
-      initialValues,
-      animations,
-    };
-  };
-
   return (
     <Skeleton height={200} width={200} {...SkeletonCommonProps}>
-      <Animated.View style={styles.container} entering={entering}>
+      <View style={styles.container}>
         <Text style={[styles.amount, sender !== address && styles.positive]}>${amount}</Text>
-        {userImage && <Image source={userImage} style={styles.userImage} />}
+        {recipientImage && <Image source={recipientImage} style={styles.userImage} />}
         <Text style={styles.recipientName}>{recipientName}</Text>
-        <Text style={styles.recipientPhone}>{recipientPhone}</Text>
         <Text style={styles.description}>{description}</Text>
         <Text style={styles.date}>{date}</Text>
         <Text> {claimed ? 'Claimed' : 'Not Claimed'}</Text>
-      </Animated.View>
+      </View>
     </Skeleton>
   );
 };
-export default TransactionCardHome;
+export default HomeTransactionCard;
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.gray[200],
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 24,
+    paddingHorizontal: 12,
+    backgroundColor: COLORS.gray[200],
+    paddingVertical: 20,
   },
   amount: {
     fontFamily: 'Satoshi-Bold',
