@@ -1,7 +1,10 @@
 import { LocalAccountSigner } from '@alchemy/aa-core';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import { ECDSAProvider } from '@zerodev/sdk';
-import { useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Text, SafeAreaView, StyleSheet, View, Pressable, Image } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -9,28 +12,30 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import * as ImagePicker from 'expo-image-picker';
-import storage from '@react-native-firebase/storage';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import LoadingIndicator from '../../components/UI/LoadingIndicator';
 import { COLORS } from '../../constants/global-styles';
+import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
 
 interface OnboardingScreenProps {
-  nextScreenFunction: () => void;
-  dbName?: string;
+  transactionData: any;
+  id: string;
 }
 
-const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps) => {
-  const [name, setName] = useState(dbName || '');
+const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
+  const [name, setName] = useState(transactionData.sender || '');
   const [image, setImage] = useState<any>(null);
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingState, setLoadingState] = useState('Creating account...');
+  const [address, setAddress] = useState<`0x${string}` | null>(null);
   const { authenticate } = useSession();
   const { setEcdsaProvider } = useAccount();
+  const { withdraw, withdrawHash } = useWithdraw();
   const reference = storage().ref(`avatars/${name}.jpg`);
 
   const fadeOutAnim = useSharedValue(1);
@@ -71,6 +76,7 @@ const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps)
       const address = await ecdsaProvider.getAddress();
       console.log('Zerodev Provider set');
       console.log('Address: ', address);
+
       //Wait for address to be set
       //Save user data to Firestore
 
@@ -87,6 +93,7 @@ const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps)
         profilePicture: url,
       });
       console.log('Database set');
+      setAddress(address);
       //Go to claim screen
       //nextScreenFunction();
     } catch (error) {
@@ -95,6 +102,67 @@ const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps)
       // Handle error
     }
   };
+
+  const claimFunction = async () => {
+    fadeOutAnim.value = withTiming(0, { duration: 500 }); // Start fade out
+    fadeInAnim.value = withDelay(500, withTiming(1, { duration: 200 })); // Start fade in
+
+    setIsLoading(true);
+    setLoadingState('Claiming funds...');
+    try {
+      //Claim the transaction
+      console.log('Claiming...');
+      console.log('Transaction data: ', transactionData);
+      if (!address) {
+        console.log('No address');
+        setIsLoading(false);
+        return;
+      }
+      if (!transactionData.signature) {
+        console.log('No secret');
+        setIsLoading(false);
+        return;
+      }
+      if (!transactionData.depositIndex) {
+        console.log('No deposit index');
+        setIsLoading(false);
+        return;
+      }
+      console.log('Executing withdraw');
+      //400 error thrown here but everything works
+      await withdraw(
+        transactionData.depositIndex,
+        transactionData.signature as `0x${string}`,
+        address
+      );
+      console.log('Withdraw executed! Updating database');
+      firestore()
+        .collection('transactions')
+        //transaction data doesn't have the id.
+        .doc(id)
+        .update({
+          claimedBy: address,
+          claimedAt: new Date(),
+          withdrawHash,
+        })
+        .then(() => {
+          console.log('Transaction updated!');
+          router.push('/');
+        });
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+      // Handle error
+    }
+  };
+
+  useEffect(() => {
+    if (!address) {
+      console.log('No address');
+      return;
+    }
+    claimFunction();
+  }, [address]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -147,7 +215,7 @@ const OnboardingScreen = ({ nextScreenFunction, dbName }: OnboardingScreenProps)
             {isLoading && <LoadingIndicator isLoading={isLoading} />}
 
             <Text style={{ color: COLORS.light, fontSize: 24, marginTop: 16 }}>
-              Creating your account...
+              {loadingState}...
             </Text>
           </View>
         </Animated.View>

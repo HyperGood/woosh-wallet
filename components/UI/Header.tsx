@@ -1,17 +1,18 @@
 import storage from '@react-native-firebase/storage';
 import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import placeholderUser from '../../assets/images/profile.png';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
+import { useSession } from '../../store/AuthContext';
 import { useUserData } from '../../store/UserDataContext';
 
 const Header = () => {
   const { userData } = useUserData();
+  const { deletePrivateKey } = useSession();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingUserImage, setLoadingUserImage] = useState(true);
 
   useEffect(() => {
     if (userData) {
@@ -25,12 +26,10 @@ const Header = () => {
   const [imageSrc, setImageSrc] = useState<any>(placeholderUser);
 
   useEffect(() => {
-    setLoadingUserImage(true);
     const fetchImage = async () => {
       try {
         const url = await reference.getDownloadURL();
         setImageSrc(url);
-        setLoadingUserImage(false);
       } catch (error) {
         console.error('Error fetching image:', error);
       }
@@ -41,16 +40,13 @@ const Header = () => {
 
   return (
     <View style={styles.container}>
-      <Skeleton
-        show={loadingUserImage}
-        height={48}
-        width={48}
-        radius="round"
-        {...SkeletonCommonProps}>
-        <Image
-          style={styles.image}
-          source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}
-        />
+      <Skeleton show={isLoading} height={48} width={48} radius="round" {...SkeletonCommonProps}>
+        <Pressable onPress={deletePrivateKey}>
+          <Image
+            style={styles.image}
+            source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}
+          />
+        </Pressable>
       </Skeleton>
       <Skeleton show={isLoading} height={24} width={200} {...SkeletonCommonProps}>
         <View>

@@ -8,6 +8,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   authenticate: () => Promise<string | boolean>;
   logout: () => void;
+  deletePrivateKey: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -15,6 +16,7 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   authenticate: () => Promise.resolve(false),
   logout: () => {},
+  deletePrivateKey: () => {},
 });
 
 export function useSession() {
@@ -42,6 +44,7 @@ function SessionProvider({ children }: SessionProviderProps) {
           //if not generate a new one using local auth and generatePrivateKey from viem/accounts and store it in SecureStorage
           LocalAuthentication.authenticateAsync().then(async (result) => {
             if (result.success) {
+              console.log('Authentication succeeded, generating private key');
               const privateKey = generatePrivateKey();
               if (privateKey) {
                 await SecureStore.setItemAsync('token', privateKey);
@@ -59,15 +62,22 @@ function SessionProvider({ children }: SessionProviderProps) {
     });
   }
 
-  function logout() {
+  async function deletePrivateKey() {
+    console.log('Deleting private key');
+    await SecureStore.deleteItemAsync('token');
     setAuthToken(null);
   }
 
+  async function logout() {
+    console.log('Logging out');
+    setAuthToken(null);
+  }
   const value = {
     token: authToken,
     isAuthenticated: !!authToken,
     authenticate,
     logout,
+    deletePrivateKey,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

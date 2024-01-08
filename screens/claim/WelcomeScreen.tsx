@@ -35,18 +35,18 @@ const WelcomeScreen = ({
             </Text>
           </Skeleton>
         </View>
-        <Skeleton {...SkeletonCommonProps}>
-          {transactionData && (
-            <View style={{ transform: [{ rotate: '1deg' }] }}>
+        <View style={{ transform: [{ rotate: '1deg' }] }}>
+          <Skeleton {...SkeletonCommonProps}>
+            {transactionData && (
               <DefaultTransactionCard
                 amount={transactionData.amount}
                 sender={transactionData.sender}
                 description={transactionData.description}
                 date={transactionData.createdAt.toDate().toDateString()}
               />
-            </View>
-          )}
-        </Skeleton>
+            )}
+          </Skeleton>
+        </View>
         {!loadingTransactionData && (
           <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>
             <Button title="Get Started" onPress={nextScreenFunction} type="primary" />

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
-import ClaimScreen from '../../screens/claim/ClaimScreen';
 import IntroScreen from '../../screens/claim/IntroScreen';
 import OnboardingScreen from '../../screens/claim/OnboardingScreen';
 import WelcomeScreen from '../../screens/claim/WelcomeScreen';
@@ -18,7 +17,6 @@ export default function Page() {
   const goToWelcome = () => setActiveScreen('welcome');
   const goToIntro = () => setActiveScreen('intro');
   const goToOnboarding = () => setActiveScreen('onboarding');
-  const goToClaim = () => setActiveScreen('claim');
 
   //Use a useEffect to fetch the data from Firestore
   useEffect(() => {
@@ -29,6 +27,8 @@ export default function Page() {
         console.log('No such document!');
         setIsLoading(false);
       } else {
+        //wait for 2 seconds to simulate loading
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         setTransactionData(transactionData.data());
         setIsLoading(false);
       }
@@ -62,19 +62,7 @@ export default function Page() {
   if (activeScreen === 'onboarding') {
     return (
       <View style={styles.wrapper}>
-        <OnboardingScreen nextScreenFunction={goToClaim} dbName={transactionData.recipientName} />
-      </View>
-    );
-  }
-
-  if (activeScreen === 'claim') {
-    return (
-      <View style={styles.wrapper}>
-        <ClaimScreen
-          backFunction={goToOnboarding}
-          transactionData={transactionData}
-          id={Array.isArray(id) ? id[0] : id}
-        />
+        <OnboardingScreen transactionData={transactionData} id={Array.isArray(id) ? id[0] : id} />
       </View>
     );
   }
