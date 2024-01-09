@@ -16,7 +16,7 @@ const HomeScreen = () => {
   const { address } = useAccount();
 
   const requestFunds = async () => {
-    console.log('requesting');
+    console.log('requesting funds');
   };
 
   useFocusEffect(

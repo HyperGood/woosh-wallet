@@ -5,6 +5,10 @@ type TokenPrices = {
     mxn: number;
     usd: number;
   };
+  'usd-coin': {
+    usd: number;
+    mxn: number;
+  };
 };
 
 export const useTokenPrices = () => {

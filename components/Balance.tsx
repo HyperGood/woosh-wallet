@@ -7,7 +7,7 @@ import { COLORS } from '../constants/global-styles';
 import { useUserBalance } from '../hooks/useUserBalance';
 
 const Balance = () => {
-  const token = 'ETH';
+  const token = 'USD';
   const { fiatBalance, tokenBalance, isFetchingBalance } = useUserBalance();
 
   const handleButton = () => {

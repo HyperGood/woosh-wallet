@@ -1,22 +1,23 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useState } from 'react';
 import { Alert } from 'react-native';
-import { encodeFunctionData, parseUnits, zeroAddress } from 'viem';
+import { Hex, encodeFunctionData, parseUnits } from 'viem';
 import { optimismSepolia } from 'viem/chains';
 
 import { depositVaultAbi, contractAddress, Addresses } from '../../references/depositVault-abi';
+import { usdcAddress, TokenAddresses } from '../../references/tokenAddresses';
 import { useAccount } from '../../store/SmartAccountContext';
-import { useUserBalance } from '../useUserBalance';
 
 export const useDeposit = () => {
   const [depositHash, setDepositHash] = useState<string | null>(null);
   const [isDepositing, setIsDepositing] = useState(false);
   const [depositError, setDepositError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
-  const { refetchBalance } = useUserBalance();
   const chainId = optimismSepolia.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
+  const tokenAddress = usdcAddress[chainId as keyof TokenAddresses][0];
+  const tokenDecimals = process.env.EXPO_PUBLIC_TESTNET === 'true' ? 18 : 6;
 
   const deposit = async (amount: string) => {
     setIsDepositing(true);
@@ -29,21 +30,38 @@ export const useDeposit = () => {
           return;
         }
         if (!ecdsaProvider) throw new Error('No ecdsaProvider');
-        const { hash } = await ecdsaProvider.sendUserOperation({
+        const approvalData = await ecdsaProvider.sendUserOperation({
+          target: tokenAddress,
+          value: 0n,
+          data: encodeFunctionData({
+            abi: [
+              {
+                name: 'approve',
+                type: 'function',
+                stateMutability: 'nonpayable',
+                inputs: [
+                  { internalType: 'address', name: 'spender', type: 'address' },
+                  { internalType: 'uint256', name: 'amount', type: 'uint256' },
+                ],
+                outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+              },
+            ],
+            functionName: 'approve',
+            args: [depositVaultAddress, parseUnits(amount, tokenDecimals)],
+          }),
+        });
+        await ecdsaProvider.waitForUserOperationTransaction(approvalData.hash as Hex);
+        const depositData = await ecdsaProvider.sendUserOperation({
           target: depositVaultAddress,
-          value: parseUnits(amount, 18),
+          value: 0n,
           data: encodeFunctionData({
             abi: depositVaultAbi,
             functionName: 'deposit',
-            args: [parseUnits('0', 18), zeroAddress],
+            args: [parseUnits(amount, tokenDecimals), tokenAddress],
           }),
         });
-        setDepositHash(hash);
-        //refetch balance
-        setTimeout(() => {
-          refetchBalance();
-        }, 3000);
-        Alert.alert('Transaction Successful!! User Op Hash: ', hash);
+        setDepositHash(depositData.hash);
+        await ecdsaProvider.waitForUserOperationTransaction(depositData.hash as Hex);
         setIsDepositing(false);
       }
     } catch (e) {

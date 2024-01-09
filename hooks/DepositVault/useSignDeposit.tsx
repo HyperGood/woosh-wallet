@@ -80,7 +80,7 @@ export const useSignDeposit = () => {
         console.log('Types: ', types);
 
         const message = {
-          amount: depositAmount || '0',
+          amount: depositAmount.toString() || '0',
           depositIndex,
         } as const;
 
