@@ -10,7 +10,7 @@ import { useUserData } from '../../store/UserDataContext';
 
 const Header = () => {
   const { userData } = useUserData();
-  const { deletePrivateKey } = useSession();
+  const { deletePrivateKey, logout } = useSession();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,7 +41,7 @@ const Header = () => {
   return (
     <View style={styles.container}>
       <Skeleton show={isLoading} height={48} width={48} radius="round" {...SkeletonCommonProps}>
-        <Pressable onPress={deletePrivateKey}>
+        <Pressable onPress={logout}>
           <Image
             style={styles.image}
             source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}

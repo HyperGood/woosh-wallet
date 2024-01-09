@@ -111,20 +111,19 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
   },
   cards: {
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingHorizontal: 10,
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
   },
   cardsLeft: {
     gap: 32,
-    width: '48%',
-    marginTop: 8,
+    width: '50%',
+    marginTop: 16,
   },
   cardsRight: {
     gap: 32,
-    width: '48%',
+    width: '50%',
   },
   rotateLeft: {
     transform: [{ rotate: '-1deg' }],

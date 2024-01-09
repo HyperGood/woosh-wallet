@@ -1,4 +1,6 @@
+import { Skeleton } from 'moti/skeleton';
 import { StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
 import IconButton from './UI/IconButton';
 import { COLORS } from '../constants/global-styles';
@@ -6,25 +8,29 @@ import { useUserBalance } from '../hooks/useUserBalance';
 
 const Balance = () => {
   const token = 'ETH';
-  const { fiatBalance, tokenBalance } = useUserBalance();
+  const { fiatBalance, tokenBalance, isFetchingBalance } = useUserBalance();
 
   const handleButton = () => {
     console.log('hi');
   };
   return (
     <View style={styles.wrapper}>
-      <View style={styles.container}>
-        <Text style={styles.number}>
-          ${fiatBalance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.
-          <Text style={styles.decimal}>{(fiatBalance % 1).toFixed(2).slice(2)}</Text>
+      <Skeleton show={isFetchingBalance} height={110} width={300}>
+        <Animated.View layout={Layout} entering={FadeIn.duration(1500)} style={styles.container}>
+          <Text style={styles.number}>
+            ${fiatBalance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.
+            <Text style={styles.decimal}>{(fiatBalance % 1).toFixed(2).slice(2)}</Text>
+          </Text>
+          <View style={styles.buttonContainer}>
+            <IconButton icon="plus" onPress={handleButton} />
+          </View>
+        </Animated.View>
+      </Skeleton>
+      <Skeleton show={isFetchingBalance} height={30} width={200}>
+        <Text style={styles.tokenBalance}>
+          {tokenBalance} {token}
         </Text>
-        <View style={styles.buttonContainer}>
-          <IconButton icon="plus" onPress={handleButton} />
-        </View>
-      </View>
-      <Text style={styles.tokenBalance}>
-        {tokenBalance} {token}
-      </Text>
+      </Skeleton>
     </View>
   );
 };
@@ -37,6 +43,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    justifyContent: 'center',
     gap: 8,
   },
   number: {
@@ -53,6 +60,7 @@ const styles = StyleSheet.create({
     fontFamily: 'FHOscar',
     color: COLORS.light,
     opacity: 0.4,
+    textAlign: 'center',
   },
   buttonContainer: {
     paddingBottom: 16,

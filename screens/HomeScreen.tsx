@@ -1,5 +1,6 @@
 import { Link, useFocusEffect } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { Skeleton } from 'moti/skeleton';
+import { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { fetchTransactionsByEthAddress } from '../api/firestoreService';
@@ -26,7 +27,6 @@ const HomeScreen = () => {
       }
       (async () => {
         const transactions = await fetchTransactionsByEthAddress(address);
-        console.log('Transactions: ', transactions);
         setTransactions(transactions);
       })();
     }, [address])
@@ -37,19 +37,23 @@ const HomeScreen = () => {
       <View style={styles.container}>
         <Header />
         <Balance />
-        <View style={styles.buttonsContainer}>
-          <Button
-            title="Request"
-            icon="arrow-down-left"
-            type="secondary"
-            swapIcon
-            onPress={requestFunds}
-          />
-          <Link href="/(app)/send/selectContact" asChild>
-            <Button title="Enviar" icon="send" type="primary" onPress={() => {}} />
-          </Link>
-        </View>
-        {transactions && <PreviousTransactions transactions={transactions} />}
+        <Skeleton show={!transactions} height={120} width="100%">
+          <View style={styles.buttonsContainer}>
+            <Button
+              title="Request"
+              icon="arrow-down-left"
+              type="secondary"
+              swapIcon
+              onPress={requestFunds}
+            />
+            <Link href="/(app)/send/selectContact" asChild>
+              <Button title="Enviar" icon="send" type="primary" onPress={() => {}} />
+            </Link>
+          </View>
+        </Skeleton>
+        <Skeleton show={!transactions} height={600} width="100%">
+          <PreviousTransactions transactions={transactions} />
+        </Skeleton>
       </View>
     </ScrollView>
   );

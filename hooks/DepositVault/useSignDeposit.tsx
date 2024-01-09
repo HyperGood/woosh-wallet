@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
-import { parseEther } from 'viem';
 import { optimismSepolia } from 'viem/chains';
 
 import publicClient from '../../constants/viemPublicClient';
