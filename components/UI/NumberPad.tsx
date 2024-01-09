@@ -17,7 +17,7 @@ const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) =>
   const [cents, setCents] = useState('00');
 
   const [isDecimal, setIsDecimal] = useState(false);
-  const currency = 'ETH';
+  const currency = 'USD';
   const { tokenBalance } = useUserBalance();
 
   const onNumberPress = (number: string) => {
@@ -78,13 +78,10 @@ const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) =>
     <View>
       <View style={styles.amountWrapper}>
         <Pressable onPress={setAmountToMax}>
-          <Text style={styles.balance}>
-            You have: {currency === 'ETH' ? 'Ξ' : '$'} {tokenBalance}
-          </Text>
+          <Text style={styles.balance}>You have: ${tokenBalance}</Text>
         </Pressable>
         <Text style={styles.amount}>
-          {currency === 'ETH' ? 'Ξ' : '$'}
-          {formatAmount(amount)}.
+          ${formatAmount(amount)}.
           <Text style={styles.cents}>{cents.length < 2 ? cents.padEnd(2, '0') : cents}</Text>
         </Text>
 

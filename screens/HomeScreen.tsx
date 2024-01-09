@@ -33,19 +33,19 @@ const HomeScreen = () => {
   );
 
   return (
-    <ScrollView style={styles.wrapper}>
+    <ScrollView style={styles.wrapper} showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         <Header />
         <Balance />
         <Skeleton show={!transactions} height={120} width="100%">
           <View style={styles.buttonsContainer}>
-            <Button
+            {/* <Button
               title="Request"
               icon="arrow-down-left"
               type="secondary"
               swapIcon
               onPress={requestFunds}
-            />
+            /> */}
             <Link href="/(app)/send/selectContact" asChild>
               <Button title="Enviar" icon="send" type="primary" onPress={() => {}} />
             </Link>
@@ -63,11 +63,13 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     backgroundColor: COLORS.dark,
+    width: '100%',
   },
   container: {
     flex: 1,
     alignItems: 'center',
     paddingTop: 72,
+    width: '100%',
   },
   buttonsContainer: {
     flexDirection: 'row',

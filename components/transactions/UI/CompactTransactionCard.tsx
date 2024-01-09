@@ -8,7 +8,7 @@ interface TranscationCardProps {
   user: string;
   userImage?: any;
   description?: string;
-  date: string;
+  date: Date;
   sender?: string;
 }
 const TransactionCard: React.FC<TranscationCardProps> = ({
@@ -20,17 +20,32 @@ const TransactionCard: React.FC<TranscationCardProps> = ({
   date,
 }) => {
   const { address } = useAccount();
+
+  console.log(date.toLocaleDateString());
+  const formattedTime = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+  }).format(date);
+  console.log(formattedTime);
   return (
     <View style={styles.container}>
       <View>
         <View style={styles.userContainer}>
           {userImage && <Image source={userImage} style={styles.userImage} />}
-          <Text style={styles.user}>{user}</Text>
+          <Text style={styles.user}>
+            {sender !== address ? 'From' : 'To'}: {user}
+          </Text>
         </View>
-        <Text style={styles.description}>{description}</Text>
+        {description && <Text style={styles.description}>Note: {description}</Text>}
+        <Text style={styles.time}>{formattedTime}</Text>
       </View>
+
       <Text style={[styles.amount, sender !== address && styles.positive]}>
-        {sender === address && '-'}${amount}
+        {sender === address ? '-' : '+'}$
+        {Number(amount).toLocaleString('us', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 5,
+        })}
       </Text>
     </View>
   );
@@ -60,9 +75,8 @@ const styles = StyleSheet.create({
   },
   user: {
     fontFamily: 'Satoshi-Bold',
-    fontSize: 16,
+    fontSize: 18,
     letterSpacing: -0.02,
-    color: COLORS.gray[600],
     marginBottom: 4,
   },
   userImage: {
@@ -73,19 +87,20 @@ const styles = StyleSheet.create({
   },
   description: {
     fontFamily: 'Satoshi',
-    fontSize: 16,
+    fontSize: 14,
     letterSpacing: -0.02,
     color: COLORS.gray[600],
   },
-  date: {
-    fontFamily: 'Satoshi-Bold',
+
+  positive: {
+    color: COLORS.primary[600],
+  },
+  time: {
+    fontFamily: 'Satoshi',
     fontSize: 14,
     letterSpacing: -0.02,
     color: COLORS.gray[600],
     opacity: 0.4,
-    marginTop: 16,
-  },
-  positive: {
-    color: COLORS.primary[600],
+    marginTop: 8,
   },
 });

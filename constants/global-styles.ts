@@ -7,7 +7,7 @@ export const COLORS = {
   },
   primary: {
     100: '#E5F7F1',
-    200: '#C1EFE0',
+    200: '#B4F9AE',
     400: '#28EB17',
     600: '#00B935',
     800: '#1C7D2F',

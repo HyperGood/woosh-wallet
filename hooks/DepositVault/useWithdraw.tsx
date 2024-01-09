@@ -7,7 +7,6 @@ import { depositVaultAbi, contractAddress, Addresses } from '../../references/de
 import { useAccount } from '../../store/SmartAccountContext';
 
 export const useWithdraw = () => {
-  const [withdrawHash, setWithdrawHash] = useState<string | null>(null);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [withdrawError, setWithdrawError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
@@ -15,8 +14,13 @@ export const useWithdraw = () => {
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
 
-  const withdraw = async (depositIndex: number, secret: `0x${string}`, address: `0x${string}`) => {
+  const withdraw = async (
+    depositIndex: number,
+    secret: `0x${string}`,
+    address: `0x${string}`
+  ): Promise<string | null> => {
     setIsWithdrawing(true);
+    let withdrawHash: string | null = null;
     try {
       if (!ecdsaProvider) throw new Error('No ecdsaProvider');
       if (!isHex(secret)) throw new Error('Secret is not a hexadecimal string');
@@ -31,17 +35,15 @@ export const useWithdraw = () => {
         }),
       });
       console.log('Withdraw request: ', request);
-      console.log('Withdraw hash: ', hash);
-      setWithdrawHash(hash);
-      Alert.alert('Transaction Successful!! User Op Hash: ', hash);
-      setIsWithdrawing(false);
+      withdrawHash = hash;
     } catch (e) {
       setWithdrawError(e);
       Alert.alert('Transaction Failed!!');
     } finally {
       setIsWithdrawing(false);
     }
+    return withdrawHash;
   };
 
-  return { withdraw, withdrawHash, isWithdrawing, withdrawError };
+  return { withdraw, isWithdrawing, withdrawError };
 };

@@ -8,15 +8,17 @@ import { useAccount } from '../../../store/SmartAccountContext';
 interface TranscationCardProps {
   amount: string;
   recipientName?: string;
+  senderName?: string;
   recipientImage?: any;
   description?: string;
-  date: string;
+  date: Date;
   claimed?: boolean;
   sender?: string;
 }
 const HomeTransactionCard: React.FC<TranscationCardProps> = ({
   amount,
   recipientName,
+  senderName,
   recipientImage,
   description,
   date,
@@ -25,15 +27,37 @@ const HomeTransactionCard: React.FC<TranscationCardProps> = ({
 }) => {
   const { address } = useAccount();
 
+  const claimedTextStyles = claimed ? { opacity: 1 } : { opacity: 0.5 };
+
+  const formattedTime = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+  }).format(date);
+
   return (
     <Skeleton height={200} width={200} {...SkeletonCommonProps}>
       <View style={styles.container}>
-        <Text style={[styles.amount, sender !== address && styles.positive]}>${amount}</Text>
+        <Text style={[styles.amount, sender !== address && styles.positive]}>
+          {sender !== address ? '+' : '-'}$
+          {Number(amount).toLocaleString('us', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 5,
+          })}
+        </Text>
         {recipientImage && <Image source={recipientImage} style={styles.userImage} />}
-        <Text style={styles.recipientName}>{recipientName}</Text>
+        <Text style={styles.recipientName}>
+          {sender !== address ? `From: ${senderName}` : `To: ${recipientName}`}
+        </Text>
         <Text style={styles.description}>{description}</Text>
-        <Text style={styles.date}>{date}</Text>
-        <Text> {claimed ? 'Claimed' : 'Not Claimed'}</Text>
+        <View>
+          <Text style={styles.date}>{date.toDateString()}</Text>
+          <Text style={styles.date}>{formattedTime}</Text>
+        </View>
+        {sender === address && (
+          <Text style={[styles.claimedText, claimedTextStyles]}>
+            {claimed ? 'Claimed' : 'Not Claimed'}
+          </Text>
+        )}
       </View>
     </Skeleton>
   );
@@ -45,6 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: COLORS.gray[200],
     paddingVertical: 20,
+    width: '100%',
   },
   amount: {
     fontFamily: 'Satoshi-Bold',
@@ -79,16 +104,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: -0.02,
     color: COLORS.gray[600],
+    marginBottom: 8,
   },
   date: {
-    fontFamily: 'Satoshi-Bold',
+    fontFamily: 'Satoshi',
     fontSize: 14,
     letterSpacing: -0.02,
     color: COLORS.gray[600],
     opacity: 0.4,
-    marginTop: 16,
+    marginTop: 4,
   },
   positive: {
     color: COLORS.primary[600],
+  },
+  claimedText: {
+    color: COLORS.gray[600],
+    fontFamily: 'Satoshi-Bold',
+    fontSize: 16,
+    letterSpacing: -0.02,
+    marginTop: 16,
   },
 });

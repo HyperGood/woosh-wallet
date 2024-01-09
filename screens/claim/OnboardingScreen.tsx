@@ -35,7 +35,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const { authenticate } = useSession();
   const { setEcdsaProvider } = useAccount();
-  const { withdraw, withdrawHash } = useWithdraw();
+  const { withdraw } = useWithdraw();
   const reference = storage().ref(`avatars/${name}.jpg`);
 
   const fadeOutAnim = useSharedValue(1);
@@ -126,7 +126,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
 
       console.log('Executing withdraw');
       //400 error thrown here but everything works
-      await withdraw(
+      const withdrawHash = await withdraw(
         transactionData.depositIndex,
         transactionData.signature as `0x${string}`,
         address

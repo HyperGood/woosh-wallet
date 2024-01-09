@@ -2,18 +2,24 @@ import { Link, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
-import { fetchTransactions } from '../api/firestoreService';
+import { fetchTransactionsByEthAddress } from '../api/firestoreService';
 import TransactionCard from '../components/transactions/UI/CompactTransactionCard';
 import { COLORS } from '../constants/global-styles';
 import { Transaction } from '../models/Transaction';
+import { useAccount } from '../store/SmartAccountContext';
 
 const AllTransactionsScreen = () => {
   const [transactions, setTransactions] = useState<Partial<Transaction>[]>([]);
+  const { address } = useAccount();
 
   useFocusEffect(
     useCallback(() => {
       (async () => {
-        const transactions = await fetchTransactions();
+        if (!address) {
+          console.log('No address found');
+          return;
+        }
+        const transactions = await fetchTransactionsByEthAddress(address);
         transactions?.sort((a, b) => {
           if (a.createdAt && b.createdAt) {
             return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
@@ -21,7 +27,7 @@ const AllTransactionsScreen = () => {
             return 0;
           }
         });
-        console.log(transactions);
+
         setTransactions(transactions);
       })();
     }, [])
@@ -61,8 +67,8 @@ const AllTransactionsScreen = () => {
                   amount={Number(transaction.amount)}
                   user={transaction.recipientName || ''}
                   description={transaction.description}
-                  date={transaction.createdAt.toDate().toDateString()}
-                  sender={transaction.sender}
+                  date={transaction.createdAt.toDate()}
+                  sender={transaction.senderAddress}
                 />
               ))}
             </View>

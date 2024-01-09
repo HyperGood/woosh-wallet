@@ -5,6 +5,7 @@ export interface Transaction {
   token: string;
   depositIndex: number;
   sender: string;
+  senderAddress: string;
   recipientName?: string;
   recipientPhone?: string;
   amountInUSD: number;

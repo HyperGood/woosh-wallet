@@ -18,8 +18,9 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
       </View>
     );
   }
-  const leftTransactions = transactions.filter((_: any, index: number) => index % 2 === 0);
-  const rightTransactions = transactions.filter((_: any, index: number) => index % 2 !== 0);
+  const slicedTransactions = transactions.slice(0, 4);
+  const leftTransactions = slicedTransactions.filter((_: any, index: number) => index % 2 === 0);
+  const rightTransactions = slicedTransactions.filter((_: any, index: number) => index % 2 !== 0);
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
@@ -37,9 +38,10 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                     amount={transaction.amount || '0'}
                     recipientName={transaction.recipientName}
                     description={transaction.description}
-                    date={transaction.createdAt.toDate().toDateString()}
+                    date={transaction.createdAt.toDate()}
                     claimed={Boolean(transaction.claimedAt)}
-                    sender={transaction.sender}
+                    sender={transaction.senderAddress}
+                    senderName={transaction.sender}
                   />
                 </Link>
               ) : (
@@ -56,9 +58,10 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                   amount={transaction.amount || '0'}
                   recipientName={transaction.recipientName}
                   description={transaction.description}
-                  date={transaction.createdAt.toDate().toDateString()}
-                  claimed={transaction.claimed}
-                  sender={transaction.sender}
+                  date={transaction.createdAt.toDate()}
+                  claimed={Boolean(transaction.claimedAt)}
+                  sender={transaction.senderAddress}
+                  senderName={transaction.sender}
                 />
               </Link>
             </View>
@@ -115,6 +118,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
+    gap: 16,
   },
   cardsLeft: {
     gap: 32,

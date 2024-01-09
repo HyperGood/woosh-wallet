@@ -43,7 +43,6 @@ const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: Intro
           value={phoneNumber}
         />
       </View>
-
       <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>
         <Button title="Next" onPress={onButtonClick} type="primary" />
       </View>
