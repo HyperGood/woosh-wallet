@@ -6,7 +6,7 @@ import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
 import { useAccount } from '../../../store/SmartAccountContext';
 
 interface TranscationCardProps {
-  amount: number;
+  amount: string;
   recipientName?: string;
   recipientImage?: any;
   description?: string;

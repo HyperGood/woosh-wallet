@@ -2,8 +2,9 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { encodeFunctionData, parseUnits, zeroAddress } from 'viem';
+import { optimismSepolia } from 'viem/chains';
 
-import { depositVaultAbi } from '../../references/depositVault-abi';
+import { depositVaultAbi, contractAddress, Addresses } from '../../references/depositVault-abi';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useUserBalance } from '../useUserBalance';
 
@@ -13,6 +14,9 @@ export const useDeposit = () => {
   const [depositError, setDepositError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
   const { refetchBalance } = useUserBalance();
+  const chainId = optimismSepolia.id;
+  const depositVaultAddress =
+    chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
 
   const deposit = async (amount: string) => {
     setIsDepositing(true);
@@ -26,7 +30,7 @@ export const useDeposit = () => {
         }
         if (!ecdsaProvider) throw new Error('No ecdsaProvider');
         const { hash } = await ecdsaProvider.sendUserOperation({
-          target: '0x835d70aa12353f3866b118F8c9b70685Db44ad4D',
+          target: depositVaultAddress,
           value: parseUnits(amount, 18),
           data: encodeFunctionData({
             abi: depositVaultAbi,

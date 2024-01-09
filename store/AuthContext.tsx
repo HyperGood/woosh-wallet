@@ -46,6 +46,7 @@ function SessionProvider({ children }: SessionProviderProps) {
             if (result.success) {
               console.log('Authentication succeeded, generating private key');
               const privateKey = generatePrivateKey();
+              console.log('Private key: ', privateKey);
               if (privateKey) {
                 await SecureStore.setItemAsync('token', privateKey);
                 setAuthToken(privateKey);

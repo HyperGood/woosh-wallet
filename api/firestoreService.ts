@@ -19,6 +19,40 @@ export const fetchTransactions = async (): Promise<Partial<Transaction>[]> => {
   }
 };
 
+export const fetchTransactionsByEthAddress = async (
+  userAddress: string
+): Promise<Partial<Transaction>[]> => {
+  try {
+    const transactionsRef = firestore().collection('transactions');
+    const recipientTransactions = await transactionsRef
+      .where('recipientAddress', '==', userAddress)
+      .orderBy('createdAt', 'desc')
+      .get();
+    const claimedTransactions = await transactionsRef
+      .where('claimedBy', '==', userAddress)
+      .orderBy('createdAt', 'desc')
+      .get();
+    const senderTransactions = await transactionsRef
+      .where('senderAddress', '==', userAddress)
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    const allTransactions = [
+      ...recipientTransactions.docs,
+      ...claimedTransactions.docs,
+      ...senderTransactions.docs,
+    ];
+
+    return allTransactions.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as Partial<Transaction>[];
+  } catch (error) {
+    console.error('Error fetching transactions: ', error);
+    return [];
+  }
+};
+
 export const fetchUserByEthAddress = async (ethAddress: string): Promise<Partial<User> | null> => {
   try {
     const user = await firestore().collection('users').where('ethAddress', '==', ethAddress).get();

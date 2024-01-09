@@ -26,7 +26,9 @@ export default function Layout() {
             owner: LocalAccountSigner.privateKeyToAccountSigner(token as `0x${string}`),
           });
           setEcdsaProvider(ecdsaProvider);
+          console.log('Zerodev Provider set');
           setAddress(await ecdsaProvider.getAddress());
+
           setLoading(false);
         } catch (e) {
           console.log(e);

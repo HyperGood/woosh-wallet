@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import TransactionCardHome from './HomeTransactionCard';
 import { COLORS } from '../../../constants/global-styles';
+import { Transaction } from '../../../models/Transaction';
 
 interface PreviousTransactionsProps {
   transactions: any;
@@ -17,10 +18,8 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
       </View>
     );
   }
-  const leftTransactions =
-    transactions[0] && transactions[2] ? [transactions[0], transactions[2]] : [transactions[0]];
-  const rightTransactions =
-    transactions[1] && transactions[3] ? [transactions[1], transactions[3]] : [transactions[1]];
+  const leftTransactions = transactions.filter((_: any, index: number) => index % 2 === 0);
+  const rightTransactions = transactions.filter((_: any, index: number) => index % 2 !== 0);
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
@@ -30,17 +29,16 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
 
       <View style={styles.cards}>
         <View style={styles.cardsLeft}>
-          {leftTransactions.map((transaction, index) => (
+          {leftTransactions.map((transaction: Partial<Transaction>, index: number) => (
             <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
               {transaction.id ? (
                 <Link href={`/claim/${transaction.id}`}>
                   <TransactionCardHome
-                    amount={transaction.amount}
+                    amount={transaction.amount || '0'}
                     recipientName={transaction.recipientName}
-                    recipientImage={transaction.userImage}
                     description={transaction.description}
                     date={transaction.createdAt.toDate().toDateString()}
-                    claimed={transaction.claimed}
+                    claimed={Boolean(transaction.claimedAt)}
                     sender={transaction.sender}
                   />
                 </Link>
@@ -51,13 +49,12 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
           ))}
         </View>
         <View style={styles.cardsRight}>
-          {rightTransactions.map((transaction, index) => (
+          {rightTransactions.map((transaction: Partial<Transaction>, index: number) => (
             <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
               <Link href={`/claim/${transaction.id}`}>
                 <TransactionCardHome
-                  amount={transaction.amount}
+                  amount={transaction.amount || '0'}
                   recipientName={transaction.recipientName}
-                  recipientImage={transaction.userImage}
                   description={transaction.description}
                   date={transaction.createdAt.toDate().toDateString()}
                   claimed={transaction.claimed}

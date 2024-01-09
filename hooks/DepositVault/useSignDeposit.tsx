@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { parseEther } from 'viem';
-import { optimismGoerli } from 'viem/chains';
+import { optimismSepolia } from 'viem/chains';
 
 import publicClient from '../../constants/viemPublicClient';
 import { Addresses, contractAddress } from '../../references/depositVault-abi';
@@ -13,7 +13,7 @@ export const useSignDeposit = () => {
   const [isSigning, setIsSigning] = useState(false);
   const [signError, setSignError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
-  const chainId = optimismGoerli.id;
+  const chainId = optimismSepolia.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
 
@@ -70,6 +70,7 @@ export const useSignDeposit = () => {
           chainId,
           verifyingContract: depositVaultAddress,
         } as const;
+        console.log('Domain: ', domain);
 
         const types = {
           Withdrawal: [
@@ -77,11 +78,14 @@ export const useSignDeposit = () => {
             { name: 'depositIndex', type: 'uint256' },
           ],
         };
+        console.log('Types: ', types);
 
         const message = {
-          amount: parseEther(depositAmount?.toString() || '0'),
+          amount: depositAmount || '0',
           depositIndex,
         } as const;
+
+        console.log('Message: ', message);
 
         const typedData = {
           domain,
@@ -89,7 +93,7 @@ export const useSignDeposit = () => {
           message,
           primaryType: 'Withdrawal',
         };
-        const signedDeposit = (await ecdsaProvider?.signTypedData(typedData)) || '';
+        const signedDeposit = (await ecdsaProvider?.signTypedDataWith6492(typedData)) || '';
         setSignature(signedDeposit);
       });
     } catch (e) {

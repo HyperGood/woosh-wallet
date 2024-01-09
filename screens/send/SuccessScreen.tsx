@@ -28,6 +28,7 @@ const SuccessScreen = () => {
       .add({
         ...transactionData,
         sender: userData.name || address,
+        senderAddress: address,
         createdAt: new Date(),
       })
       .then(() => {

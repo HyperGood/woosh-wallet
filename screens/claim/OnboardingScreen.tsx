@@ -123,11 +123,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         setIsLoading(false);
         return;
       }
-      if (!transactionData.depositIndex) {
-        console.log('No deposit index');
-        setIsLoading(false);
-        return;
-      }
+
       console.log('Executing withdraw');
       //400 error thrown here but everything works
       await withdraw(

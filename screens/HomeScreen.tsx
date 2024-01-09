@@ -1,28 +1,35 @@
 import { Link, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { fetchTransactions } from '../api/firestoreService';
+import { fetchTransactionsByEthAddress } from '../api/firestoreService';
 import Balance from '../components/Balance';
 import Button from '../components/UI/Button';
 import Header from '../components/UI/Header';
 import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
 import { COLORS } from '../constants/global-styles';
+import { useAccount } from '../store/SmartAccountContext';
 
 const HomeScreen = () => {
   const [transactions, setTransactions] = useState<any>();
-  //const [loadingTransactions, setLoadingTransactions] = useState(true);
+  const { address } = useAccount();
+
   const requestFunds = async () => {
     console.log('requesting');
   };
 
   useFocusEffect(
     useCallback(() => {
+      if (!address) {
+        console.log('No address found');
+        return;
+      }
       (async () => {
-        const transactions = await fetchTransactions();
+        const transactions = await fetchTransactionsByEthAddress(address);
+        console.log('Transactions: ', transactions);
         setTransactions(transactions);
       })();
-    }, [])
+    }, [address])
   );
 
   return (
@@ -42,7 +49,7 @@ const HomeScreen = () => {
             <Button title="Enviar" icon="send" type="primary" onPress={() => {}} />
           </Link>
         </View>
-        <PreviousTransactions transactions={transactions} />
+        {transactions && <PreviousTransactions transactions={transactions} />}
       </View>
     </ScrollView>
   );
