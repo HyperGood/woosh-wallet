@@ -38,7 +38,7 @@ const Input = ({
         placeholderTextColor={COLORS.gray[400]}
         onFocus={() => setIsActive(true)}
         onBlur={() => setIsActive(false)}
-        keyboardType={keyboardType} // Added keyboardType prop
+        keyboardType={keyboardType}
       />
       {icon ? <Feather name="search" size={24} color="black" style={styles.icon} /> : null}
     </View>

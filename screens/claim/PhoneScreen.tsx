@@ -3,7 +3,7 @@ import { Text, SafeAreaView, View, StyleSheet, Alert } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
-import Input from '../../components/UI/Input';
+import PhoneNumberInput from '../../components/UI/PhoneNumberInput';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 
@@ -14,10 +14,11 @@ interface IntroScreenProps {
 }
 
 const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: IntroScreenProps) => {
+  const [countryCode, setCountryCode] = useState('+52');
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const onButtonClick = () => {
-    if (phoneNumber === transactionData.recipientPhone) {
+    if (countryCode + phoneNumber === transactionData.recipientPhone) {
       console.log('Phone number is correct');
       nextScreenFunction();
     } else {
@@ -40,10 +41,11 @@ const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: Intro
           <Text style={styles.description}>{i18n.t('claimIntroScreenDescription')}</Text>
         </View>
 
-        <Input
-          placeholder={i18n.t('enterYourPhoneNumber')}
-          onChangeText={setPhoneNumber}
-          value={phoneNumber}
+        <PhoneNumberInput
+          onPhoneNumberChange={setPhoneNumber}
+          onCountryCodeChange={setCountryCode}
+          initialCountryCode={countryCode}
+          initialPhoneNumber={phoneNumber}
         />
       </View>
       <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>

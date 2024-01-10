@@ -21,6 +21,7 @@ import i18n from '../../constants/i18n';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
+import { Feather } from '@expo/vector-icons';
 
 interface OnboardingScreenProps {
   transactionData: any;
@@ -213,7 +214,10 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
                 {image ? (
                   <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
                 ) : (
-                  <Text>{i18n.t('uploadPhoto')}</Text>
+                  <View style={{ gap: 4, alignItems: 'center' }}>
+                    <Feather name="camera" size={24} color={COLORS.dark} />
+                    <Text>{i18n.t('uploadPhoto')}</Text>
+                  </View>
                 )}
               </Pressable>
             </View>
@@ -246,13 +250,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Satoshi-Bold',
     letterSpacing: -0.02,
     lineHeight: 52,
-    marginHorizontal: 32,
+    paddingHorizontal: 16,
     marginBottom: 16,
+    width: '100%',
   },
   imagePicker: {
     height: 250,
     aspectRatio: 1,
-    backgroundColor: COLORS.gray[600],
+    backgroundColor: COLORS.gray[400],
     borderRadius: 125,
     justifyContent: 'center',
     alignItems: 'center',

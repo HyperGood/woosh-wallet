@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import storage from '@react-native-firebase/storage';
 import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
@@ -40,19 +41,27 @@ const Header = () => {
 
   return (
     <View style={styles.container}>
-      <Skeleton show={isLoading} height={48} width={48} radius="round" {...SkeletonCommonProps}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <Skeleton show={isLoading} height={48} width={48} radius="round" {...SkeletonCommonProps}>
+          <Pressable onPress={deletePrivateKey}>
+            <Image
+              style={styles.image}
+              source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}
+            />
+          </Pressable>
+        </Skeleton>
+        <Skeleton show={isLoading} height={24} width={200} {...SkeletonCommonProps}>
+          <View>
+            <Text style={styles.username}>${username}</Text>
+          </View>
+        </Skeleton>
+      </View>
+
+      <View>
         <Pressable onPress={logout}>
-          <Image
-            style={styles.image}
-            source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}
-          />
+          <Feather name="log-out" color={COLORS.light} size={24} />
         </Pressable>
-      </Skeleton>
-      <Skeleton show={isLoading} height={24} width={200} {...SkeletonCommonProps}>
-        <View>
-          <Text style={styles.username}>${username}</Text>
-        </View>
-      </Skeleton>
+      </View>
     </View>
   );
 };
@@ -62,6 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 12,
     width: '100%',
     marginBottom: 40,

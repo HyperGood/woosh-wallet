@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
-import * as Clipboard from 'expo-clipboard';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, Share, StyleSheet, Text, View } from 'react-native';
 
+import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import DefaultTransactionCard from '../../components/transactions/UI/DefaultTransactionCard';
 import { COLORS } from '../../constants/global-styles';
@@ -18,8 +18,22 @@ const SuccessScreen = () => {
   const { address } = useAccount();
   const { userData } = useUserData();
 
+  const onShare = async () => {
+    try {
+      await Share.share({
+        message: `${i18n.t('shareMessageGreeting')} ${transactionData?.recipientName}! ${i18n.t(
+          'shareMessageText1'
+        )}${transactionData?.amount} ${i18n.t(
+          'shareMessageText2'
+        )} https://wooshapp.com/id+${signature}`,
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   useEffect(() => {
-    if (!transactionData) {
+    if (!transactionData || !signature) {
       console.log('No transaction data found');
       return;
     }
@@ -36,7 +50,7 @@ const SuccessScreen = () => {
       .then(() => {
         console.log('Transaction added!');
       });
-  }, []);
+  }, [transactionData, signature]);
 
   if (!transactionData) {
     return null;
@@ -45,10 +59,6 @@ const SuccessScreen = () => {
   const amount = Number(transactionData.amount);
   const date = new Date().toLocaleDateString();
 
-  const copyToClipboard = async () => {
-    await Clipboard.setStringAsync(signature);
-    Alert.alert('Copied to clipboard!');
-  };
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -56,23 +66,25 @@ const SuccessScreen = () => {
         style={styles.background}
         end={{ x: 0.3, y: 0.7 }}
       />
-      <Link href="/(app)">
-        <Text style={styles.description}>{i18n.t('goHome')}</Text>
-      </Link>
-      <Text style={styles.title}>{i18n.t('sent')}! 🥳</Text>
-      <Text style={styles.description}>{i18n.t('successDescription')} </Text>
-      <DefaultTransactionCard
-        amount={amount}
-        recipientName={recipientName || ''}
-        description={description}
-        date={date}
-      />
-      <Pressable onPress={copyToClipboard}>
-        <Text style={styles.description}>Secret: {signature}</Text>
-      </Pressable>
-      <View style={styles.buttonWrapper}>
-        <Button title={i18n.t('share')} type="primary" icon="share" onPress={() => {}} />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View />
+        <View style={{ alignSelf: 'flex-start', position: 'absolute', top: 100 }}>
+          <BackButton backFunction={() => router.push('/')} size={24} />
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={styles.title}>{i18n.t('sent')}! 🥳</Text>
+          <Text style={styles.description}>{i18n.t('sendSuccessDescription')} </Text>
+          <DefaultTransactionCard
+            amount={amount}
+            recipientName={recipientName || ''}
+            description={description}
+            date={date}
+          />
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Button title={i18n.t('share')} type="primary" icon="share" onPress={onShare} />
+        </View>
+      </SafeAreaView>
     </View>
   );
 };
@@ -82,7 +94,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   background: {
     position: 'absolute',
@@ -97,6 +109,12 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 24,
+    fontFamily: 'Satoshi-Bold',
+    color: COLORS.light,
+    marginBottom: 40,
+  },
+  backButton: {
+    fontSize: 16,
     fontFamily: 'Satoshi-Bold',
     color: COLORS.light,
     marginBottom: 16,

@@ -24,8 +24,11 @@ const translations = {
     sending: 'Sending',
     goHome: 'Go Home',
     sent: 'Sent',
-    successDescription: 'A claim link has been sent to',
+    sendSuccessDescription: 'Share the link with the recipient',
     share: 'Share',
+    shareMessageGreeting: 'Hey',
+    shareMessageText1: 'I sent you $',
+    shareMessageText2: 'using Woosh enter this link to download the app and claim your money: ',
     welcomeScreenTitle: 'Claim your funds!',
     welcomeScreenSubtitle: 'It only takes 30 seconds!',
     welcomeScreenDescription:
@@ -66,8 +69,12 @@ const translations = {
     sending: 'Enviando',
     goHome: 'Ir a Inicio',
     sent: 'Enviado',
-    successDescription: 'Un link de reclamo ha sido enviado a',
+    sendSuccessDescription: 'Comparte el link para que reclamen sus fondos',
     share: 'Compartir',
+    shareMessageGreeting: 'Hola',
+    shareMessageText1: 'Te envie $',
+    shareMessageText2:
+      'usando Woosh entra a este link para descargar la app y reclamar tus fondos: ',
     welcomeScreenTitle: '¡Te enviaron fondos! ',
     welcomeScreenSubtitle: '¡Solo toma 30 segundos!',
     welcomeScreenDescription:

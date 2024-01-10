@@ -1,12 +1,20 @@
-import { Feather } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
+import PhoneNumberInput from '../../components/UI/PhoneNumberInput';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useContacts } from '../../store/ContactsContext';
@@ -21,7 +29,6 @@ const SelectContactScreen = () => {
   const [searchText, setSearchText] = useState(''); // Add this line
 
   const countryCodes = ['+52', '+1']; // Array of country codes
-  const countryNames = ['🇲🇽 MX +52', '🇺🇸 US +1']; // Array of country names for display
 
   const filteredContacts = contacts?.filter((contact: any) =>
     contact.name.toLowerCase().includes(searchText.toLowerCase())
@@ -40,67 +47,19 @@ const SelectContactScreen = () => {
   const dropdownRef = useRef<ModalDropdown | null>(null);
 
   return (
-    <View style={styles.wrapper}>
+    <KeyboardAvoidingView
+      style={styles.wrapper}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <BackButton />
       <View style={{ flex: 1, justifyContent: 'space-between' }}>
         <View style={{ gap: 16 }}>
           <Text style={styles.title}>{i18n.t('sendSelectContactTitle')}</Text>
-          <View style={{ flexDirection: 'row', marginHorizontal: 16 }}>
-            <ModalDropdown
-              ref={dropdownRef}
-              options={countryNames}
-              onSelect={(index, value) => {
-                const selectedIndex = parseInt(index, 10);
-                setCountryCode(countryCodes[selectedIndex]);
-              }}
-              defaultValue={countryNames[0]}
-              style={{
-                backgroundColor: COLORS.gray[800],
-                borderRadius: 16,
-                borderWidth: 0,
-              }}
-              dropdownStyle={{
-                borderRadius: 16,
-                backgroundColor: COLORS.gray[800],
-                padding: 16,
-                borderWidth: 0,
-                marginTop: 8,
-              }}
-              dropdownTextStyle={{
-                fontSize: 18,
-                color: COLORS.light,
-                backgroundColor: COLORS.gray[800],
-              }}
-              textStyle={{
-                fontSize: 18,
-                color: COLORS.light,
-                paddingHorizontal: 8,
-                paddingVertical: 24,
-              }}
-              dropdownTextHighlightStyle={{
-                fontSize: 18,
-                color: COLORS.dark,
-                backgroundColor: COLORS.primary[400],
-                borderRadius: 16,
-              }}
-              renderRightComponent={() => (
-                <Feather
-                  name="chevron-down"
-                  color={COLORS.light}
-                  size={20}
-                  style={{ paddingRight: 8 }}
-                />
-              )}
-            />
-            <View style={{ flex: 1 }}>
-              <Input
-                placeholder={i18n.t('selectContactPlaceholder')}
-                onChangeText={setPhoneNumber}
-                value={phoneNumber}
-                keyboardType="phone-pad"
-              />
-            </View>
-          </View>
+          <PhoneNumberInput
+            onPhoneNumberChange={setPhoneNumber}
+            onCountryCodeChange={setCountryCode}
+            initialCountryCode={countryCode}
+            initialPhoneNumber={phoneNumber}
+          />
           <Input placeholder={i18n.t('enterName')} onChangeText={setRecipient} value={recipient} />
         </View>
         <View style={{ flex: 1, marginTop: 16 }}>
@@ -200,7 +159,7 @@ const SelectContactScreen = () => {
           </Link>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 export default SelectContactScreen;
@@ -244,7 +203,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 32,
   },
   buttonWrapper: {
-    marginTop: 24,
+    marginBottom: 24,
     flexDirection: 'row',
     marginHorizontal: 12,
   },

@@ -1,15 +1,15 @@
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
-import i18n from '../../constants/i18n';
 
 interface BackButtonProps {
   backFunction?: () => void;
+  size?: number;
 }
 
-const BackButton = ({ backFunction }: BackButtonProps) => {
+const BackButton = ({ backFunction, size = 24 }: BackButtonProps) => {
   function goBack() {
     if (backFunction) {
       backFunction();
@@ -19,7 +19,7 @@ const BackButton = ({ backFunction }: BackButtonProps) => {
   }
   return (
     <Pressable style={styles.container} onPress={goBack}>
-      <Feather name="corner-up-left" size={16} color={COLORS.light} />
+      <Feather name="corner-up-left" size={size} color={COLORS.light} />
     </Pressable>
   );
 };

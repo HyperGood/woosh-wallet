@@ -27,6 +27,17 @@ const Button: React.FC<ButtonProps> = ({
       style={[
         styles.buttonContainer,
         type === 'primary' && styles.primaryButton,
+        !disabled &&
+          type === 'primary' && {
+            elevation: 8,
+            shadowColor: '#09EE49',
+            shadowOpacity: 0.3,
+            shadowRadius: 20,
+            shadowOffset: {
+              width: 0,
+              height: 5,
+            },
+          },
         swapIcon && styles.swapIcon,
         type === 'secondary' && styles.secondaryButton,
         disabled && { backgroundColor: COLORS.gray[600] },
@@ -61,14 +72,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   primaryButton: {
-    elevation: 8,
-    shadowColor: '#09EE49',
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
     backgroundColor: COLORS.primary[400],
   },
   secondaryButton: {
