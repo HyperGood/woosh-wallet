@@ -11,9 +11,17 @@ interface InputProps {
   value: string;
   theme?: 'light' | 'dark';
   icon?: boolean;
+  keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad'; // Added keyboardType prop
 }
 
-const Input = ({ placeholder, onChangeText, value, theme = 'dark', icon }: InputProps) => {
+const Input = ({
+  placeholder,
+  onChangeText,
+  value,
+  theme = 'dark',
+  icon,
+  keyboardType = 'default',
+}: InputProps) => {
   const [isActive, setIsActive] = useState(false);
   const inputStyle = [
     theme === 'light' ? styles.lightInput : styles.darkInput,
@@ -30,6 +38,7 @@ const Input = ({ placeholder, onChangeText, value, theme = 'dark', icon }: Input
         placeholderTextColor={COLORS.gray[400]}
         onFocus={() => setIsActive(true)}
         onBlur={() => setIsActive(false)}
+        keyboardType={keyboardType} // Added keyboardType prop
       />
       {icon ? <Feather name="search" size={24} color="black" style={styles.icon} /> : null}
     </View>
@@ -39,7 +48,6 @@ const Input = ({ placeholder, onChangeText, value, theme = 'dark', icon }: Input
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
-
     width: '100%',
     position: 'relative',
   },

@@ -1,45 +1,106 @@
-import { Link } from 'expo-router';
-import { useState } from 'react';
+import { Feather } from '@expo/vector-icons';
+import { Link, router } from 'expo-router';
+import { useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
 import { useContacts } from '../../store/ContactsContext';
 import { useTransaction } from '../../store/TransactionContext';
-import i18n from '../../constants/i18n';
 
 const SelectContactScreen = () => {
   const { setTransactionData } = useTransaction();
   const { contacts, getContacts } = useContacts();
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [countryCode, setCountryCode] = useState('+52'); // default to US
   const [recipient, setRecipient] = useState('');
   const [searchText, setSearchText] = useState(''); // Add this line
+
+  const countryCodes = ['+52', '+1']; // Array of country codes
+  const countryNames = ['🇲🇽 MX +52', '🇺🇸 US +1']; // Array of country names for display
 
   const filteredContacts = contacts?.filter((contact: any) =>
     contact.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const handleNext = (phoneNumber: string, recipient: string) => {
+  const handleNext = (phoneNumber: string, recipient: string, countryCode: string) => {
     setTransactionData({
-      recipientPhone: phoneNumber,
+      recipientPhone: (countryCode + phoneNumber).replace(/\s/g, ''),
       recipientName: recipient,
       amount: '0',
       token: 'ETH',
     });
+    router.push('/(app)/send/enterAmount');
   };
+
+  const dropdownRef = useRef<ModalDropdown | null>(null);
+
   return (
     <View style={styles.wrapper}>
       <BackButton />
       <View style={{ flex: 1, justifyContent: 'space-between' }}>
         <View style={{ gap: 16 }}>
           <Text style={styles.title}>{i18n.t('sendSelectContactTitle')}</Text>
-          <Input
-            placeholder={i18n.t('selectContactPlaceholder')}
-            onChangeText={setPhoneNumber}
-            value={phoneNumber}
-          />
+          <View style={{ flexDirection: 'row', marginHorizontal: 16 }}>
+            <ModalDropdown
+              ref={dropdownRef}
+              options={countryNames}
+              onSelect={(index, value) => {
+                const selectedIndex = parseInt(index, 10);
+                setCountryCode(countryCodes[selectedIndex]);
+              }}
+              defaultValue={countryNames[0]}
+              style={{
+                backgroundColor: COLORS.gray[800],
+                borderRadius: 16,
+                borderWidth: 0,
+              }}
+              dropdownStyle={{
+                borderRadius: 16,
+                backgroundColor: COLORS.gray[800],
+                padding: 16,
+                borderWidth: 0,
+                marginTop: 8,
+              }}
+              dropdownTextStyle={{
+                fontSize: 18,
+                color: COLORS.light,
+                backgroundColor: COLORS.gray[800],
+              }}
+              textStyle={{
+                fontSize: 18,
+                color: COLORS.light,
+                paddingHorizontal: 8,
+                paddingVertical: 24,
+              }}
+              dropdownTextHighlightStyle={{
+                fontSize: 18,
+                color: COLORS.dark,
+                backgroundColor: COLORS.primary[400],
+                borderRadius: 16,
+              }}
+              renderRightComponent={() => (
+                <Feather
+                  name="chevron-down"
+                  color={COLORS.light}
+                  size={20}
+                  style={{ paddingRight: 8 }}
+                />
+              )}
+            />
+            <View style={{ flex: 1 }}>
+              <Input
+                placeholder={i18n.t('selectContactPlaceholder')}
+                onChangeText={setPhoneNumber}
+                value={phoneNumber}
+                keyboardType="phone-pad"
+              />
+            </View>
+          </View>
           <Input placeholder={i18n.t('enterName')} onChangeText={setRecipient} value={recipient} />
         </View>
         <View style={{ flex: 1, marginTop: 16 }}>
@@ -78,19 +139,28 @@ const SelectContactScreen = () => {
                 contentContainerStyle={{ paddingBottom: 40 }}
                 ListEmptyComponent={<Text>No contacts found</Text>}
                 renderItem={({ item }) => (
-                  <Link href="/(app)/send/enterAmount" asChild>
-                    <Pressable
-                      onPress={() => {
-                        const selectedPhoneNumber = item.phoneNumbers[0].number;
-                        const selectedRecipient = item.name;
-                        setPhoneNumber(selectedPhoneNumber);
-                        setRecipient(selectedRecipient);
-                        handleNext(selectedPhoneNumber, selectedRecipient);
-                      }}
-                      style={styles.contact}>
-                      <Text style={styles.contactName}>{item.name}</Text>
-                    </Pressable>
-                  </Link>
+                  <Pressable
+                    onPress={() => {
+                      const selectedPhoneNumber = item.phoneNumbers[0].number;
+                      const selectedRecipient = item.name;
+                      const match = selectedPhoneNumber.match(/^\+\d{1,3}/);
+                      const newCountryCode = match ? match[0] : '+52';
+                      const phoneNumberWithoutCountryCode = selectedPhoneNumber.replace(
+                        /^\+\d{1,3}/,
+                        ''
+                      );
+                      setCountryCode(newCountryCode);
+                      setPhoneNumber(phoneNumberWithoutCountryCode);
+                      setRecipient(selectedRecipient);
+                      const selectedIndex = countryCodes.indexOf(newCountryCode);
+                      if (selectedIndex !== -1 && dropdownRef.current) {
+                        dropdownRef.current.select(selectedIndex);
+                      }
+                      handleNext(phoneNumberWithoutCountryCode, selectedRecipient, newCountryCode);
+                    }}
+                    style={styles.contact}>
+                    <Text style={styles.contactName}>{item.name}</Text>
+                  </Pressable>
                 )}
               />
             </View>
@@ -124,7 +194,7 @@ const SelectContactScreen = () => {
             <Button
               title="Next"
               type="primary"
-              onPress={() => handleNext(phoneNumber, recipient)}
+              onPress={() => handleNext(phoneNumber, recipient, countryCode)}
             />
           </Link>
         </View>
