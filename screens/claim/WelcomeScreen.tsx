@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { Skeleton } from 'moti/skeleton';
 import { Text, SafeAreaView, View, StyleSheet } from 'react-native';
 
@@ -5,7 +6,7 @@ import Button from '../../components/UI/Button';
 import DefaultTransactionCard from '../../components/transactions/UI/DefaultTransactionCard';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import { useSession } from '../../store/AuthContext';
-import { router } from 'expo-router';
+import i18n from '../../constants/i18n';
 
 interface WelcomeScreenProps {
   transactionData: any;
@@ -46,18 +47,15 @@ const WelcomeScreen = ({
           <>
             <View style={styles.textContainer}>
               <Skeleton {...SkeletonCommonProps}>
-                <Text style={styles.title}>Claim your funds! 🥳</Text>
+                <Text style={styles.title}>{i18n.t('welcomeScreenTitle')} 🥳</Text>
               </Skeleton>
               <Skeleton {...SkeletonCommonProps}>
                 <Text style={[styles.description, { fontFamily: 'Satoshi-Bold' }]}>
-                  It only takes 30 seconds!
+                  {i18n.t('welcomeScreenSubtitle')}
                 </Text>
               </Skeleton>
               <Skeleton {...SkeletonCommonProps}>
-                <Text style={styles.description}>
-                  With Woosh you can send money instantly. Split bills with friends effortlessly,
-                  even if they're not on Woosh.
-                </Text>
+                <Text style={styles.description}>{i18n.t('welcomeScreenDescription')}</Text>
               </Skeleton>
             </View>
             <View style={{ transform: [{ rotate: '1deg' }] }}>
@@ -76,7 +74,7 @@ const WelcomeScreen = ({
         )}
         {!loadingTransactionData && !transactionData?.claimedBy && (
           <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>
-            <Button title="Get Started" onPress={nextScreenFunction} type="primary" />
+            <Button title={i18n.t('getStarted')} onPress={nextScreenFunction} type="primary" />
           </View>
         )}
       </SafeAreaView>
@@ -103,6 +101,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.02,
     lineHeight: 52,
     maxWidth: 300,
+    textTransform: 'capitalize',
   },
   textContainer: {
     marginHorizontal: 16,

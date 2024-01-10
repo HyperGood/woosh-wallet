@@ -10,4 +10,6 @@ const config = getDefaultConfig(__dirname, {
 
 config.resolver.extraNodeModules = require('node-libs-react-native');
 
+config.resolver.sourceExts.push('mjs', 'cjs');
+
 module.exports = config;

@@ -8,6 +8,7 @@ import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
 import { useContacts } from '../../store/ContactsContext';
 import { useTransaction } from '../../store/TransactionContext';
+import i18n from '../../constants/i18n';
 
 const SelectContactScreen = () => {
   const { setTransactionData } = useTransaction();
@@ -33,19 +34,19 @@ const SelectContactScreen = () => {
       <BackButton />
       <View style={{ flex: 1, justifyContent: 'space-between' }}>
         <View style={{ gap: 16 }}>
-          <Text style={styles.title}>A quien le enviaras?</Text>
+          <Text style={styles.title}>{i18n.t('sendSelectContactTitle')}</Text>
           <Input
-            placeholder="Enter a phone number"
+            placeholder={i18n.t('selectContactPlaceholder')}
             onChangeText={setPhoneNumber}
             value={phoneNumber}
           />
-          <Input placeholder="Enter a name" onChangeText={setRecipient} value={recipient} />
+          <Input placeholder={i18n.t('enterName')} onChangeText={setRecipient} value={recipient} />
         </View>
         <View style={{ flex: 1, marginTop: 16 }}>
           {contacts ? (
             <View style={{ flex: 1 }}>
               <Input
-                placeholder="Search contacts"
+                placeholder={i18n.t('searchContacts')}
                 onChangeText={setSearchText}
                 value={searchText}
                 theme="light"
@@ -94,9 +95,28 @@ const SelectContactScreen = () => {
               />
             </View>
           ) : (
-            <Pressable onPress={getContacts}>
-              <Text style={{ color: COLORS.light }}>Select from contacts</Text>
-            </Pressable>
+            <View style={{ flexDirection: 'row' }}>
+              <Pressable
+                style={{
+                  flex: 1,
+                  padding: 32,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: COLORS.light,
+                  borderRadius: 16,
+                }}
+                onPress={getContacts}>
+                <Text
+                  style={{
+                    color: COLORS.dark,
+                    fontFamily: 'Satoshi-Bold',
+                    fontSize: 16,
+                    textDecorationLine: 'underline',
+                  }}>
+                  {i18n.t('getContacts')}
+                </Text>
+              </Pressable>
+            </View>
           )}
         </View>
         <View style={styles.buttonWrapper}>

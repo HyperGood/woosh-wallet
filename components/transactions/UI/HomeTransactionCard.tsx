@@ -4,6 +4,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
 import { useAccount } from '../../../store/SmartAccountContext';
+import i18n from '../../../constants/i18n';
 
 interface TranscationCardProps {
   amount: string;
@@ -46,7 +47,9 @@ const HomeTransactionCard: React.FC<TranscationCardProps> = ({
         </Text>
         {recipientImage && <Image source={recipientImage} style={styles.userImage} />}
         <Text style={styles.recipientName}>
-          {sender !== address ? `From: ${senderName}` : `To: ${recipientName}`}
+          {sender !== address
+            ? `${i18n.t('from')}: ${senderName}`
+            : `${i18n.t('to')}: ${recipientName}`}
         </Text>
         <Text style={styles.description}>{description}</Text>
         <View>
@@ -55,7 +58,7 @@ const HomeTransactionCard: React.FC<TranscationCardProps> = ({
         </View>
         {sender === address && (
           <Text style={[styles.claimedText, claimedTextStyles]}>
-            {claimed ? 'Claimed' : 'Not Claimed'}
+            {claimed ? i18n.t('claimed') : i18n.t('unclaimed')}
           </Text>
         )}
       </View>

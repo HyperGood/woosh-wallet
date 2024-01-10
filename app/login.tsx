@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/UI/Button';
 import { COLORS } from '../constants/global-styles';
+import i18n from '../constants/i18n';
 import { useSession } from '../store/AuthContext';
 
 export default function Page() {
@@ -26,10 +27,10 @@ export default function Page() {
 
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.title}>La manera mas facil de pagarle a tus amigos</Text>
+      <Text style={styles.title}>{i18n.t('loginTitle')}</Text>
       <View style={styles.buttonContainer}>
         <Button
-          title="Iniciar sesion"
+          title={i18n.t('loginButton')}
           onPress={async () => {
             try {
               await authenticate();

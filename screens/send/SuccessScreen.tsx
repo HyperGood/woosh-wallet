@@ -11,6 +11,7 @@ import { COLORS } from '../../constants/global-styles';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
 import { useUserData } from '../../store/UserDataContext';
+import i18n from '../../constants/i18n';
 
 const SuccessScreen = () => {
   const { transactionData, signature } = useTransaction();
@@ -56,10 +57,10 @@ const SuccessScreen = () => {
         end={{ x: 0.3, y: 0.7 }}
       />
       <Link href="/(app)">
-        <Text style={styles.description}>Go home</Text>
+        <Text style={styles.description}>{i18n.t('goHome')}</Text>
       </Link>
-      <Text style={styles.title}>Sent! 🥳</Text>
-      <Text style={styles.description}>A claim link has been sent to </Text>
+      <Text style={styles.title}>{i18n.t('sent')}! 🥳</Text>
+      <Text style={styles.description}>{i18n.t('successDescription')} </Text>
       <DefaultTransactionCard
         amount={amount}
         recipientName={recipientName || ''}
@@ -70,7 +71,7 @@ const SuccessScreen = () => {
         <Text style={styles.description}>Secret: {signature}</Text>
       </Pressable>
       <View style={styles.buttonWrapper}>
-        <Button title="Share" type="primary" icon="share" onPress={() => {}} />
+        <Button title={i18n.t('share')} type="primary" icon="share" onPress={() => {}} />
       </View>
     </View>
   );

@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 import Input from './Input';
 import { COLORS } from '../../constants/global-styles';
 import { useUserBalance } from '../../hooks/useUserBalance';
+import i18n from '../../constants/i18n';
 
 interface NumberPadProps {
   onChange: (amount: string) => void;
@@ -78,7 +79,9 @@ const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) =>
     <View>
       <View style={styles.amountWrapper}>
         <Pressable onPress={setAmountToMax}>
-          <Text style={styles.balance}>You have: ${tokenBalance}</Text>
+          <Text style={styles.balance}>
+            {i18n.t('youHave')} ${tokenBalance}
+          </Text>
         </Pressable>
         <Text style={styles.amount}>
           ${formatAmount(amount)}.
@@ -90,7 +93,7 @@ const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) =>
         </View>
       </View>
       <Input
-        placeholder="Add a note or concept"
+        placeholder={i18n.t('noteInputPlaceholder')}
         value={description}
         onChangeText={setDescription}
       />

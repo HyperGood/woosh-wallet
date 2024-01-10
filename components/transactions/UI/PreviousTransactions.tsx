@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import TransactionCardHome from './HomeTransactionCard';
 import { COLORS } from '../../../constants/global-styles';
 import { Transaction } from '../../../models/Transaction';
+import i18n from '../../../constants/i18n';
 
 interface PreviousTransactionsProps {
   transactions: any;
@@ -24,8 +25,8 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
-        <Text style={styles.title}>Mis</Text>
-        <Text style={styles.title}>Transacciones</Text>
+        <Text style={styles.title}>{i18n.t('previousTransactionTitle1')}</Text>
+        <Text style={styles.title}>{i18n.t('previousTransactionTitle2')}</Text>
       </View>
 
       <View style={styles.cards}>
@@ -71,7 +72,7 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
 
       <Link href="/(app)/transactions" asChild>
         <Pressable style={styles.viewAllButton}>
-          <Text style={styles.viewAllText}>Ver Todas Mis Transacciones</Text>
+          <Text style={styles.viewAllText}>{i18n.t('viewAllTransactions')}</Text>
           <Feather name="arrow-up-right" size={16} color={COLORS.dark} />
         </Pressable>
       </Link>

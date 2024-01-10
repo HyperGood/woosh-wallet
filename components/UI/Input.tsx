@@ -27,7 +27,7 @@ const Input = ({ placeholder, onChangeText, value, theme = 'dark', icon }: Input
         placeholder={placeholder}
         onChangeText={onChangeText}
         value={value}
-        placeholderTextColor={COLORS.gray[600]}
+        placeholderTextColor={COLORS.gray[400]}
         onFocus={() => setIsActive(true)}
         onBlur={() => setIsActive(false)}
       />

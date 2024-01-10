@@ -2,6 +2,7 @@ import { Skeleton } from 'moti/skeleton';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
+import i18n from '../../../constants/i18n';
 import { useAccount } from '../../../store/SmartAccountContext';
 
 interface TranscationCardProps {
@@ -30,11 +31,13 @@ const DefaultTransactionCard: React.FC<TranscationCardProps> = ({
           <View style={styles.tag}>
             <Text style={styles.date}>{date}</Text>
           </View>
-          <Text style={[styles.amount, sender !== address && styles.positive]}>${amount}</Text>
+          <Text style={[styles.amount, sender !== address && styles.positive]}>
+            ${amount.toLocaleString('us', { maximumFractionDigits: 5, minimumFractionDigits: 2 })}
+          </Text>
         </View>
         <View style={{ alignItems: 'flex-start', gap: 4 }}>
           <View style={styles.tag}>
-            <Text style={{ opacity: 0.6 }}>{recipientName ? 'To' : 'From'}</Text>
+            <Text style={{ opacity: 0.6 }}>{recipientName ? i18n.t('to') : i18n.t('from')}</Text>
           </View>
           <View>
             {profilePicture && <Image source={profilePicture} style={styles.userImage} />}

@@ -6,6 +6,7 @@ import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import NumberPad from '../../components/UI/NumberPad';
 import { COLORS } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
 import { useDeposit } from '../../hooks/DepositVault/useDeposit';
 import { useSignDeposit } from '../../hooks/DepositVault/useSignDeposit';
 import { useUserBalance } from '../../hooks/useUserBalance';
@@ -48,14 +49,14 @@ const EnterAmountScreen = () => {
       <View style={styles.wrapper}>
         <BackButton />
         <View>
-          <Text style={styles.title}>Sending To</Text>
+          <Text style={styles.title}>{i18n.t('sendingTo')}</Text>
           <View style={styles.recipient}>
             {/* <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} /> */}
             <Text style={styles.recipientName}>{transactionData?.recipientName}</Text>
             <Text style={styles.recipientPhone}>{transactionData?.recipientPhone}</Text>
           </View>
           {isDepositing && !depositError ? (
-            <Text style={{ color: 'white' }}>Sending...</Text>
+            <Text style={{ color: 'white' }}>{i18n.t('sending')}...</Text>
           ) : (
             <>
               <NumberPad
@@ -65,7 +66,7 @@ const EnterAmountScreen = () => {
               />
               <View style={styles.buttonWrapper}>
                 <Button
-                  title="Send"
+                  title={i18n.t('send')}
                   type="primary"
                   onPress={() => {
                     deposit(amount);
@@ -95,6 +96,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
     marginTop: 8,
+    textTransform: 'capitalize',
   },
   recipient: {
     marginHorizontal: 16,

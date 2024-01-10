@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
 
 interface BackButtonProps {
   backFunction?: () => void;
@@ -19,7 +20,6 @@ const BackButton = ({ backFunction }: BackButtonProps) => {
   return (
     <Pressable style={styles.container} onPress={goBack}>
       <Feather name="corner-up-left" size={16} color={COLORS.light} />
-      <Text style={styles.text}>Back</Text>
     </Pressable>
   );
 };

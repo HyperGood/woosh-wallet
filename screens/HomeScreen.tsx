@@ -9,15 +9,16 @@ import Button from '../components/UI/Button';
 import Header from '../components/UI/Header';
 import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
 import { COLORS } from '../constants/global-styles';
+import i18n from '../constants/i18n';
 import { useAccount } from '../store/SmartAccountContext';
 
 const HomeScreen = () => {
   const [transactions, setTransactions] = useState<any>();
   const { address } = useAccount();
 
-  const requestFunds = async () => {
-    console.log('requesting funds');
-  };
+  // const requestFunds = async () => {
+  //   console.log('requesting funds');
+  // };
 
   useFocusEffect(
     useCallback(() => {
@@ -47,7 +48,7 @@ const HomeScreen = () => {
               onPress={requestFunds}
             /> */}
             <Link href="/(app)/send/selectContact" asChild>
-              <Button title="Enviar" icon="send" type="primary" onPress={() => {}} />
+              <Button title={i18n.t('send')} icon="send" type="primary" onPress={() => {}} />
             </Link>
           </View>
         </Skeleton>
