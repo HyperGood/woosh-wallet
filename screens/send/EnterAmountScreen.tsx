@@ -72,6 +72,7 @@ const EnterAmountScreen = () => {
                     deposit(amount);
                     setDescription('');
                   }}
+                  disabled={amount === '0'}
                 />
               </View>
             </>

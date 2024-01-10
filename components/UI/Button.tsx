@@ -9,17 +9,27 @@ interface ButtonProps {
   type?: 'primary' | 'secondary';
   icon?: string;
   swapIcon?: boolean;
+  disabled?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ onPress, title, type, icon, swapIcon = false }) => {
+const Button: React.FC<ButtonProps> = ({
+  onPress,
+  title,
+  type,
+  icon,
+  swapIcon = false,
+  disabled,
+}) => {
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       style={[
         styles.buttonContainer,
         type === 'primary' && styles.primaryButton,
         swapIcon && styles.swapIcon,
         type === 'secondary' && styles.secondaryButton,
+        disabled && { backgroundColor: COLORS.gray[600] },
       ]}>
       <Text style={styles.buttonText}>{title}</Text>
       {icon && <Feather name={icon as any} size={20} color={COLORS.dark} />}

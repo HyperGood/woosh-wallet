@@ -47,7 +47,12 @@ const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: Intro
         />
       </View>
       <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>
-        <Button title={i18n.t('next')} onPress={onButtonClick} type="primary" />
+        <Button
+          title={i18n.t('next')}
+          onPress={onButtonClick}
+          type="primary"
+          disabled={!phoneNumber}
+        />
       </View>
     </SafeAreaView>
   );

@@ -178,27 +178,6 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View
-        style={[
-          { width: '100%', marginTop: 64, gap: 16, alignItems: 'center' },
-          fadeOutAnimatedStyle,
-        ]}>
-        <Text style={styles.title}>{i18n.t('onboardingTitle')}</Text>
-        <Input placeholder="Enter your name" onChangeText={setName} value={name} />
-        <Input placeholder="Enter your username" onChangeText={setUsername} value={username} />
-        <View style={{ width: '100%', padding: 16, gap: 16, alignItems: 'center' }}>
-          <Text style={{ color: COLORS.light, fontSize: 24, fontFamily: 'Satoshi-Bold' }}>
-            {i18n.t('setProfilePicture')}
-          </Text>
-          <Pressable style={styles.imagePicker} onPress={pickImage}>
-            {image ? (
-              <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
-            ) : (
-              <Text>{i18n.t('uploadPhoto')}</Text>
-            )}
-          </Pressable>
-        </View>
-      </Animated.View>
       {isLoading ? (
         <Animated.View
           style={[
@@ -217,9 +196,38 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
           </View>
         </Animated.View>
       ) : (
-        <View style={{ flexDirection: 'row' }}>
-          <Button title={i18n.t('createAccountAndClaim')} onPress={onButtonClick} type="primary" />
-        </View>
+        <>
+          <Animated.View
+            style={[
+              { width: '100%', marginTop: 64, gap: 16, alignItems: 'center' },
+              fadeOutAnimatedStyle,
+            ]}>
+            <Text style={styles.title}>{i18n.t('onboardingTitle')}</Text>
+            <Input placeholder="Enter your name" onChangeText={setName} value={name} />
+            <Input placeholder="Enter your username" onChangeText={setUsername} value={username} />
+            <View style={{ width: '100%', padding: 16, gap: 16, alignItems: 'center' }}>
+              <Text style={{ color: COLORS.light, fontSize: 24, fontFamily: 'Satoshi-Bold' }}>
+                {i18n.t('setProfilePicture')}
+              </Text>
+              <Pressable style={styles.imagePicker} onPress={pickImage}>
+                {image ? (
+                  <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
+                ) : (
+                  <Text>{i18n.t('uploadPhoto')}</Text>
+                )}
+              </Pressable>
+            </View>
+          </Animated.View>
+
+          <View style={{ flexDirection: 'row' }}>
+            <Button
+              title={i18n.t('createAccountAndClaim')}
+              onPress={onButtonClick}
+              type="primary"
+              disabled={!name || !username || !image}
+            />
+          </View>
+        </>
       )}
     </SafeAreaView>
   );

@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
-import IntroScreen from '../../screens/claim/IntroScreen';
 import OnboardingScreen from '../../screens/claim/OnboardingScreen';
+import PhoneScreen from '../../screens/claim/PhoneScreen';
 import WelcomeScreen from '../../screens/claim/WelcomeScreen';
 
 export default function Page() {
@@ -50,7 +50,7 @@ export default function Page() {
   if (activeScreen === 'intro') {
     return (
       <View style={styles.wrapper}>
-        <IntroScreen
+        <PhoneScreen
           backFuncion={goToWelcome}
           transactionData={transactionData}
           nextScreenFunction={goToOnboarding}

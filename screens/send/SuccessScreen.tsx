@@ -8,10 +8,10 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/UI/Button';
 import DefaultTransactionCard from '../../components/transactions/UI/DefaultTransactionCard';
 import { COLORS } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
 import { useUserData } from '../../store/UserDataContext';
-import i18n from '../../constants/i18n';
 
 const SuccessScreen = () => {
   const { transactionData, signature } = useTransaction();
