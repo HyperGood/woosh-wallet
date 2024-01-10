@@ -5,8 +5,8 @@ import { Text, SafeAreaView, View, StyleSheet } from 'react-native';
 import Button from '../../components/UI/Button';
 import DefaultTransactionCard from '../../components/transactions/UI/DefaultTransactionCard';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
-import { useSession } from '../../store/AuthContext';
 import i18n from '../../constants/i18n';
+import { useSession } from '../../store/AuthContext';
 
 interface WelcomeScreenProps {
   transactionData: any;
@@ -35,12 +35,12 @@ const WelcomeScreen = ({
       <SafeAreaView style={styles.container}>
         {transactionData?.claimedBy ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 32 }}>
-            <Text style={styles.title}>Funds already claimed!</Text>
+            <Text style={styles.title}>{i18n.t('welcomeClaimedTitle')}</Text>
             <View style={{ flexDirection: 'row' }}>
-              <Button title="Sign In" onPress={onButtonClick} type="primary" />
+              <Button title={i18n.t('loginButton')} onPress={onButtonClick} type="primary" />
             </View>
             <View style={{ flexDirection: 'row' }}>
-              <Button title="I don't have an account" onPress={onButtonClick} />
+              <Button title={i18n.t('noAccountButton')} onPress={onButtonClick} />
             </View>
           </View>
         ) : (

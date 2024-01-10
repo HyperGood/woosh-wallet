@@ -17,6 +17,7 @@ import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import LoadingIndicator from '../../components/UI/LoadingIndicator';
 import { COLORS } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
@@ -31,7 +32,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   const [image, setImage] = useState<any>(null);
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingState, setLoadingState] = useState('Creating account...');
+  const [loadingState, setLoadingState] = useState(`${i18n.t('settingUpAccountLabel')}`);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const { authenticate } = useSession();
   const { setEcdsaProvider } = useAccount();
@@ -108,7 +109,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
     fadeInAnim.value = withDelay(500, withTiming(1, { duration: 200 })); // Start fade in
 
     setIsLoading(true);
-    setLoadingState('Claiming funds...');
+    setLoadingState(`${i18n.t('claimingFundsLabel')}`);
     try {
       //Claim the transaction
       console.log('Claiming...');
@@ -182,18 +183,18 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
           { width: '100%', marginTop: 64, gap: 16, alignItems: 'center' },
           fadeOutAnimatedStyle,
         ]}>
-        <Text style={styles.title}>Onboarding</Text>
+        <Text style={styles.title}>{i18n.t('onboardingTitle')}</Text>
         <Input placeholder="Enter your name" onChangeText={setName} value={name} />
         <Input placeholder="Enter your username" onChangeText={setUsername} value={username} />
         <View style={{ width: '100%', padding: 16, gap: 16, alignItems: 'center' }}>
           <Text style={{ color: COLORS.light, fontSize: 24, fontFamily: 'Satoshi-Bold' }}>
-            Set Your Profile picture
+            {i18n.t('setProfilePicture')}
           </Text>
           <Pressable style={styles.imagePicker} onPress={pickImage}>
             {image ? (
               <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
             ) : (
-              <Text>Upload a profile picture</Text>
+              <Text>{i18n.t('uploadPhoto')}</Text>
             )}
           </Pressable>
         </View>
@@ -217,7 +218,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         </Animated.View>
       ) : (
         <View style={{ flexDirection: 'row' }}>
-          <Button title="Next" onPress={onButtonClick} type="primary" />
+          <Button title={i18n.t('createAccountAndClaim')} onPress={onButtonClick} type="primary" />
         </View>
       )}
     </SafeAreaView>
