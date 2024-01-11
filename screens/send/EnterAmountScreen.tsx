@@ -17,6 +17,7 @@ const EnterAmountScreen = () => {
   const [amount, setAmount] = useState('0');
   const [description, setDescription] = useState('');
   const { deposit, isDepositing, depositError, depositHash } = useDeposit();
+  const [isSaving, setIsSaving] = useState(false);
   const { signDeposit } = useSignDeposit();
   const { refetchBalance } = useUserBalance();
   const { transactionData, setTransactionData } = useTransaction();
@@ -24,12 +25,12 @@ const EnterAmountScreen = () => {
   useEffect(() => {
     (async () => {
       if (depositHash && transactionData) {
+        setIsSaving(true);
         refetchBalance();
         const updatedTransactionData = await signDeposit();
         if (typeof updatedTransactionData === 'object' && updatedTransactionData !== null) {
           setTransactionData({ ...updatedTransactionData, transactionHash: depositHash });
         } else {
-          // Handle the case where updatedTransactionData is not an object
           console.log('Updated transaction is not an object: ', updatedTransactionData);
         }
         router.push('/(app)/send/success');
@@ -41,7 +42,7 @@ const EnterAmountScreen = () => {
     setTransactionData(
       transactionData
         ? { ...transactionData, amount, description }
-        : { recipientName: '', token: 'ETH', amount, description }
+        : { recipientName: '', token: 'USDc', amount, description }
     );
   }, [amount]);
 
@@ -56,7 +57,7 @@ const EnterAmountScreen = () => {
             <Text style={styles.recipientName}>{transactionData?.recipientName}</Text>
             <Text style={styles.recipientPhone}>{transactionData?.recipientPhone}</Text>
           </View>
-          {isDepositing && !depositError ? (
+          {(isDepositing || isSaving) && !depositError ? (
             <LottieView
               source={require('../../assets/animations/loading.json')}
               autoPlay

@@ -62,12 +62,12 @@ export const useUserBalance = () => {
         setTokenBalance(formattedBalance);
         if (usdcPrice) {
           setFiatBalance(formattedBalance * usdcPrice);
-          storage.set('fiatBalance', formattedBalance * usdcPrice);
+          storage.set('usdcPrice', usdcPrice);
         } else {
           // Retrieve the fiatBalance from MMKV
-          const storedFiatBalance = storage.getNumber('fiatBalance');
-          if (storedFiatBalance) {
-            setFiatBalance(storedFiatBalance);
+          const usdcPrice = storage.getNumber('usdcPrice');
+          if (usdcPrice) {
+            setFiatBalance(usdcPrice * formattedBalance);
           } else {
             throw new Error("Couldn't fetch balance and no stored balance found");
           }

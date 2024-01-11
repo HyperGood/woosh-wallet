@@ -39,7 +39,7 @@ const SelectContactScreen = () => {
       recipientPhone: (countryCode + phoneNumber).replace(/\s/g, ''),
       recipientName: recipient,
       amount: '0',
-      token: 'ETH',
+      token: 'USDc',
     });
     router.push('/(app)/send/enterAmount');
   };

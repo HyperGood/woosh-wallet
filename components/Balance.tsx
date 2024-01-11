@@ -1,12 +1,12 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { Skeleton } from 'moti/skeleton';
+import { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
 import IconButton from './UI/IconButton';
 import { COLORS } from '../constants/global-styles';
 import { useUserBalance } from '../hooks/useUserBalance';
-import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
 
 const Balance = () => {
   const token = 'USD';

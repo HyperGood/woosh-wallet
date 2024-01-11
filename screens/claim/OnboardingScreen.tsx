@@ -12,6 +12,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+import LottieView from 'lottie-react-native';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
@@ -183,12 +184,19 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
             {
               flex: 1,
               width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
             },
             fadeInAnimatedStyle,
           ]}>
-          <View style={{ flexDirection: 'row', gap: 16 }}>
-            {isLoading && <LoadingIndicator isLoading={isLoading} />}
-
+          <View style={{ alignItems: 'center', gap: 8 }}>
+            {/*It would be cool to have two progress bars one for each state */}
+            <LottieView
+              source={require('../../assets/animations/loading.json')}
+              autoPlay
+              loop
+              style={{ width: 40, height: 40 }}
+            />
             <Text style={{ color: COLORS.light, fontSize: 24, marginTop: 16 }}>
               {loadingState}...
             </Text>

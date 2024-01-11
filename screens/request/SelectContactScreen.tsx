@@ -25,7 +25,7 @@ const SelectContactScreen = () => {
       recipientPhone: phoneNumber,
       recipientName: recipient,
       amount: '0',
-      token: 'ETH',
+      token: 'USDc',
     });
   };
   return (
