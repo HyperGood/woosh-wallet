@@ -30,6 +30,7 @@ export const useDeposit = () => {
           return;
         }
         if (!ecdsaProvider) throw new Error('No ecdsaProvider');
+        console.log('Sending deposit');
         const approvalData = await ecdsaProvider.sendUserOperation({
           target: tokenAddress,
           value: 0n,
@@ -61,11 +62,11 @@ export const useDeposit = () => {
           }),
         });
         setDepositHash(depositData.hash);
-        await ecdsaProvider.waitForUserOperationTransaction(depositData.hash as Hex);
         setIsDepositing(false);
       }
     } catch (e) {
       setDepositError(e);
+      console.log(e);
       Alert.alert('Transaction Failed!!');
     } finally {
       setIsDepositing(false);

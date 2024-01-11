@@ -36,7 +36,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   const [loadingState, setLoadingState] = useState(`${i18n.t('settingUpAccountLabel')}`);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const { authenticate } = useSession();
-  const { setEcdsaProvider } = useAccount();
+  const { setEcdsaProvider, ecdsaProvider } = useAccount();
   const { withdraw } = useWithdraw();
   const reference = storage().ref(`avatars/${name}.jpg`);
 
@@ -97,8 +97,6 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
       });
       console.log('Database set');
       setAddress(address);
-      //Go to claim screen
-      //nextScreenFunction();
     } catch (error) {
       console.error('Error in onboarding screen', error);
       setIsLoading(false);
@@ -128,13 +126,12 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
       }
 
       console.log('Executing withdraw');
-      //400 error thrown here but everything works
       const withdrawHash = await withdraw(
         transactionData.depositIndex,
         transactionData.signature as `0x${string}`,
         address
       );
-      console.log('Withdraw executed! Updating database');
+      await ecdsaProvider?.waitForUserOperationTransaction(withdrawHash as `0x${string}`);
       firestore()
         .collection('transactions')
         //transaction data doesn't have the id.

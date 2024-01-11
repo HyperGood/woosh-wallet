@@ -5,10 +5,18 @@ import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import IconButton from './UI/IconButton';
 import { COLORS } from '../constants/global-styles';
 import { useUserBalance } from '../hooks/useUserBalance';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 const Balance = () => {
   const token = 'USD';
-  const { fiatBalance, tokenBalance, isFetchingBalance } = useUserBalance();
+  const { fiatBalance, tokenBalance, isFetchingBalance, refetchBalance } = useUserBalance();
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchBalance();
+    }, [])
+  );
 
   const handleButton = () => {
     console.log('hi');

@@ -11,6 +11,7 @@ import PreviousTransactions from '../components/transactions/UI/PreviousTransact
 import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
 import { useAccount } from '../store/SmartAccountContext';
+import { useUserBalance } from '../hooks/useUserBalance';
 
 const HomeScreen = () => {
   const [transactions, setTransactions] = useState<any>();

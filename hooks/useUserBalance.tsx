@@ -49,6 +49,7 @@ export const useUserBalance = () => {
   } as const;
 
   const fetchBalance = async () => {
+    setIsFetchingBalance(true);
     try {
       if (address) {
         const balance = await publicClient.readContract({
