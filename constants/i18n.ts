@@ -3,7 +3,7 @@ import { I18n } from 'i18n-js';
 
 const translations = {
   en: {
-    loginTitle: 'Your Finances, 100% under your control',
+    loginTitle: `Send crypto to anyone who doesn't have a wallet`,
     loginButton: 'Log In',
     send: 'Send',
     previousTransactionTitle1: 'My',
@@ -50,7 +50,7 @@ const translations = {
   es: {
     loginTitle: 'La manera mas facil de pagarle a tus amigos',
     loginButton: 'Iniciar Sesión',
-    send: 'Enviar',
+    send: 'Hacer Envio',
     previousTransactionTitle1: 'Mis',
     previousTransactionTitle2: 'Transacciones',
     viewAllTransactions: 'Ver Todas Mis Transacciones',

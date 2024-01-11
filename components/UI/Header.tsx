@@ -32,7 +32,7 @@ const Header = () => {
         const url = await reference.getDownloadURL();
         setImageSrc(url);
       } catch (error) {
-        console.error('Error fetching image:', error);
+        console.log('Error fetching image:', error);
       }
     };
 

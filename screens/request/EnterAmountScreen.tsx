@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
@@ -12,6 +12,7 @@ import { useUserBalance } from '../../hooks/useUserBalance';
 import { useTransaction } from '../../store/TransactionContext';
 
 const EnterAmountScreen = () => {
+  const animation = useRef(null);
   const [amount, setAmount] = useState('0');
   const [description, setDescription] = useState('');
   const { deposit, isDepositing, depositError, depositHash } = useDeposit();
@@ -39,7 +40,7 @@ const EnterAmountScreen = () => {
     setTransactionData(
       transactionData
         ? { ...transactionData, amount, description }
-        : { recipientName: '', token: 'ETH', amount, description }
+        : { recipientName: '', token: 'USDc', amount, description }
     );
   }, [amount]);
 
@@ -55,7 +56,9 @@ const EnterAmountScreen = () => {
             <Text style={styles.recipientPhone}>{transactionData?.recipientPhone}</Text>
           </View>
           {isDepositing && !depositError ? (
-            <Text style={{ color: 'white' }}>Sending...</Text>
+            <View>
+              <Text style={{ color: 'white' }}>Sending...</Text>
+            </View>
           ) : (
             <>
               <NumberPad

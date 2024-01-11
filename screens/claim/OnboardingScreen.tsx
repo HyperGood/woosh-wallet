@@ -70,6 +70,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         setIsLoading(false);
         return;
       }
+      console.log('Token: ', token);
       const ecdsaProvider = await ECDSAProvider.init({
         projectId: process.env.EXPO_PUBLIC_ZERODEV_ID || '',
         owner: LocalAccountSigner.privateKeyToAccountSigner(token as `0x${string}`),

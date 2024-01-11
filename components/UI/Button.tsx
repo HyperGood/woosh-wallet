@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import { forwardRef } from 'react';
 import { Pressable, Text, StyleSheet } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
@@ -12,14 +13,9 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  onPress,
-  title,
-  type,
-  icon,
-  swapIcon = false,
-  disabled,
-}) => {
+const Button = forwardRef((props: ButtonProps, ref) => {
+  const { onPress, title, type, icon, swapIcon = false, disabled } = props;
+
   return (
     <Pressable
       onPress={onPress}
@@ -46,7 +42,7 @@ const Button: React.FC<ButtonProps> = ({
       {icon && <Feather name={icon as any} size={20} color={COLORS.dark} />}
     </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   buttonContainer: {

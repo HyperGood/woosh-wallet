@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import LottieView from 'lottie-react-native';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -56,7 +57,12 @@ const EnterAmountScreen = () => {
             <Text style={styles.recipientPhone}>{transactionData?.recipientPhone}</Text>
           </View>
           {isDepositing && !depositError ? (
-            <Text style={{ color: 'white' }}>{i18n.t('sending')}...</Text>
+            <LottieView
+              source={require('../../assets/animations/loading.json')}
+              autoPlay
+              loop
+              style={{ width: 40, height: 40 }}
+            />
           ) : (
             <>
               <NumberPad
