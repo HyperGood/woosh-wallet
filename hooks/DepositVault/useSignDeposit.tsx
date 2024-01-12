@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
-import { optimismSepolia } from 'viem/chains';
 
-import publicClient from '../../constants/viemPublicClient';
+import publicClient, { chain } from '../../constants/viemPublicClient';
 import { Addresses, contractAddress } from '../../references/depositVault-abi';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
@@ -12,7 +11,7 @@ export const useSignDeposit = () => {
   const [isSigning, setIsSigning] = useState(false);
   const [signError, setSignError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
-  const chainId = optimismSepolia.id;
+  const chainId = chain.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
 

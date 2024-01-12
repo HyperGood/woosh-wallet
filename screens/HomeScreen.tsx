@@ -16,9 +16,9 @@ const HomeScreen = () => {
   const [transactions, setTransactions] = useState<any>();
   const { address } = useAccount();
 
-  // const requestFunds = async () => {
-  //   console.log('requesting funds');
-  // };
+  const requestFunds = async () => {
+    console.log('requesting funds');
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -40,13 +40,13 @@ const HomeScreen = () => {
         <Balance />
         <Skeleton show={!transactions} height={120} width="100%">
           <View style={styles.buttonsContainer}>
-            {/* <Button
-              title="Request"
+            <Button
+              title={i18n.t('request')}
               icon="arrow-down-left"
               type="secondary"
               swapIcon
               onPress={requestFunds}
-            /> */}
+            />
             <Link href="/(app)/send/selectContact" asChild>
               <Button title={i18n.t('send')} icon="send" type="primary" onPress={() => {}} />
             </Link>

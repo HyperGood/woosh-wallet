@@ -46,11 +46,12 @@ const translations = {
     createAccountAndClaim: 'Create account and claim',
     welcomeClaimedTitle: 'These funds have already been claimed',
     noAccountButton: 'I dont have an account',
+    request: 'request',
   },
   es: {
-    loginTitle: 'La manera mas facil de pagarle a tus amigos',
+    loginTitle: 'La manera más fácil de recibir dinero de tus amigos',
     loginButton: 'Iniciar Sesión',
-    send: 'Hacer Envio',
+    send: 'Enviar',
     previousTransactionTitle1: 'Mis',
     previousTransactionTitle2: 'Transacciones',
     viewAllTransactions: 'Ver Todas Mis Transacciones',
@@ -92,6 +93,7 @@ const translations = {
     createAccountAndClaim: 'Crear cuenta y reclamar',
     welcomeClaimedTitle: 'Estos fondos ya fueron reclamados',
     noAccountButton: 'No tengo una cuenta',
+    request: 'Solicitar',
   },
 };
 

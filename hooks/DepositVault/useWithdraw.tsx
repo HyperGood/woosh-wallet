@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { encodeFunctionData, isHex } from 'viem';
-import { optimismSepolia } from 'viem/chains';
 
 import { depositVaultAbi, contractAddress, Addresses } from '../../references/depositVault-abi';
 import { useAccount } from '../../store/SmartAccountContext';
+import { chain } from '../../constants/viemPublicClient';
 
 export const useWithdraw = () => {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [withdrawError, setWithdrawError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
-  const chainId = optimismSepolia.id;
+  const chainId = chain.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
 

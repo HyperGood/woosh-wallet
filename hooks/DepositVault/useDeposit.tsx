@@ -2,18 +2,18 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { Hex, encodeFunctionData, parseUnits } from 'viem';
-import { optimismSepolia } from 'viem/chains';
 
 import { depositVaultAbi, contractAddress, Addresses } from '../../references/depositVault-abi';
 import { usdcAddress, TokenAddresses } from '../../references/tokenAddresses';
 import { useAccount } from '../../store/SmartAccountContext';
+import { chain } from '../../constants/viemPublicClient';
 
 export const useDeposit = () => {
   const [depositHash, setDepositHash] = useState<string | null>(null);
   const [isDepositing, setIsDepositing] = useState(false);
   const [depositError, setDepositError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
-  const chainId = optimismSepolia.id;
+  const chainId = chain.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
   const tokenAddress = usdcAddress[chainId as keyof TokenAddresses][0];

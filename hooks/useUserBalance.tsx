@@ -1,11 +1,10 @@
 // hooks/useUserBalance.tsx
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
-import { optimismSepolia } from 'viem/chains';
 
 import { useTokenPrices } from './useTokenPrices';
 import { storage } from '../app/_layout';
-import publicClient from '../constants/viemPublicClient';
+import publicClient, { chain } from '../constants/viemPublicClient';
 import { TokenAddresses, usdcAddress } from '../references/tokenAddresses';
 import { useAccount } from '../store/SmartAccountContext';
 
@@ -17,7 +16,7 @@ export const useUserBalance = () => {
   const { address } = useAccount();
   const { tokenPrices } = useTokenPrices();
   const usdcPrice = tokenPrices?.['usd-coin'].mxn;
-  const chainId = optimismSepolia.id;
+  const chainId = chain.id;
   const tokenAddress =
     chainId && chainId in usdcAddress ? usdcAddress[chainId as keyof TokenAddresses][0] : '0x12';
   const tokenDecimals = process.env.EXPO_PUBLIC_TESTNET === 'true' ? 18 : 6;

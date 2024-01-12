@@ -55,6 +55,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
+      "buildNumber": "1",
       "bundleIdentifier": "com.hypergood.wooshmvpmobile",
       "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist",
