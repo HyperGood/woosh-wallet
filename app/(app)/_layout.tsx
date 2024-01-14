@@ -2,6 +2,7 @@ import { LocalAccountSigner } from '@alchemy/aa-core';
 import { ECDSAProvider } from '@zerodev/sdk';
 import { Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
+import * as Sentry from 'sentry-expo';
 
 import { fetchUserByEthAddress } from '../../api/firestoreService';
 import { useSession } from '../../store/AuthContext';
@@ -32,6 +33,7 @@ export default function Layout() {
           setLoading(false);
         } catch (e) {
           console.log(e);
+          Sentry.Native.captureException(e);
         }
       })();
     }

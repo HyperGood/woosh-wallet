@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
+import * as Sentry from 'sentry-expo';
 
 import SessionProvider from '../store/AuthContext';
 import SmartAccountProvider from '../store/SmartAccountContext';
@@ -18,6 +19,12 @@ export default function Layout() {
     Satoshi: require('../assets/fonts/Satoshi-Regular.ttf'),
     'Satoshi-Bold': require('../assets/fonts/Satoshi-Bold.ttf'),
     FHOscar: require('../assets/fonts/FHOscar-Medium.otf'),
+  });
+
+  Sentry.init({
+    dsn: 'https://84f72a6f2f2b8e115eccd24a1acaf490@o4506101264809984.ingest.sentry.io/4506555616395264',
+    enableInExpoDevelopment: true,
+    debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
   });
 
   useEffect(() => {

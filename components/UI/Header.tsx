@@ -3,6 +3,7 @@ import storage from '@react-native-firebase/storage';
 import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import * as Sentry from 'sentry-expo';
 
 import placeholderUser from '../../assets/images/profile.png';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
@@ -33,6 +34,7 @@ const Header = () => {
         setImageSrc(url);
       } catch (error) {
         console.log('Error fetching image:', error);
+        Sentry.Native.captureException(error);
       }
     };
 

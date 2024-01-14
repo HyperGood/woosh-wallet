@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as Sentry from 'sentry-expo';
 
 type TokenPrices = {
   ethereum: {
@@ -29,6 +30,7 @@ export const useTokenPrices = () => {
         setTokenPrices(data as TokenPrices);
       } catch (error) {
         console.error('There has been a problem with fetching the token prices:', error);
+        Sentry.Native.captureException(error);
       } finally {
         setIsLoading(false);
       }

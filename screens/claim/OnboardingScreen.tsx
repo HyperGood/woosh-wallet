@@ -1,9 +1,11 @@
 import { LocalAccountSigner } from '@alchemy/aa-core';
+import { Feather } from '@expo/vector-icons';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { ECDSAProvider } from '@zerodev/sdk';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
+import LottieView from 'lottie-react-native';
 import { useEffect, useState } from 'react';
 import { Text, SafeAreaView, StyleSheet, View, Pressable, Image } from 'react-native';
 import Animated, {
@@ -12,17 +14,15 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import LottieView from 'lottie-react-native';
+import * as Sentry from 'sentry-expo';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
-import LoadingIndicator from '../../components/UI/LoadingIndicator';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
-import { Feather } from '@expo/vector-icons';
 
 interface OnboardingScreenProps {
   transactionData: any;
@@ -100,6 +100,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
       setAddress(address);
     } catch (error) {
       console.error('Error in onboarding screen', error);
+      Sentry.Native.captureException(error);
       setIsLoading(false);
       // Handle error
     }
@@ -148,6 +149,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         });
     } catch (error) {
       console.error(error);
+      Sentry.Native.captureException(error);
       setIsLoading(false);
       // Handle error
     }

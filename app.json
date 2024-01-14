@@ -11,6 +11,7 @@
     },
     "plugins": [
       "expo-router",
+      "sentry-expo",
       [
         "expo-local-authentication",
         {
@@ -39,7 +40,8 @@
           "contactsPermission": "Allow Woosh to access your contacts so you can send funds to anyone in your contacts list."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "sentry-expo"
     ],
     "experiments": {
       "typedRoutes": true
@@ -52,7 +54,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "buildNumber": "1",
@@ -60,8 +64,10 @@
       "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Allow Woosh to use Face ID"
-      }
+        "NSFaceIDUsageDescription": "Allow Woosh to use Face ID",
+        "NSContactsUsageDescription": "Allow Woosh to access your contacts so you can send funds to anyone in your contacts list."
+      },
+      "runtimeVersion": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -69,8 +75,17 @@
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./google-services.json",
-      "permissions": ["android.permission.USE_BIOMETRIC", "android.permission.USE_FINGERPRINT"],
-      "package": "com.hypergood.wooshmvpmobile"
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS"
+      ],
+      "package": "com.hypergood.wooshmvpmobile",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "extra": {
       "router": {
@@ -79,6 +94,20 @@
       "eas": {
         "projectId": "0115e554-889d-4722-9140-d898c364853e"
       }
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
+            "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
+          }
+        }
+      ]
+    },
+    "updates": {
+      "url": "https://u.expo.dev/0115e554-889d-4722-9140-d898c364853e"
     }
   }
 }

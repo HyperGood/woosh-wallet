@@ -1,5 +1,6 @@
 // hooks/useUserBalance.tsx
 import { useEffect, useState } from 'react';
+import * as Sentry from 'sentry-expo';
 import { formatUnits } from 'viem';
 
 import { useTokenPrices } from './useTokenPrices';
@@ -76,6 +77,7 @@ export const useUserBalance = () => {
       }
     } catch (e: any) {
       setErrorFetchingBalance(e.message);
+      Sentry.Native.captureException(e);
     } finally {
       setIsFetchingBalance(false);
     }

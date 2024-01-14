@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { SafeAreaView, Share, StyleSheet, Text, View } from 'react-native';
+import * as Sentry from 'sentry-expo';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
@@ -29,6 +30,7 @@ const SuccessScreen = () => {
       });
     } catch (error) {
       console.error('Error sharing:', error);
+      Sentry.Native.captureException(error);
     }
   };
 

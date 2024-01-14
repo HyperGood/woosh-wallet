@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import * as Sentry from 'sentry-expo';
 
 import publicClient, { chain } from '../../constants/viemPublicClient';
 import { Addresses, contractAddress } from '../../references/depositVault-abi';
@@ -97,6 +98,7 @@ export const useSignDeposit = () => {
     } catch (e) {
       setSignError(e);
       console.log('Error: ', e);
+      Sentry.Native.captureException(e);
       Alert.alert('Something went wrong with generating the signature!!');
     } finally {
       setIsSigning(false);
