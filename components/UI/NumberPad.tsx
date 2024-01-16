@@ -3,22 +3,33 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 
 import Input from './Input';
+import Tabs, { TabOption } from './Tabs';
 import { COLORS } from '../../constants/global-styles';
-import { useUserBalance } from '../../hooks/useUserBalance';
 import i18n from '../../constants/i18n';
+import { useUserBalance } from '../../hooks/useUserBalance';
 
 interface NumberPadProps {
   onChange: (amount: string) => void;
   description: string;
   setDescription: (description: string) => void;
+  type?: 'request' | 'send';
+  activeTab?: TabOption;
+  handleTabPress?: (tab: TabOption) => void;
 }
 
-const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) => {
+const NumberPad = ({
+  onChange,
+  description,
+  setDescription,
+  type = 'send',
+  activeTab,
+  handleTabPress,
+}: NumberPadProps) => {
   const [amount, setAmount] = useState('0');
   const [cents, setCents] = useState('00');
 
   const [isDecimal, setIsDecimal] = useState(false);
-  const currency = 'USD';
+  const currency = '🇺🇸 USD';
   const { tokenBalance } = useUserBalance();
 
   const onNumberPress = (number: string) => {
@@ -34,7 +45,12 @@ const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) =>
     } else {
       setAmount((prevAmount) => {
         const newAmount = prevAmount === '0' ? number : prevAmount + number;
-        const finalAmount = parseFloat(newAmount) <= tokenBalance ? newAmount : prevAmount;
+        let finalAmount;
+        if (type === 'request') {
+          finalAmount = newAmount; // allow any number if type is "request"
+        } else {
+          finalAmount = parseFloat(newAmount) <= tokenBalance ? newAmount : prevAmount;
+        }
         onChange(finalAmount); // call the passed callback function
         return finalAmount;
       });
@@ -78,11 +94,13 @@ const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) =>
   return (
     <View>
       <View style={styles.amountWrapper}>
-        <Pressable onPress={setAmountToMax}>
-          <Text style={styles.balance}>
-            {i18n.t('youHave')} ${tokenBalance}
-          </Text>
-        </Pressable>
+        {type === 'send' && (
+          <Pressable onPress={setAmountToMax}>
+            <Text style={styles.balance}>
+              {i18n.t('youHave')} ${tokenBalance}
+            </Text>
+          </Pressable>
+        )}
         <Text style={styles.amount}>
           ${formatAmount(amount)}.
           <Text style={styles.cents}>{cents.length < 2 ? cents.padEnd(2, '0') : cents}</Text>
@@ -91,6 +109,15 @@ const NumberPad = ({ onChange, description, setDescription }: NumberPadProps) =>
         <View style={styles.currencyWrapper}>
           <Text style={styles.currencyText}>{currency}</Text>
         </View>
+        {type !== 'send' && (
+          <View style={{ marginTop: 16, marginBottom: 8 }}>
+            <Tabs
+              options={['Total', 'Por Persona']}
+              activeTab={activeTab || ''}
+              onTabPress={handleTabPress || (() => {})}
+            />
+          </View>
+        )}
       </View>
       <Input
         placeholder={i18n.t('noteInputPlaceholder')}
@@ -144,15 +171,13 @@ const styles = StyleSheet.create({
   },
   currencyWrapper: {
     backgroundColor: COLORS.gray[200],
-    borderRadius: 4,
+    borderRadius: 8,
     paddingHorizontal: 4,
-    paddingVertical: 2,
   },
   currencyText: {
     color: COLORS.dark,
     fontSize: 16,
     fontFamily: 'Satoshi-Bold',
-    opacity: 0.6,
   },
   numberPad: {
     paddingHorizontal: 24,

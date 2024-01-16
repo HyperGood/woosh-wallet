@@ -46,7 +46,7 @@ const translations = {
     createAccountAndClaim: 'Create account and claim',
     welcomeClaimedTitle: 'These funds have already been claimed',
     noAccountButton: 'I dont have an account',
-    request: 'request',
+    request: 'Request',
   },
   es: {
     loginTitle: 'La manera más fácil de recibir dinero de tus amigos',

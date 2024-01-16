@@ -35,6 +35,7 @@ const Header = () => {
       } catch (error) {
         console.log('Error fetching image:', error);
         Sentry.Native.captureException(error);
+        setImageSrc(placeholderUser);
       }
     };
 

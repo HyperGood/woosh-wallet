@@ -54,9 +54,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
       "buildNumber": "1",
@@ -100,8 +98,8 @@
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
-            "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
+            "organization": "hypergood",
+            "project": "woosh-mobile-app"
           }
         }
       ]

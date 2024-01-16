@@ -23,8 +23,8 @@ export default function Layout() {
 
   Sentry.init({
     dsn: 'https://84f72a6f2f2b8e115eccd24a1acaf490@o4506101264809984.ingest.sentry.io/4506555616395264',
-    enableInExpoDevelopment: true,
-    debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+    enableInExpoDevelopment: false,
+    debug: true,
   });
 
   useEffect(() => {

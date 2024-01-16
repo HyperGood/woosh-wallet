@@ -1,115 +1,71 @@
-import { Link } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
-import Input from '../../components/UI/Input';
+import BottomSheet from '../../components/modals/BottomSheet';
+import ContactModal from '../../components/modals/ContactModal';
 import { COLORS } from '../../constants/global-styles';
-import { useContacts } from '../../store/ContactsContext';
-import { useTransaction } from '../../store/TransactionContext';
+import { useRequest } from '../../store/RequestContext';
 
 const SelectContactScreen = () => {
-  const { setTransactionData } = useTransaction();
-  const { contacts, getContacts } = useContacts();
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [recipient, setRecipient] = useState('');
-  const [searchText, setSearchText] = useState(''); // Add this line
+  const [modalVisible, setModalVisible] = useState(false);
+  const { requestData } = useRequest();
 
-  const filteredContacts = contacts?.filter((contact: any) =>
-    contact.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
 
-  const handleNext = (phoneNumber: string, recipient: string) => {
-    setTransactionData({
-      recipientPhone: phoneNumber,
-      recipientName: recipient,
-      amount: '0',
-      token: 'USDc',
-    });
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
+
+  const handleNext = () => {
+    console.log(requestData);
   };
   return (
-    <View style={styles.wrapper}>
-      <BackButton />
-      <View style={{ flex: 1, justifyContent: 'space-between' }}>
-        <View style={{ gap: 16 }}>
-          <Text style={styles.title}>A quien le enviaras?</Text>
-          <Input
-            placeholder="Enter a phone number"
-            onChangeText={setPhoneNumber}
-            value={phoneNumber}
-          />
-          <Input placeholder="Enter a name" onChangeText={setRecipient} value={recipient} />
-        </View>
-        <View style={{ flex: 1, marginTop: 16 }}>
-          {contacts ? (
-            <View style={{ flex: 1 }}>
-              <Input
-                placeholder="Search contacts"
-                onChangeText={setSearchText}
-                value={searchText}
-                theme="light"
-                icon
-              />
-              <FlatList
-                data={filteredContacts}
-                style={styles.container}
-                keyExtractor={(item) => item.id}
-                ListHeaderComponent={
-                  <View
-                    style={{
-                      borderBottomWidth: 1,
-                      paddingTop: 8,
-                      paddingBottom: 16,
-                      borderBottomColor: COLORS.gray[400],
-                    }}>
-                    <Text
-                      style={{
-                        color: COLORS.dark,
-                        fontFamily: 'Satoshi-Bold',
-                        textTransform: 'uppercase',
-                        opacity: 0.6,
-                      }}>
-                      Contacts
-                    </Text>
-                  </View>
-                }
-                contentContainerStyle={{ paddingBottom: 40 }}
-                ListEmptyComponent={<Text>No contacts found</Text>}
-                renderItem={({ item }) => (
-                  <Link href="/(app)/send/enterAmount" asChild>
-                    <Pressable
-                      onPress={() => {
-                        const selectedPhoneNumber = item.phoneNumbers[0].number;
-                        const selectedRecipient = item.name;
-                        setPhoneNumber(selectedPhoneNumber);
-                        setRecipient(selectedRecipient);
-                        handleNext(selectedPhoneNumber, selectedRecipient);
-                      }}
-                      style={styles.contact}>
-                      <Text style={styles.contactName}>{item.name}</Text>
-                    </Pressable>
-                  </Link>
-                )}
-              />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.wrapper}>
+        <BackButton />
+        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+          <Text style={styles.title}>Agrega contactos</Text>
+          <Pressable
+            onPress={handleOpenModal}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              backgroundColor: '#2C2C2E',
+              paddingVertical: 24,
+              paddingHorizontal: 16,
+              borderRadius: 24,
+              marginHorizontal: 16,
+            }}>
+            <View
+              style={{
+                backgroundColor: COLORS.primary[400],
+                borderRadius: 100,
+                height: 32,
+                width: 32,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Feather name="plus" size={16} color={COLORS.light} />
             </View>
-          ) : (
-            <Pressable onPress={getContacts}>
-              <Text style={{ color: COLORS.light }}>Select from contacts</Text>
-            </Pressable>
-          )}
+            <Text style={{ color: COLORS.primary[400], fontFamily: 'Satoshi-Bold', fontSize: 18 }}>
+              Add a contact
+            </Text>
+          </Pressable>
+          <ContactModal visible={modalVisible} onClose={handleCloseModal} />
+          <View style={styles.buttonWrapper}>
+            <Button title="Next" type="primary" onPress={() => handleNext()} />
+          </View>
         </View>
-        <View style={styles.buttonWrapper}>
-          <Link href="/(app)/send/enterAmount" asChild>
-            <Button
-              title="Next"
-              type="primary"
-              onPress={() => handleNext(phoneNumber, recipient)}
-            />
-          </Link>
-        </View>
+        <BottomSheet />
       </View>
-    </View>
+    </GestureHandlerRootView>
   );
 };
 export default SelectContactScreen;
@@ -119,6 +75,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingBottom: 40,
     justifyContent: 'space-between',
+    backgroundColor: COLORS.dark,
   },
   contact: {
     gap: 10,

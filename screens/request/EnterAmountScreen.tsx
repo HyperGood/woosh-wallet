@@ -1,89 +1,79 @@
 import { router } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import NumberPad from '../../components/UI/NumberPad';
+import { TabOption } from '../../components/UI/Tabs';
 import { COLORS } from '../../constants/global-styles';
-import { useDeposit } from '../../hooks/DepositVault/useDeposit';
-import { useSignDeposit } from '../../hooks/DepositVault/useSignDeposit';
-import { useUserBalance } from '../../hooks/useUserBalance';
-import { useTransaction } from '../../store/TransactionContext';
+import { useRequest } from '../../store/RequestContext';
 
-const EnterAmountScreen = () => {
-  const animation = useRef(null);
+const RequestEnterAmountScreen = () => {
   const [amount, setAmount] = useState('0');
   const [description, setDescription] = useState('');
-  const { deposit, isDepositing, depositError, depositHash } = useDeposit();
-  const { signDeposit } = useSignDeposit();
-  const { refetchBalance } = useUserBalance();
-  const { transactionData, setTransactionData } = useTransaction();
+  const { setRequestData } = useRequest();
+  const [activeTab, setActiveTab] = useState<TabOption>('Total');
+
+  const handleTabPress = (tab: TabOption) => {
+    setActiveTab(tab);
+  };
+
+  const handleNextPress = () => {
+    router.push('/(app)/request/selectContact');
+  };
 
   useEffect(() => {
-    (async () => {
-      if (depositHash && transactionData) {
-        refetchBalance();
-        const updatedTransactionData = await signDeposit();
-        if (typeof updatedTransactionData === 'object' && updatedTransactionData !== null) {
-          setTransactionData({ ...updatedTransactionData, transactionHash: depositHash });
-        } else {
-          // Handle the case where updatedTransactionData is not an object
-          console.log('Updated transaction is not an object: ', updatedTransactionData);
-        }
-        router.push('/(app)/send/success');
-      }
-    })();
-  }, [depositHash]);
-
-  useEffect(() => {
-    setTransactionData(
-      transactionData
-        ? { ...transactionData, amount, description }
-        : { recipientName: '', token: 'USDc', amount, description }
+    setRequestData(
+      (prevData) =>
+        ({
+          ...prevData,
+          totalAmount: amount,
+          description,
+          type: 'total',
+        }) as any
     );
   }, [amount]);
 
   return (
     <ScrollView style={{ flex: 1, width: '100%' }}>
       <View style={styles.wrapper}>
-        <BackButton />
-        <View>
-          <Text style={styles.title}>Sending To</Text>
-          <View style={styles.recipient}>
-            {/* <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} /> */}
-            <Text style={styles.recipientName}>{transactionData?.recipientName}</Text>
-            <Text style={styles.recipientPhone}>{transactionData?.recipientPhone}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: 8,
+          }}>
+          <View style={{ position: 'absolute', left: 16, top: 2 }}>
+            <BackButton />
           </View>
-          {isDepositing && !depositError ? (
-            <View>
-              <Text style={{ color: 'white' }}>Sending...</Text>
-            </View>
-          ) : (
-            <>
-              <NumberPad
-                onChange={setAmount}
-                description={description}
-                setDescription={setDescription}
-              />
-              <View style={styles.buttonWrapper}>
-                <Button
-                  title="Send"
-                  type="primary"
-                  onPress={() => {
-                    deposit(amount);
-                    setDescription('');
-                  }}
-                />
-              </View>
-            </>
-          )}
+          <Text style={styles.title}>Solicitar Pago</Text>
+        </View>
+        <NumberPad
+          onChange={setAmount}
+          description={description}
+          setDescription={setDescription}
+          type="request"
+          activeTab={activeTab}
+          handleTabPress={handleTabPress}
+        />
+        <View style={styles.buttonWrapper}>
+          <Button
+            title="Next"
+            type="primary"
+            onPress={() => {
+              setDescription('');
+              handleNextPress();
+            }}
+            disabled={amount === '0'}
+          />
         </View>
       </View>
     </ScrollView>
   );
 };
-export default EnterAmountScreen;
+export default RequestEnterAmountScreen;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -93,11 +83,8 @@ const styles = StyleSheet.create({
   },
   title: {
     color: COLORS.light,
-    marginHorizontal: 16,
     fontFamily: 'Satoshi-Bold',
-    fontSize: 16,
-    marginBottom: 8,
-    marginTop: 8,
+    fontSize: 24,
   },
   recipient: {
     marginHorizontal: 16,
