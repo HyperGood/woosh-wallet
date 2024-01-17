@@ -1,30 +1,32 @@
 import { Feather } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
-import BottomSheet from '../../components/modals/BottomSheet';
+import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 import ContactModal from '../../components/modals/ContactModal';
 import { COLORS } from '../../constants/global-styles';
 import { useRequest } from '../../store/RequestContext';
 
 const SelectContactScreen = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const ref = useRef<BottomSheetRefProps>(null);
   const { requestData } = useRequest();
-
-  const handleOpenModal = () => {
-    setModalVisible(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalVisible(false);
-  };
 
   const handleNext = () => {
     console.log(requestData);
   };
+
+  const handleOpenBottomSheet = useCallback(() => {
+    const isActive = ref.current?.isActive();
+    if (isActive) {
+      ref.current?.scrollTo(0);
+    } else {
+      ref.current?.scrollTo(-200);
+    }
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.wrapper}>
@@ -32,7 +34,7 @@ const SelectContactScreen = () => {
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
           <Text style={styles.title}>Agrega contactos</Text>
           <Pressable
-            onPress={handleOpenModal}
+            onPress={handleOpenBottomSheet}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -58,12 +60,13 @@ const SelectContactScreen = () => {
               Add a contact
             </Text>
           </Pressable>
-          <ContactModal visible={modalVisible} onClose={handleCloseModal} />
           <View style={styles.buttonWrapper}>
             <Button title="Next" type="primary" onPress={() => handleNext()} />
           </View>
         </View>
-        <BottomSheet />
+        <BottomSheet ref={ref}>
+          <View style={{ flex: 1, backgroundColor: 'orange' }} />
+        </BottomSheet>
       </View>
     </GestureHandlerRootView>
   );

@@ -1,3 +1,4 @@
+import { forwardRef, useCallback, useEffect, useImperativeHandle } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -6,17 +7,40 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated';
 
 import { COLORS } from '../../constants/global-styles';
-import { useEffect } from 'react';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 50;
 
-const BottomSheet = () => {
+type BottomSheetProps = {
+  children?: React.ReactNode;
+};
+export type BottomSheetRefProps = {
+  scrollTo: (destination: number) => void;
+  isActive: () => boolean;
+};
+
+const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(({ children }, ref) => {
   const translateY = useSharedValue(0);
+  const active = useSharedValue(false);
+  const scrollTo = useCallback((destination: number) => {
+    'worklet';
+    active.value = destination !== 0;
+    translateY.value = withSpring(destination, { damping: 50 });
+  }, []);
+  const isActive = useCallback(() => {
+    return active.value;
+  }, []);
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollTo,
+      isActive,
+    }),
+    [scrollTo, isActive]
+  );
   const context = useSharedValue({ y: 0 });
   const gesture = Gesture.Pan()
     .onStart(() => {
@@ -25,7 +49,15 @@ const BottomSheet = () => {
     .onUpdate((event) => {
       translateY.value = context.value.y + event.translationY;
       translateY.value = Math.max(translateY.value, MAX_TRANSLATE_Y);
+    })
+    .onEnd(() => {
+      if (translateY.value < -SCREEN_HEIGHT / 4) {
+        scrollTo(MAX_TRANSLATE_Y);
+      } else {
+        scrollTo(0);
+      }
     });
+
   const reanimatedBottomSheetStyle = useAnimatedStyle(() => {
     const borderRadius = interpolate(
       translateY.value,
@@ -37,17 +69,18 @@ const BottomSheet = () => {
   });
 
   useEffect(() => {
-    translateY.value = withSpring(-SCREEN_HEIGHT / 2, { damping: 50 });
+    scrollTo(-SCREEN_HEIGHT / 2);
   }, []);
 
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.bottomSheetContainer, reanimatedBottomSheetStyle]}>
         <View style={styles.line} />
+        {children}
       </Animated.View>
     </GestureDetector>
   );
-};
+});
 export default BottomSheet;
 const styles = StyleSheet.create({
   bottomSheetContainer: {
@@ -64,6 +97,6 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: COLORS.gray[400],
     alignSelf: 'center',
-    marginTop: 16,
+    marginVertical: 16,
   },
 });
