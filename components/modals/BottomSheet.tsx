@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, Keyboard, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolate,
@@ -7,6 +7,8 @@ import Animated, {
   FadeOut,
   Layout,
   interpolate,
+  runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -45,6 +47,7 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
     const close = useCallback(() => {
       'worklet';
       return scrollTo(maxHeight);
+      //if there's a keyboard open, close it
     }, [maxHeight, scrollTo]);
 
     const isActive = useCallback(() => {

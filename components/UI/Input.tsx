@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { TextInput, StyleSheet, View } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
@@ -12,6 +12,7 @@ interface InputProps {
   theme?: 'light' | 'dark';
   icon?: boolean;
   keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad'; // Added keyboardType prop
+  handleOpenKeyboard?: () => void;
 }
 
 const Input = ({
@@ -21,6 +22,7 @@ const Input = ({
   theme = 'dark',
   icon,
   keyboardType = 'default',
+  handleOpenKeyboard,
 }: InputProps) => {
   const [isActive, setIsActive] = useState(false);
   const inputStyle = [
@@ -36,9 +38,13 @@ const Input = ({
         onChangeText={onChangeText}
         value={value}
         placeholderTextColor={COLORS.gray[400]}
-        onFocus={() => setIsActive(true)}
+        onFocus={() => {
+          setIsActive(true);
+          handleOpenKeyboard && handleOpenKeyboard();
+        }}
         onBlur={() => setIsActive(false)}
         keyboardType={keyboardType}
+        returnKeyType="done"
       />
       {icon ? <Feather name="search" size={24} color="black" style={styles.icon} /> : null}
     </View>

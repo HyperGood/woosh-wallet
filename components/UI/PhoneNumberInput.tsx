@@ -12,6 +12,7 @@ interface PhoneNumberInputProps {
   onCountryCodeChange: (countryCode: string) => void;
   initialCountryCode: string;
   initialPhoneNumber: string;
+  handleOpenKeyboard?: () => void;
 }
 
 const PhoneNumberInput = ({
@@ -19,6 +20,7 @@ const PhoneNumberInput = ({
   onCountryCodeChange,
   initialCountryCode,
   initialPhoneNumber,
+  handleOpenKeyboard,
 }: PhoneNumberInputProps) => {
   const [countryCode, setCountryCode] = useState(initialCountryCode);
   const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber);
@@ -92,6 +94,7 @@ const PhoneNumberInput = ({
             onChangeText={handlePhoneNumberChange}
             value={phoneNumber}
             keyboardType="phone-pad"
+            handleOpenKeyboard={handleOpenKeyboard}
           />
         </View>
       </View>

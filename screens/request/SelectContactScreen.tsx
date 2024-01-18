@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import { useCallback, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BackButton from '../../components/UI/BackButton';
@@ -28,7 +28,26 @@ const SelectContactScreen = () => {
       ref.current?.scrollTo(0);
     } else {
       ref.current?.scrollTo(-550);
+      console.log('inactive');
     }
+  }, []);
+
+  const handleOpenKeyboard = useCallback(() => {
+    const isActive = ref.current?.isActive();
+    const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', (e) => {
+      if (isActive) {
+        ref.current?.scrollTo(-550 - e.endCoordinates.height);
+      }
+    });
+    const keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', () => {
+      ref.current?.scrollTo(-550);
+    });
+
+    // Cleanup listeners on unmount
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
   }, []);
 
   return (
@@ -76,9 +95,15 @@ const SelectContactScreen = () => {
               onCountryCodeChange={setCountryCode}
               initialCountryCode={countryCode}
               initialPhoneNumber={phoneNumber}
+              handleOpenKeyboard={handleOpenKeyboard}
             />
 
-            <Input placeholder="Name" value={name} onChangeText={setName} />
+            <Input
+              placeholder="Name"
+              value={name}
+              onChangeText={setName}
+              handleOpenKeyboard={handleOpenKeyboard}
+            />
             <View style={styles.selectContactButton}>
               <Text style={styles.selectContactButtonText}>Seleccionar de mis contactos</Text>
             </View>
