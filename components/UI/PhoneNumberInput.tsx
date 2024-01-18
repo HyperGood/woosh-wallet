@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 
@@ -41,6 +41,10 @@ const PhoneNumberInput = ({
     setPhoneNumber(newPhoneNumber);
     onPhoneNumberChange(newPhoneNumber);
   };
+
+  useEffect(() => {
+    setPhoneNumber(initialPhoneNumber);
+  }, [initialPhoneNumber]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

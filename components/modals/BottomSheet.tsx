@@ -29,6 +29,7 @@ type BottomSheetProps = {
 export type BottomSheetRefProps = {
   scrollTo: (destination: number) => void;
   isActive: () => boolean;
+  close: () => void;
 };
 
 const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
@@ -47,7 +48,6 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
     const close = useCallback(() => {
       'worklet';
       return scrollTo(maxHeight);
-      //if there's a keyboard open, close it
     }, [maxHeight, scrollTo]);
 
     const isActive = useCallback(() => {
@@ -59,8 +59,9 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
       () => ({
         scrollTo,
         isActive,
+        close,
       }),
-      [scrollTo, isActive]
+      [scrollTo, isActive, close]
     );
 
     const context = useSharedValue({ y: 0 });

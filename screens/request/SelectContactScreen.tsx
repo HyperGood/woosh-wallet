@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import { useCallback, useRef, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Keyboard, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BackButton from '../../components/UI/BackButton';
@@ -11,16 +11,46 @@ import BottomSheet, { BottomSheetRefProps } from '../../components/modals/Bottom
 import { COLORS } from '../../constants/global-styles';
 import { useRequest } from '../../store/RequestContext';
 
+type Contact = {
+  name: string;
+  phoneNumber: string;
+};
+
 const SelectContactScreen = () => {
   const ref = useRef<BottomSheetRefProps>(null);
   const { requestData } = useRequest();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('+52');
   const [name, setName] = useState('');
+  //Array of contacts via useState
+  const [contacts, setContacts] = useState<Contact[] | null>(null);
 
   const handleNext = () => {
     console.log(requestData);
   };
+
+  const handleAddContact = useCallback(() => {
+    if (phoneNumber && name) {
+      setContacts((prev) => {
+        if (prev) {
+          return [...prev, { name, phoneNumber }];
+        } else {
+          return [{ name, phoneNumber }];
+        }
+      });
+      setPhoneNumber('');
+      setName('');
+      // Listen for keyboardDidHide event
+      const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+        ref.current?.close();
+        // Remove the listener once done
+        keyboardDidHideListener.remove();
+      });
+
+      // Dismiss the keyboard
+      Keyboard.dismiss();
+    }
+  }, [name, phoneNumber]);
 
   const handleOpenBottomSheet = useCallback(() => {
     const isActive = ref.current?.isActive();
@@ -28,7 +58,6 @@ const SelectContactScreen = () => {
       ref.current?.scrollTo(0);
     } else {
       ref.current?.scrollTo(-550);
-      console.log('inactive');
     }
   }, []);
 
@@ -52,37 +81,51 @@ const SelectContactScreen = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.wrapper}>
-        <BackButton />
+      <SafeAreaView style={styles.wrapper}>
+        <View style={styles.header}>
+          <View style={{ position: 'absolute', left: 0 }}>
+            <BackButton />
+          </View>
+          <Text style={styles.headerTitle}>Solicitar Pago</Text>
+          <View />
+        </View>
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
-          <Text style={styles.title}>Agrega contactos</Text>
-          <Pressable
-            onPress={handleOpenBottomSheet}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-              backgroundColor: '#2C2C2E',
-              paddingVertical: 24,
-              paddingHorizontal: 16,
-              borderRadius: 24,
-              marginHorizontal: 16,
-            }}>
-            <View
+          <View>
+            <Text style={styles.title}>Agrega contactos</Text>
+            <Pressable
+              onPress={handleOpenBottomSheet}
               style={{
-                backgroundColor: COLORS.primary[400],
-                borderRadius: 100,
-                height: 32,
-                width: 32,
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
+                gap: 8,
+                backgroundColor: '#2C2C2E',
+                paddingVertical: 24,
+                paddingHorizontal: 16,
+                borderRadius: 24,
+                marginHorizontal: 16,
+                marginTop: 24,
               }}>
-              <Feather name="plus" size={16} color={COLORS.light} />
-            </View>
-            <Text style={{ color: COLORS.primary[400], fontFamily: 'Satoshi-Bold', fontSize: 18 }}>
-              Add a contact
-            </Text>
-          </Pressable>
+              <View
+                style={{
+                  backgroundColor: COLORS.primary[400],
+                  borderRadius: 100,
+                  height: 32,
+                  width: 32,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Feather name="plus" size={16} color={COLORS.light} />
+              </View>
+              <Text
+                style={{ color: COLORS.primary[400], fontFamily: 'Satoshi-Bold', fontSize: 18 }}>
+                Add a contact
+              </Text>
+            </Pressable>
+            <FlatList
+              data={contacts}
+              renderItem={({ item }) => <Text style={{ color: COLORS.light }}>{item.name}</Text>}
+            />
+          </View>
           <View style={styles.buttonWrapper}>
             <Button title="Next" type="primary" onPress={() => handleNext()} />
           </View>
@@ -108,11 +151,11 @@ const SelectContactScreen = () => {
               <Text style={styles.selectContactButtonText}>Seleccionar de mis contactos</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 16 }}>
-              <Button title="Add" type="primary" onPress={() => {}} />
+              <Button title="Add" type="primary" onPress={handleAddContact} disabled={!name} />
             </View>
           </View>
         </BottomSheet>
-      </View>
+      </SafeAreaView>
     </GestureHandlerRootView>
   );
 };
@@ -180,5 +223,19 @@ const styles = StyleSheet.create({
     color: COLORS.primary[600],
     fontFamily: 'Satoshi-Bold',
     fontSize: 18,
+  },
+  headerTitle: {
+    fontSize: 24,
+    color: COLORS.light,
+    fontFamily: 'Satoshi-Bold',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    marginHorizontal: 16,
+    marginBottom: 32,
+    position: 'relative',
   },
 });
