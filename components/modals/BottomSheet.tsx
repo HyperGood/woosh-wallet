@@ -7,6 +7,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 
 import { COLORS } from '../../constants/global-styles';
@@ -72,13 +73,37 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(({ childre
     scrollTo(-SCREEN_HEIGHT / 2);
   }, []);
 
+  const rBackDropStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(active.value ? 1 : 0),
+    };
+  });
+
+  const rBackDropProps = useAnimatedStyle(() => {
+    return {
+      pointerEvents: active.value ? 'auto' : 'none',
+    };
+  });
+
   return (
-    <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.bottomSheetContainer, reanimatedBottomSheetStyle]}>
-        <View style={styles.line} />
-        {children}
-      </Animated.View>
-    </GestureDetector>
+    <>
+      <Animated.View
+        animatedProps={rBackDropProps}
+        onTouchStart={() => {
+          scrollTo(0);
+        }}
+        style={[
+          { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)' },
+          rBackDropStyle,
+        ]}
+      />
+      <GestureDetector gesture={gesture}>
+        <Animated.View style={[styles.bottomSheetContainer, reanimatedBottomSheetStyle]}>
+          <View style={styles.line} />
+          {children}
+        </Animated.View>
+      </GestureDetector>
+    </>
   );
 });
 export default BottomSheet;
