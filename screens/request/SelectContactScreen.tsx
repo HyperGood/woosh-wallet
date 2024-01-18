@@ -1,6 +1,15 @@
 import { Feather } from '@expo/vector-icons';
 import { useCallback, useRef, useState } from 'react';
-import { FlatList, Keyboard, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  Image,
+  Keyboard,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BackButton from '../../components/UI/BackButton';
@@ -17,7 +26,7 @@ type Contact = {
 };
 
 const SelectContactScreen = () => {
-  const ref = useRef<BottomSheetRefProps>(null);
+  const addContactRef = useRef<BottomSheetRefProps>(null);
   const { requestData } = useRequest();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('+52');
@@ -42,7 +51,7 @@ const SelectContactScreen = () => {
       setName('');
       // Listen for keyboardDidHide event
       const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-        ref.current?.close();
+        addContactRef.current?.close();
         // Remove the listener once done
         keyboardDidHideListener.remove();
       });
@@ -53,23 +62,23 @@ const SelectContactScreen = () => {
   }, [name, phoneNumber]);
 
   const handleOpenBottomSheet = useCallback(() => {
-    const isActive = ref.current?.isActive();
+    const isActive = addContactRef.current?.isActive();
     if (isActive) {
-      ref.current?.scrollTo(0);
+      addContactRef.current?.scrollTo(0);
     } else {
-      ref.current?.scrollTo(-550);
+      addContactRef.current?.scrollTo(-550);
     }
   }, []);
 
   const handleOpenKeyboard = useCallback(() => {
-    const isActive = ref.current?.isActive();
+    const isActive = addContactRef.current?.isActive();
     const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', (e) => {
       if (isActive) {
-        ref.current?.scrollTo(-550 - e.endCoordinates.height);
+        addContactRef.current?.scrollTo(-550 - e.endCoordinates.height);
       }
     });
     const keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', () => {
-      ref.current?.scrollTo(-550);
+      addContactRef.current?.scrollTo(-550);
     });
 
     // Cleanup listeners on unmount
@@ -77,6 +86,16 @@ const SelectContactScreen = () => {
       keyboardWillShowListener.remove();
       keyboardWillHideListener.remove();
     };
+  }, []);
+
+  const handleDeleteContact = useCallback((index: number) => {
+    setContacts((prev) => {
+      if (prev) {
+        const newContacts = prev.filter((_, i) => i !== index);
+        return newContacts;
+      }
+      return null;
+    });
   }, []);
 
   return (
@@ -121,16 +140,60 @@ const SelectContactScreen = () => {
                 Add a contact
               </Text>
             </Pressable>
-            <FlatList
-              data={contacts}
-              renderItem={({ item }) => <Text style={{ color: COLORS.light }}>{item.name}</Text>}
-            />
+            {contacts && contacts?.length > 0 && (
+              <FlatList
+                data={contacts}
+                renderItem={({ item, index }) => (
+                  <View style={styles.contact}>
+                    <View style={{ flexDirection: 'row', gap: 12 }}>
+                      <View>
+                        <Image
+                          source={require('../../assets/images/profile.png')}
+                          style={{ width: 40, height: 40, borderRadius: 100 }}
+                        />
+                      </View>
+                      <View>
+                        <Text style={styles.contactName}>{item.name}</Text>
+                        <Text style={styles.contactNumber}>{item.phoneNumber}</Text>
+                      </View>
+                    </View>
+                    <View style={{ flexDirection: 'row', gap: 16 }}>
+                      <Pressable
+                        style={styles.contactIcon}
+                        onPress={() => handleDeleteContact(index)}>
+                        <Feather name="trash-2" size={16} color={COLORS.light} />
+                      </Pressable>
+                      {/* <Pressable
+                      style={styles.contactIcon}
+                      onPress={() => handleEditContactOpen(index, item.name, item.phoneNumber)}>
+                      <Feather name="edit-3" size={16} color={COLORS.light} />
+                    </Pressable> */}
+                    </View>
+                  </View>
+                )}
+                keyExtractor={(item) => item.phoneNumber}
+                style={styles.contactsContainer}
+                ItemSeparatorComponent={() => (
+                  <View
+                    style={{
+                      height: 1,
+                      backgroundColor: COLORS.light,
+                      opacity: 0.05,
+                      width: '75%',
+                      alignSelf: 'center',
+                      marginVertical: 8,
+                    }}
+                  />
+                )}
+              />
+            )}
           </View>
+
           <View style={styles.buttonWrapper}>
             <Button title="Next" type="primary" onPress={() => handleNext()} />
           </View>
         </View>
-        <BottomSheet ref={ref}>
+        <BottomSheet ref={addContactRef}>
           <Text style={styles.modalText}>Agrega Un Contacto</Text>
           <View style={{ gap: 24, paddingHorizontal: 16 }}>
             <PhoneNumberInput
@@ -168,20 +231,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: COLORS.dark,
   },
+  contactIcon: {
+    backgroundColor: COLORS.gray[600],
+    padding: 8,
+    borderRadius: 100,
+  },
+  contactsContainer: {
+    marginTop: 24,
+    marginHorizontal: 16,
+    backgroundColor: COLORS.gray[800],
+    borderRadius: 24,
+    paddingVertical: 8,
+  },
   contact: {
     gap: 10,
-    paddingVertical: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray[400],
+    paddingVertical: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: 16,
+    paddingRight: 24,
   },
   contactName: {
-    color: COLORS.dark,
-    fontSize: 20,
+    color: COLORS.light,
+    fontSize: 16,
     fontFamily: 'Satoshi-Bold',
   },
   contactNumber: {
-    color: COLORS.dark,
-    fontSize: 20,
+    color: COLORS.light,
+    fontSize: 14,
+    opacity: 0.4,
   },
   container: {
     backgroundColor: COLORS.light,
