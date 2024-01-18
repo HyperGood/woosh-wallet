@@ -5,14 +5,18 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
+import Input from '../../components/UI/Input';
+import PhoneNumberInput from '../../components/UI/PhoneNumberInput';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
-import ContactModal from '../../components/modals/ContactModal';
 import { COLORS } from '../../constants/global-styles';
 import { useRequest } from '../../store/RequestContext';
 
 const SelectContactScreen = () => {
   const ref = useRef<BottomSheetRefProps>(null);
   const { requestData } = useRequest();
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [countryCode, setCountryCode] = useState('+52');
+  const [name, setName] = useState('');
 
   const handleNext = () => {
     console.log(requestData);
@@ -23,7 +27,7 @@ const SelectContactScreen = () => {
     if (isActive) {
       ref.current?.scrollTo(0);
     } else {
-      ref.current?.scrollTo(-200);
+      ref.current?.scrollTo(-550);
     }
   }, []);
 
@@ -65,7 +69,23 @@ const SelectContactScreen = () => {
           </View>
         </View>
         <BottomSheet ref={ref}>
-          <View style={{ flex: 1, backgroundColor: 'orange' }} />
+          <Text style={styles.modalText}>Agrega Un Contacto</Text>
+          <View style={{ gap: 24, paddingHorizontal: 16 }}>
+            <PhoneNumberInput
+              onPhoneNumberChange={setPhoneNumber}
+              onCountryCodeChange={setCountryCode}
+              initialCountryCode={countryCode}
+              initialPhoneNumber={phoneNumber}
+            />
+
+            <Input placeholder="Name" value={name} onChangeText={setName} />
+            <View style={styles.selectContactButton}>
+              <Text style={styles.selectContactButtonText}>Seleccionar de mis contactos</Text>
+            </View>
+            <View style={{ flexDirection: 'row', marginTop: 16 }}>
+              <Button title="Add" type="primary" onPress={() => {}} />
+            </View>
+          </View>
         </BottomSheet>
       </View>
     </GestureHandlerRootView>
@@ -116,5 +136,24 @@ const styles = StyleSheet.create({
     marginTop: 24,
     flexDirection: 'row',
     marginHorizontal: 12,
+  },
+  modalText: {
+    fontSize: 32,
+    textAlign: 'center',
+    fontFamily: 'Satoshi-Bold',
+    color: COLORS.light,
+    marginTop: 16,
+    marginBottom: 32,
+  },
+  selectContactButton: {
+    backgroundColor: COLORS.light,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+  },
+  selectContactButtonText: {
+    color: COLORS.primary[600],
+    fontFamily: 'Satoshi-Bold',
+    fontSize: 18,
   },
 });

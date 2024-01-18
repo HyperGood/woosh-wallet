@@ -42,20 +42,20 @@ const PhoneNumberInput = ({
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ flexDirection: 'row', marginLeft: 16, paddingVertical: 8 }}>
+      <View style={{ flexDirection: 'row', gap: 12 }}>
         <ModalDropdown
           ref={dropdownRef}
           options={countryNames}
           onSelect={handleCountryCodeChange}
           defaultValue={countryNames[0]}
           style={{
-            backgroundColor: COLORS.gray[800],
+            backgroundColor: COLORS.gray[600],
             borderRadius: 16,
             borderWidth: 0,
           }}
           dropdownStyle={{
             borderRadius: 16,
-            backgroundColor: COLORS.gray[800],
+            backgroundColor: COLORS.gray[600],
             padding: 16,
             borderWidth: 0,
             marginTop: 8,
@@ -63,7 +63,7 @@ const PhoneNumberInput = ({
           dropdownTextStyle={{
             fontSize: 18,
             color: COLORS.light,
-            backgroundColor: COLORS.gray[800],
+            backgroundColor: COLORS.gray[600],
           }}
           textStyle={{
             fontSize: 18,
