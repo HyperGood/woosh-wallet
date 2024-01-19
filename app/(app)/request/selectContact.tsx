@@ -1,7 +1,7 @@
 import SelectContactScreen from '../../../screens/request/SelectContactScreen';
 
-const enterAmount = () => {
+const selectContact = () => {
   return <SelectContactScreen />;
 };
 
-export default enterAmount;
+export default selectContact;

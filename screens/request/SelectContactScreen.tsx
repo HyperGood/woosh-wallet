@@ -1,50 +1,60 @@
 import { Feather } from '@expo/vector-icons';
-import { useCallback, useRef, useState } from 'react';
-import {
-  FlatList,
-  Image,
-  Keyboard,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { router } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { FlatList, Keyboard, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
-import Input from '../../components/UI/Input';
-import PhoneNumberInput from '../../components/UI/PhoneNumberInput';
+import ContactForm from '../../components/UI/ContactForm';
+import InnerHeader from '../../components/UI/InnerHeader';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
+import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
 import { useRequest } from '../../store/RequestContext';
 
 type Contact = {
   name: string;
   phoneNumber: string;
+  amount: number;
 };
+
+const INITIAL_COUNTRY_CODE = '+52';
 
 const SelectContactScreen = () => {
   const addContactRef = useRef<BottomSheetRefProps>(null);
-  const { requestData } = useRequest();
+  const { requestData, setRequestData } = useRequest();
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [countryCode, setCountryCode] = useState('+52');
+  const [countryCode, setCountryCode] = useState(INITIAL_COUNTRY_CODE);
   const [name, setName] = useState('');
   //Array of contacts via useState
   const [contacts, setContacts] = useState<Contact[] | null>(null);
+  const [isNextClicked, setIsNextClicked] = useState(false);
 
   const handleNext = () => {
-    console.log(requestData);
+    setRequestData(
+      (prevData) =>
+        ({
+          ...prevData,
+          contacts,
+        }) as any
+    );
+    setIsNextClicked(true);
   };
+
+  useEffect(() => {
+    if (isNextClicked) {
+      router.push('/(app)/request/splits');
+      setIsNextClicked(false); // reset the flag
+    }
+  }, [requestData, isNextClicked]);
 
   const handleAddContact = useCallback(() => {
     if (phoneNumber && name) {
       setContacts((prev) => {
         if (prev) {
-          return [...prev, { name, phoneNumber }];
+          return [...prev, { name, phoneNumber, amount: 0 }];
         } else {
-          return [{ name, phoneNumber }];
+          return [{ name, phoneNumber, amount: 0 }];
         }
       });
       setPhoneNumber('');
@@ -101,13 +111,7 @@ const SelectContactScreen = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.wrapper}>
-        <View style={styles.header}>
-          <View style={{ position: 'absolute', left: 0 }}>
-            <BackButton />
-          </View>
-          <Text style={styles.headerTitle}>Solicitar Pago</Text>
-          <View />
-        </View>
+        <InnerHeader title="Request" />
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
           <View>
             <Text style={styles.title}>Agrega contactos</Text>
@@ -144,32 +148,11 @@ const SelectContactScreen = () => {
               <FlatList
                 data={contacts}
                 renderItem={({ item, index }) => (
-                  <View style={styles.contact}>
-                    <View style={{ flexDirection: 'row', gap: 12 }}>
-                      <View>
-                        <Image
-                          source={require('../../assets/images/profile.png')}
-                          style={{ width: 40, height: 40, borderRadius: 100 }}
-                        />
-                      </View>
-                      <View>
-                        <Text style={styles.contactName}>{item.name}</Text>
-                        <Text style={styles.contactNumber}>{item.phoneNumber}</Text>
-                      </View>
-                    </View>
-                    <View style={{ flexDirection: 'row', gap: 16 }}>
-                      <Pressable
-                        style={styles.contactIcon}
-                        onPress={() => handleDeleteContact(index)}>
-                        <Feather name="trash-2" size={16} color={COLORS.light} />
-                      </Pressable>
-                      {/* <Pressable
-                      style={styles.contactIcon}
-                      onPress={() => handleEditContactOpen(index, item.name, item.phoneNumber)}>
-                      <Feather name="edit-3" size={16} color={COLORS.light} />
-                    </Pressable> */}
-                    </View>
-                  </View>
+                  <ContactListItem
+                    name={item.name}
+                    phoneNumber={item.phoneNumber}
+                    onDelete={() => handleDeleteContact(index)}
+                  />
                 )}
                 keyExtractor={(item) => item.phoneNumber}
                 style={styles.contactsContainer}
@@ -190,29 +173,26 @@ const SelectContactScreen = () => {
           </View>
 
           <View style={styles.buttonWrapper}>
-            <Button title="Next" type="primary" onPress={() => handleNext()} />
+            <Button
+              title="Next"
+              type="primary"
+              onPress={() => handleNext()}
+              disabled={!contacts || contacts.length === 0}
+            />
           </View>
         </View>
         <BottomSheet ref={addContactRef}>
           <Text style={styles.modalText}>Agrega Un Contacto</Text>
           <View style={{ gap: 24, paddingHorizontal: 16 }}>
-            <PhoneNumberInput
-              onPhoneNumberChange={setPhoneNumber}
-              onCountryCodeChange={setCountryCode}
-              initialCountryCode={countryCode}
-              initialPhoneNumber={phoneNumber}
+            <ContactForm
+              phoneNumber={phoneNumber}
+              setPhoneNumber={setPhoneNumber}
+              countryCode={countryCode}
+              setCountryCode={setCountryCode}
+              name={name}
+              setName={setName}
               handleOpenKeyboard={handleOpenKeyboard}
             />
-
-            <Input
-              placeholder="Name"
-              value={name}
-              onChangeText={setName}
-              handleOpenKeyboard={handleOpenKeyboard}
-            />
-            <View style={styles.selectContactButton}>
-              <Text style={styles.selectContactButtonText}>Seleccionar de mis contactos</Text>
-            </View>
             <View style={{ flexDirection: 'row', marginTop: 16 }}>
               <Button title="Add" type="primary" onPress={handleAddContact} disabled={!name} />
             </View>
@@ -231,45 +211,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: COLORS.dark,
   },
-  contactIcon: {
-    backgroundColor: COLORS.gray[600],
-    padding: 8,
-    borderRadius: 100,
-  },
   contactsContainer: {
     marginTop: 24,
     marginHorizontal: 16,
     backgroundColor: COLORS.gray[800],
     borderRadius: 24,
     paddingVertical: 8,
-  },
-  contact: {
-    gap: 10,
-    paddingVertical: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 24,
-  },
-  contactName: {
-    color: COLORS.light,
-    fontSize: 16,
-    fontFamily: 'Satoshi-Bold',
-  },
-  contactNumber: {
-    color: COLORS.light,
-    fontSize: 14,
-    opacity: 0.4,
-  },
-  container: {
-    backgroundColor: COLORS.light,
-    flex: 1,
-    marginTop: 16,
-    borderRadius: 16,
-    paddingTop: 16,
-    paddingHorizontal: 10,
-    marginHorizontal: 8,
   },
   title: {
     fontSize: 48,
@@ -291,30 +238,5 @@ const styles = StyleSheet.create({
     color: COLORS.light,
     marginTop: 16,
     marginBottom: 32,
-  },
-  selectContactButton: {
-    backgroundColor: COLORS.light,
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    borderRadius: 24,
-  },
-  selectContactButtonText: {
-    color: COLORS.primary[600],
-    fontFamily: 'Satoshi-Bold',
-    fontSize: 18,
-  },
-  headerTitle: {
-    fontSize: 24,
-    color: COLORS.light,
-    fontFamily: 'Satoshi-Bold',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 16,
-    marginHorizontal: 16,
-    marginBottom: 32,
-    position: 'relative',
   },
 });

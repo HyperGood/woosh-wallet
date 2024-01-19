@@ -1,7 +1,8 @@
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
 
-interface Payment {
-  payerNumber: string;
+interface Contact {
+  phoneNumber: string;
+  name: string;
   amount: number;
 }
 
@@ -10,7 +11,7 @@ interface RequestData {
   totalAmount: number;
   description: string;
   type: 'total' | 'partial';
-  payments: Payment[];
+  contacts: Contact[];
 }
 
 interface RequestContextType {
