@@ -1,6 +1,6 @@
 // components/UI/ContactForm.tsx
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 import Input from './Input';
 import PhoneNumberInput from './PhoneNumberInput';
@@ -15,7 +15,7 @@ type ContactFormProps = {
   name: string;
   setName: (name: string) => void;
   handleOpenKeyboard: () => void;
-  selectContact?: () => void; // This function should handle the action of selecting a contact
+  selectContact: () => void;
 };
 
 const ContactForm: React.FC<ContactFormProps> = ({
@@ -44,11 +44,9 @@ const ContactForm: React.FC<ContactFormProps> = ({
         onChangeText={setName}
         handleOpenKeyboard={handleOpenKeyboard}
       />
-      <View style={styles.selectContactButton}>
-        <Text style={styles.selectContactButtonText} onPress={selectContact}>
-          {i18n.t('getContacts')}
-        </Text>
-      </View>
+      <Pressable style={styles.selectContactButton} onPress={selectContact}>
+        <Text style={styles.selectContactButtonText}>{i18n.t('getContacts')}</Text>
+      </Pressable>
     </View>
   );
 };
@@ -59,15 +57,20 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     paddingHorizontal: 16,
     borderRadius: 24,
-    // Add other styles as needed
   },
   selectContactButtonText: {
     color: COLORS.primary[600],
     fontFamily: 'Satoshi-Bold',
     fontSize: 18,
-    // Add other styles as needed
   },
-  // Add other styles as needed
+  modalText: {
+    fontSize: 32,
+    textAlign: 'center',
+    fontFamily: 'Satoshi-Bold',
+    color: COLORS.light,
+    marginTop: 16,
+    marginBottom: 32,
+  },
 });
 
 export default ContactForm;

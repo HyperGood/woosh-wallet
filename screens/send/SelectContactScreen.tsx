@@ -17,12 +17,12 @@ import Input from '../../components/UI/Input';
 import PhoneNumberInput from '../../components/UI/PhoneNumberInput';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import { useContacts } from '../../store/ContactsContext';
+import { usePhoneContacts } from '../../store/ContactsContext';
 import { useTransaction } from '../../store/TransactionContext';
 
 const SelectContactScreen = () => {
   const { setTransactionData } = useTransaction();
-  const { contacts, getContacts } = useContacts();
+  const { phoneContacts, getPhoneContacts } = usePhoneContacts();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('+52'); // default to US
   const [recipient, setRecipient] = useState('');
@@ -30,7 +30,7 @@ const SelectContactScreen = () => {
 
   const countryCodes = ['+52', '+1']; // Array of country codes
 
-  const filteredContacts = contacts?.filter((contact: any) =>
+  const filteredContacts = phoneContacts?.filter((contact: any) =>
     contact.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
@@ -63,7 +63,7 @@ const SelectContactScreen = () => {
           <Input placeholder={i18n.t('enterName')} onChangeText={setRecipient} value={recipient} />
         </View>
         <View style={{ flex: 1, marginTop: 16 }}>
-          {contacts ? (
+          {phoneContacts ? (
             <View style={{ flex: 1 }}>
               <Input
                 placeholder={i18n.t('searchContacts')}
@@ -134,7 +134,7 @@ const SelectContactScreen = () => {
                   backgroundColor: COLORS.light,
                   borderRadius: 16,
                 }}
-                onPress={getContacts}>
+                onPress={getPhoneContacts}>
                 <Text
                   style={{
                     color: COLORS.dark,

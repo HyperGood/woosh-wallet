@@ -3,14 +3,29 @@ import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Keyboard, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ModalDropdown from 'react-native-modal-dropdown';
+import Animated, {
+  Easing,
+  Extrapolate,
+  FadeIn,
+  FadeOut,
+  Layout,
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 import Button from '../../components/UI/Button';
 import ContactForm from '../../components/UI/ContactForm';
 import InnerHeader from '../../components/UI/InnerHeader';
+import Input from '../../components/UI/Input';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
+import { usePhoneContacts } from '../../store/ContactsContext';
 import { useRequest } from '../../store/RequestContext';
 
 type Contact = {
@@ -27,8 +42,18 @@ const SelectContactScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState(INITIAL_COUNTRY_CODE);
   const [name, setName] = useState('');
-  //Array of contacts via useState
   const [contacts, setContacts] = useState<Contact[] | null>(null);
+  const [searchText, setSearchText] = useState('');
+  const { phoneContacts, getPhoneContacts } = usePhoneContacts();
+  const dropdownRef = useRef<ModalDropdown | null>(null);
+  const [step, setStep] = useState(0);
+  const isActionTrayOpened = useSharedValue(false);
+
+  const countryCodes = ['+52', '+1']; // Array of country codes
+
+  const filteredContacts = phoneContacts?.filter((contact: any) =>
+    contact.name.toLowerCase().includes(searchText.toLowerCase())
+  );
   const [isNextClicked, setIsNextClicked] = useState(false);
 
   const handleNext = () => {
@@ -73,6 +98,12 @@ const SelectContactScreen = () => {
     console.log(requestData);
   }, []);
 
+  const close = useCallback(() => {
+    addContactRef.current?.close();
+    isActionTrayOpened.value = false;
+    setStep(0);
+  }, []);
+
   const handleAddContact = useCallback(() => {
     if (phoneNumber && name) {
       setContacts((prev) => {
@@ -86,34 +117,35 @@ const SelectContactScreen = () => {
       setName('');
       // Listen for keyboardDidHide event
       const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-        addContactRef.current?.close();
+        close();
         // Remove the listener once done
         keyboardDidHideListener.remove();
       });
 
       // Dismiss the keyboard
       Keyboard.dismiss();
+      close();
     }
   }, [name, phoneNumber]);
 
-  const handleOpenBottomSheet = useCallback(() => {
-    const isActive = addContactRef.current?.isActive();
-    if (isActive) {
-      addContactRef.current?.scrollTo(0);
-    } else {
-      addContactRef.current?.scrollTo(-550);
-    }
-  }, []);
+  const toggleActionTray = useCallback(() => {
+    const isActive = addContactRef.current?.isActive() ?? false;
+    isActionTrayOpened.value = !isActive;
+    isActive ? close() : addContactRef.current?.open();
+  }, [close, isActionTrayOpened]);
 
   const handleOpenKeyboard = useCallback(() => {
     const isActive = addContactRef.current?.isActive();
     const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', (e) => {
-      if (isActive) {
-        addContactRef.current?.scrollTo(-550 - e.endCoordinates.height);
+      if (isActive && step === 0) {
+        console.log('scrolling');
+        addContactRef.current?.scrollTo(-e.endCoordinates.height + 30);
       }
     });
     const keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', () => {
-      addContactRef.current?.scrollTo(-550);
+      if (isActive && step === 0) {
+        addContactRef.current?.scrollTo(0);
+      }
     });
 
     // Cleanup listeners on unmount
@@ -133,6 +165,18 @@ const SelectContactScreen = () => {
     });
   }, []);
 
+  const rContentHeight = useDerivedValue(() => {
+    // Just a simple interpolation to make the content height dynamic based on the step
+    return interpolate(step, [0, 1, 2], [520, 700, 250], Extrapolate.CLAMP);
+  }, [step]);
+
+  const rContentStyle = useAnimatedStyle(() => {
+    return {
+      // Spring animations. Spring animations everywhere! 😅
+      height: withSpring(rContentHeight.value),
+    };
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.wrapper}>
@@ -141,7 +185,7 @@ const SelectContactScreen = () => {
           <View>
             <Text style={styles.title}>{i18n.t('requestSelectContactTitle')}</Text>
             <Pressable
-              onPress={handleOpenBottomSheet}
+              onPress={toggleActionTray}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -208,27 +252,126 @@ const SelectContactScreen = () => {
           </View>
         </View>
         <BottomSheet ref={addContactRef}>
-          <Text style={styles.modalText}>{i18n.t('addContact')}</Text>
-          <View style={{ gap: 24, paddingHorizontal: 16 }}>
-            <ContactForm
-              phoneNumber={phoneNumber}
-              setPhoneNumber={setPhoneNumber}
-              countryCode={countryCode}
-              setCountryCode={setCountryCode}
-              name={name}
-              setName={setName}
-              handleOpenKeyboard={handleOpenKeyboard}
-            />
-            <View style={{ flexDirection: 'row', marginTop: 16 }}>
-              <Button
-                title={i18n.t('add')}
-                icon="plus"
-                type="primary"
-                onPress={handleAddContact}
-                disabled={!name}
-              />
-            </View>
-          </View>
+          <Animated.View style={rContentStyle}>
+            {step === 0 && (
+              <Animated.View
+                layout={Layout.easing(Easing.linear).duration(250)}
+                exiting={FadeOut.delay(100)}
+                style={{ flex: 1, backgroundColor: COLORS.gray[800] }}>
+                <Text style={styles.modalText}>{i18n.t('addContact')}</Text>
+                <View style={{ gap: 24, paddingHorizontal: 16 }}>
+                  <ContactForm
+                    phoneNumber={phoneNumber}
+                    setPhoneNumber={setPhoneNumber}
+                    countryCode={countryCode}
+                    setCountryCode={setCountryCode}
+                    name={name}
+                    setName={setName}
+                    handleOpenKeyboard={handleOpenKeyboard}
+                    selectContact={() => {
+                      getPhoneContacts();
+                      setStep(1);
+                    }}
+                  />
+                  <View style={{ flexDirection: 'row', marginTop: 16 }}>
+                    <Button
+                      title={i18n.t('add')}
+                      icon="plus"
+                      type="primary"
+                      onPress={handleAddContact}
+                      disabled={!name}
+                    />
+                  </View>
+                </View>
+              </Animated.View>
+            )}
+            {step === 1 && (
+              <Animated.View
+                layout={Layout.easing(Easing.linear).duration(250)}
+                entering={FadeIn.delay(100)}
+                exiting={FadeOut.delay(100)}
+                style={{ flex: 1, backgroundColor: COLORS.gray[800] }}>
+                <>
+                  <Pressable onPress={() => setStep(0)}>
+                    <Feather name="arrow-left" size={24} color={COLORS.light} />
+                  </Pressable>
+                  <Text style={styles.modalText}>{i18n.t('addContact')}</Text>
+                  <View style={{ gap: 24, paddingHorizontal: 16, flex: 1 }}>
+                    <View style={{ flex: 1 }}>
+                      <Input
+                        placeholder={i18n.t('searchContacts')}
+                        onChangeText={setSearchText}
+                        value={searchText}
+                        icon
+                      />
+                      <FlatList
+                        data={filteredContacts}
+                        style={styles.container}
+                        keyExtractor={(item) => item.id}
+                        contentContainerStyle={{ paddingBottom: 40 }}
+                        ListEmptyComponent={<Text>No contacts found on your phone</Text>}
+                        ItemSeparatorComponent={() => (
+                          <View
+                            style={{
+                              height: 1,
+                              backgroundColor: COLORS.light,
+                              opacity: 0.05,
+                              width: '75%',
+                              alignSelf: 'center',
+                            }}
+                          />
+                        )}
+                        renderItem={({ item }) => (
+                          <Pressable
+                            onPress={() => {
+                              let selectedPhoneNumber = item.phoneNumbers[0].number;
+                              const selectedRecipient = item.name;
+
+                              // Remove spaces, dashes, and parentheses from the phone number
+                              selectedPhoneNumber = selectedPhoneNumber.replace(/[-\s()]/g, '');
+                              let phoneNumberWithoutCountryCode;
+
+                              let newCountryCode = '+52'; // Default country code
+                              if (selectedPhoneNumber.startsWith('+1')) {
+                                newCountryCode = '+1';
+                                phoneNumberWithoutCountryCode = selectedPhoneNumber.substring(
+                                  newCountryCode.length
+                                );
+                              } else if (selectedPhoneNumber.startsWith('+52')) {
+                                newCountryCode = '+52';
+                                phoneNumberWithoutCountryCode = selectedPhoneNumber.substring(
+                                  newCountryCode.length
+                                );
+                              } else {
+                                phoneNumberWithoutCountryCode = selectedPhoneNumber;
+                              }
+
+                              setCountryCode(newCountryCode);
+                              setPhoneNumber(phoneNumberWithoutCountryCode);
+                              setName(selectedRecipient);
+
+                              const selectedIndex = countryCodes.indexOf(newCountryCode);
+                              if (selectedIndex !== -1 && dropdownRef.current) {
+                                dropdownRef.current.select(selectedIndex);
+                              }
+                              setStep(0);
+                            }}
+                            style={styles.contact}>
+                            <View>
+                              <Text style={styles.contactName}>{item.name}</Text>
+                              <Text style={styles.contactNumber}>
+                                {item.phoneNumbers[0].number}
+                              </Text>
+                            </View>
+                          </Pressable>
+                        )}
+                      />
+                    </View>
+                  </View>
+                </>
+              </Animated.View>
+            )}
+          </Animated.View>
         </BottomSheet>
       </SafeAreaView>
     </GestureHandlerRootView>
@@ -270,5 +413,34 @@ const styles = StyleSheet.create({
     color: COLORS.light,
     marginTop: 16,
     marginBottom: 32,
+  },
+  container: {
+    backgroundColor: COLORS.gray[600],
+    flex: 1,
+    height: '100%',
+    marginTop: 16,
+    borderRadius: 16,
+    paddingTop: 16,
+    paddingHorizontal: 10,
+    marginHorizontal: 8,
+  },
+  contact: {
+    gap: 10,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: 16,
+    paddingRight: 24,
+  },
+  contactName: {
+    color: COLORS.light,
+    fontSize: 16,
+    fontFamily: 'Satoshi-Bold',
+  },
+  contactNumber: {
+    color: COLORS.light,
+    fontSize: 14,
+    opacity: 0.4,
   },
 });

@@ -4,33 +4,33 @@ import { createContext, useContext, useState } from 'react';
 import { storage } from '../app/_layout';
 
 interface ContactContextType {
-  contacts: any;
-  getContacts: () => void;
+  phoneContacts: any;
+  getPhoneContacts: () => void;
   hasRequestedContacts: string | undefined;
 }
 
 const ContactContext = createContext<ContactContextType>({
-  contacts: null,
-  getContacts: () => {},
+  phoneContacts: null,
+  getPhoneContacts: () => {},
   hasRequestedContacts: undefined,
 });
 
-export const useContacts = () => useContext(ContactContext);
+export const usePhoneContacts = () => useContext(ContactContext);
 
 interface ContactProviderProps {
   children: React.ReactNode;
 }
 
 export const ContactProvider = ({ children }: ContactProviderProps) => {
-  const [contacts, setContacts] = useState<any>();
+  const [phoneContacts, setContacts] = useState<any>();
   const [hasRequestedContacts, setHasRequestedContacts] = useState<string>();
 
-  const getContacts = async () => {
+  const getPhoneContacts = async () => {
     const requestedContacts = storage.getString('hasRequestedContacts');
     setHasRequestedContacts(requestedContacts);
     console.log('requestedContacts', requestedContacts);
 
-    if (!requestedContacts || contacts === undefined) {
+    if (!requestedContacts || phoneContacts === undefined) {
       const { status } = await Contacts.requestPermissionsAsync();
       setHasRequestedContacts('true');
 
@@ -52,7 +52,7 @@ export const ContactProvider = ({ children }: ContactProviderProps) => {
   };
 
   return (
-    <ContactContext.Provider value={{ contacts, getContacts, hasRequestedContacts }}>
+    <ContactContext.Provider value={{ phoneContacts, getPhoneContacts, hasRequestedContacts }}>
       {children}
     </ContactContext.Provider>
   );

@@ -1,5 +1,5 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle } from 'react';
-import { Dimensions, Keyboard, StyleSheet, View } from 'react-native';
+import { forwardRef, useCallback, useImperativeHandle } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolate,
@@ -7,8 +7,6 @@ import Animated, {
   FadeOut,
   Layout,
   interpolate,
-  runOnJS,
-  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -28,13 +26,15 @@ type BottomSheetProps = {
 };
 export type BottomSheetRefProps = {
   scrollTo: (destination: number) => void;
+  open: () => void;
   isActive: () => boolean;
   close: () => void;
 };
 
 const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
   ({ children, maxHeight = SCREEN_HEIGHT }, ref) => {
-    const translateY = useSharedValue(0);
+    const translateY = useSharedValue(maxHeight);
+
     const active = useSharedValue(false);
 
     const scrollTo = useCallback((destination: number) => {
@@ -42,6 +42,7 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
       active.value = destination !== maxHeight;
       translateY.value = withSpring(destination, {
         mass: 0.4,
+        damping: 20,
       });
     }, []);
 
@@ -57,6 +58,10 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
     useImperativeHandle(
       ref,
       () => ({
+        open: () => {
+          'worklet';
+          scrollTo(0);
+        },
         scrollTo,
         isActive,
         close,
@@ -131,11 +136,11 @@ export default BottomSheet;
 const styles = StyleSheet.create({
   bottomSheetContainer: {
     width: '100%',
-    height: SCREEN_HEIGHT,
     backgroundColor: COLORS.gray[800],
     position: 'absolute',
-    top: SCREEN_HEIGHT,
     borderRadius: 25,
+    bottom: 30,
+    borderCurve: 'continuous',
   },
   line: {
     width: 40,
