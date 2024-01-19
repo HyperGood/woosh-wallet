@@ -288,11 +288,13 @@ const SelectContactScreen = () => {
             {step === 1 && (
               <Animated.View
                 layout={Layout.easing(Easing.linear).duration(250)}
-                entering={FadeIn.delay(100)}
+                entering={FadeIn.delay(0)}
                 exiting={FadeOut.delay(100)}
                 style={{ flex: 1, backgroundColor: COLORS.gray[800] }}>
                 <>
-                  <Pressable onPress={() => setStep(0)}>
+                  <Pressable
+                    style={{ marginLeft: 16, position: 'absolute' }}
+                    onPress={() => setStep(0)}>
                     <Feather name="arrow-left" size={24} color={COLORS.light} />
                   </Pressable>
                   <Text style={styles.modalText}>{i18n.t('addContact')}</Text>

@@ -20,7 +20,7 @@ export const useUserBalance = () => {
   const chainId = chain.id;
   const tokenAddress =
     chainId && chainId in usdcAddress ? usdcAddress[chainId as keyof TokenAddresses][0] : '0x12';
-  const tokenDecimals = process.env.EXPO_PUBLIC_TESTNET === 'true' ? 18 : 6;
+  const tokenDecimals = 6;
   const contract = {
     abi: [
       {

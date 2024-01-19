@@ -1,6 +1,6 @@
 // components/UI/ContactForm.tsx
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 
 import Input from './Input';
 import PhoneNumberInput from './PhoneNumberInput';
@@ -45,6 +45,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
         handleOpenKeyboard={handleOpenKeyboard}
       />
       <Pressable style={styles.selectContactButton} onPress={selectContact}>
+        <Image
+          source={require('../../assets/images/contacts-icon.png')}
+          style={{ width: 32, height: 32 }}
+        />
         <Text style={styles.selectContactButtonText}>{i18n.t('getContacts')}</Text>
       </Pressable>
     </View>
@@ -57,6 +61,9 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     paddingHorizontal: 16,
     borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   selectContactButtonText: {
     color: COLORS.primary[600],

@@ -18,7 +18,7 @@ export const useDeposit = () => {
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
   const tokenAddress = usdcAddress[chainId as keyof TokenAddresses][0];
-  const tokenDecimals = process.env.EXPO_PUBLIC_TESTNET === 'true' ? 18 : 6;
+  const tokenDecimals = 6;
 
   const deposit = async (amount: string) => {
     setIsDepositing(true);

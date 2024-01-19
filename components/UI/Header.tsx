@@ -1,18 +1,21 @@
 import { Feather } from '@expo/vector-icons';
 import storage from '@react-native-firebase/storage';
+import * as Clipboard from 'expo-clipboard';
 import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as Sentry from 'sentry-expo';
 
 import placeholderUser from '../../assets/images/profile.png';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import { useSession } from '../../store/AuthContext';
+import { useAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
 
 const Header = () => {
   const { userData } = useUserData();
-  const { deletePrivateKey, logout } = useSession();
+  const { address } = useAccount();
+  const { logout } = useSession();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -42,11 +45,16 @@ const Header = () => {
     fetchImage();
   }, [reference]);
 
+  const copyAddressToClipboard = async () => {
+    await Clipboard.setStringAsync(address || 'No address found');
+    Alert.alert('Copied address clipboard!');
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <Skeleton show={isLoading} height={48} width={48} radius="round" {...SkeletonCommonProps}>
-          <Pressable onPress={deletePrivateKey}>
+          <Pressable onPress={copyAddressToClipboard}>
             <Image
               style={styles.image}
               source={typeof imageSrc === 'string' ? { uri: imageSrc } : imageSrc}

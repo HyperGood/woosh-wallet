@@ -34,7 +34,7 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
 
   return (
     <View style={styles.contact}>
-      <View style={{ flexDirection: 'row', gap: 12 }}>
+      <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
         <Image
           source={require('../../assets/images/profile.png')}
           style={{ width: 32, height: 32, borderRadius: 100 }}
