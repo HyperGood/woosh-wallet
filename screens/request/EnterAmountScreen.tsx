@@ -8,12 +8,14 @@ import NumberPad from '../../components/UI/NumberPad';
 import { TabOption } from '../../components/UI/Tabs';
 import { COLORS } from '../../constants/global-styles';
 import { useRequest } from '../../store/RequestContext';
+import { useAccount } from '../../store/SmartAccountContext';
 
 const RequestEnterAmountScreen = () => {
   const [amount, setAmount] = useState('0');
   const [description, setDescription] = useState('');
+  const { address } = useAccount();
   const { setRequestData } = useRequest();
-  const [activeTab, setActiveTab] = useState<TabOption>('Total');
+  const [activeTab, setActiveTab] = useState<TabOption>('total');
 
   const handleTabPress = (tab: TabOption) => {
     setActiveTab(tab);
@@ -29,11 +31,13 @@ const RequestEnterAmountScreen = () => {
         ({
           ...prevData,
           totalAmount: amount,
+          amountPerPerson: amount,
           description,
-          type: 'total',
+          recipientAddress: address,
+          type: activeTab,
         }) as any
     );
-  }, [amount]);
+  }, [amount, activeTab, description]);
 
   return (
     <ScrollView style={{ flex: 1, width: '100%' }}>

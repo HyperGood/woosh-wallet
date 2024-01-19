@@ -31,11 +31,31 @@ const SelectContactScreen = () => {
   const [isNextClicked, setIsNextClicked] = useState(false);
 
   const handleNext = () => {
+    const totalAmount = requestData?.totalAmount || 100;
+    const amountPerPerson = requestData?.amountPerPerson || 100;
+    const type = requestData?.type || 'total';
+
+    let updatedContacts: Contact[] | null = null;
+
+    // Update each contact's amount
+    if (type === 'total' && contacts) {
+      updatedContacts = contacts?.map((contact) => ({
+        ...contact,
+        amount: totalAmount / (contacts?.length || 1),
+      }));
+    } else {
+      updatedContacts = (contacts || []).map((contact) => ({
+        ...contact,
+        amount: amountPerPerson,
+      }));
+    }
+
     setRequestData(
       (prevData) =>
         ({
           ...prevData,
-          contacts,
+          contacts: updatedContacts,
+          totalAmount: amountPerPerson * (updatedContacts?.length || 1),
         }) as any
     );
     setIsNextClicked(true);
@@ -47,6 +67,10 @@ const SelectContactScreen = () => {
       setIsNextClicked(false); // reset the flag
     }
   }, [requestData, isNextClicked]);
+
+  useEffect(() => {
+    console.log(requestData);
+  }, []);
 
   const handleAddContact = useCallback(() => {
     if (phoneNumber && name) {

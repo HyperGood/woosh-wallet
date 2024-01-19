@@ -3,12 +3,13 @@ import { createContext, useState, useContext, ReactNode, Dispatch, SetStateActio
 interface Contact {
   phoneNumber: string;
   name: string;
-  amount: number;
+  amount: number | string;
 }
 
 interface RequestData {
   recipientAddress: string;
   totalAmount: number;
+  amountPerPerson: number;
   description: string;
   type: 'total' | 'partial';
   contacts: Contact[];

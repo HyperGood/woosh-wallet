@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, Pressable, TextInput, StyleSheet } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
@@ -24,13 +24,20 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
   onAmountChange,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isEditing]);
 
   return (
     <View style={styles.contact}>
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <Image
           source={require('../../assets/images/profile.png')}
-          style={{ width: 40, height: 40, borderRadius: 100 }}
+          style={{ width: 32, height: 32, borderRadius: 100 }}
         />
         <View>
           <Text style={styles.contactName}>{name}</Text>
@@ -41,16 +48,28 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
         {editableAmount ? (
           isEditing ? (
             <TextInput
+              ref={inputRef}
               style={styles.amountInput}
               value={amount}
               onChangeText={onAmountChange}
-              keyboardType="numeric"
+              keyboardType="decimal-pad"
               onEndEditing={() => setIsEditing(false)}
+              returnKeyType="done"
             />
           ) : (
-            <Text style={styles.amountText} onPress={() => setIsEditing(true)}>
-              {amount}
-            </Text>
+            <Pressable
+              style={styles.amountWrapper}
+              onPress={() => {
+                setIsEditing(true);
+              }}>
+              <Text style={styles.amountText}>
+                $
+                {Number(amount).toLocaleString('us', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Text>
+            </Pressable>
           )
         ) : (
           <Pressable style={styles.contactIcon} onPress={onDelete}>
@@ -95,14 +114,23 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   amountInput: {
-    backgroundColor: COLORS.light,
+    backgroundColor: COLORS.gray[600],
     borderRadius: 4,
     padding: 8,
     fontSize: 16,
-    color: COLORS.dark,
+    color: COLORS.light,
+    borderWidth: 1,
+    borderColor: COLORS.primary[400],
+    fontFamily: 'FHOscar',
+  },
+  amountWrapper: {
+    backgroundColor: COLORS.gray[600],
+    padding: 8,
+    borderRadius: 8,
   },
   amountText: {
-    color: COLORS.primary[400],
+    color: COLORS.light,
     fontSize: 16,
+    fontFamily: 'FHOscar',
   },
 });

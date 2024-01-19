@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     color: '#EBEBEB',
     fontFamily: 'Satoshi-Bold',
     fontSize: 18,
+    textTransform: 'capitalize',
   },
   activeTabText: {
     color: COLORS.dark,

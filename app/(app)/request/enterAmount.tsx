@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
-import RequestEnterAmountScreen from '../../../screens/request/RequestEnterAmountScreen';
+import RequestEnterAmountScreen from '../../../screens/request/EnterAmountScreen';
 
 const enterAmount = () => {
   return (

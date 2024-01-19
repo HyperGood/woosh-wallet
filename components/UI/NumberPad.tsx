@@ -112,7 +112,7 @@ const NumberPad = ({
         {type !== 'send' && (
           <View style={{ marginTop: 16, marginBottom: 8 }}>
             <Tabs
-              options={['Total', 'Por Persona']}
+              options={['total', 'per user']}
               activeTab={activeTab || ''}
               onTabPress={handleTabPress || (() => {})}
             />
