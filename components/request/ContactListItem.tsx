@@ -72,9 +72,11 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
             </Pressable>
           )
         ) : (
-          <Pressable style={styles.contactIcon} onPress={onDelete}>
-            <Feather name="trash-2" size={16} color={COLORS.light} />
-          </Pressable>
+          onDelete && (
+            <Pressable style={styles.contactIcon} onPress={onDelete}>
+              <Feather name="trash-2" size={16} color={COLORS.light} />
+            </Pressable>
+          )
         )}
         {onEdit && (
           <Pressable style={styles.contactIcon} onPress={onEdit}>

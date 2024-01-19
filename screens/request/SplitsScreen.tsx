@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Keyboard, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import { router } from 'expo-router';
+import { useCallback, useRef } from 'react';
+import { FlatList, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Button from '../../components/UI/Button';
@@ -7,6 +9,7 @@ import InnerHeader from '../../components/UI/InnerHeader';
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
 import { useRequest } from '../../store/RequestContext';
+import i18n from '../../constants/i18n';
 
 const SplitsScreen = () => {
   const { requestData, setRequestData } = useRequest();
@@ -63,14 +66,26 @@ const SplitsScreen = () => {
 
   const handleSendRequest = useCallback(() => {
     console.log('Send request with data', requestData);
+    try {
+      firestore()
+        .collection('requests')
+        .add({
+          ...requestData,
+        })
+        .then(() => {
+          router.push('/(app)/request/success');
+        });
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.wrapper}>
-        <InnerHeader title="Request" />
+        <InnerHeader title={i18n.t('requestHeaderTitle')} />
 
-        <View>
+        <View style={{ marginTop: 32 }}>
           <View
             style={{
               flexDirection: 'row',
@@ -94,9 +109,9 @@ const SplitsScreen = () => {
               marginHorizontal: 16,
               marginTop: 24,
             }}>
-            <Text style={styles.subTitle}>From: </Text>
+            <Text style={styles.subTitle}>{i18n.t('from')}: </Text>
             <Pressable onPress={handleUndo}>
-              <Text style={styles.undo}>Undo</Text>
+              <Text style={styles.undo}>{i18n.t('undo')}</Text>
             </Pressable>
           </View>
         </View>
@@ -130,7 +145,12 @@ const SplitsScreen = () => {
           />
         )}
         <View style={{ flexDirection: 'row', marginTop: 16, paddingHorizontal: 16 }}>
-          <Button title="Send Request" type="primary" onPress={handleSendRequest} />
+          <Button
+            title={i18n.t('sendRequest')}
+            icon="send"
+            type="primary"
+            onPress={handleSendRequest}
+          />
         </View>
       </SafeAreaView>
     </GestureHandlerRootView>

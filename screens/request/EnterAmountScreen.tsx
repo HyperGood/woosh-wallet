@@ -1,12 +1,13 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
-import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
+import InnerHeader from '../../components/UI/InnerHeader';
 import NumberPad from '../../components/UI/NumberPad';
 import { TabOption } from '../../components/UI/Tabs';
 import { COLORS } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
 import { useRequest } from '../../store/RequestContext';
 import { useAccount } from '../../store/SmartAccountContext';
 
@@ -15,7 +16,7 @@ const RequestEnterAmountScreen = () => {
   const [description, setDescription] = useState('');
   const { address } = useAccount();
   const { setRequestData } = useRequest();
-  const [activeTab, setActiveTab] = useState<TabOption>('total');
+  const [activeTab, setActiveTab] = useState<TabOption>({ title: 'Total', value: 'total' });
 
   const handleTabPress = (tab: TabOption) => {
     setActiveTab(tab);
@@ -34,7 +35,7 @@ const RequestEnterAmountScreen = () => {
           amountPerPerson: amount,
           description,
           recipientAddress: address,
-          type: activeTab,
+          type: activeTab.value,
         }) as any
     );
   }, [amount, activeTab, description]);
@@ -42,18 +43,7 @@ const RequestEnterAmountScreen = () => {
   return (
     <ScrollView style={{ flex: 1, width: '100%' }}>
       <View style={styles.wrapper}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: 8,
-          }}>
-          <View style={{ position: 'absolute', left: 16, top: 2 }}>
-            <BackButton />
-          </View>
-          <Text style={styles.title}>Solicitar Pago</Text>
-        </View>
+        <InnerHeader title={i18n.t('requestHeaderTitle')} />
         <NumberPad
           onChange={setAmount}
           description={description}
@@ -64,8 +54,9 @@ const RequestEnterAmountScreen = () => {
         />
         <View style={styles.buttonWrapper}>
           <Button
-            title="Next"
+            title={i18n.t('next')}
             type="primary"
+            icon="arrow-right"
             onPress={() => {
               setDescription('');
               handleNextPress();

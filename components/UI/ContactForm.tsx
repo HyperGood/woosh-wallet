@@ -5,6 +5,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import Input from './Input';
 import PhoneNumberInput from './PhoneNumberInput';
 import { COLORS } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
 
 type ContactFormProps = {
   phoneNumber: string;
@@ -38,14 +39,14 @@ const ContactForm: React.FC<ContactFormProps> = ({
       />
 
       <Input
-        placeholder="Name"
+        placeholder={i18n.t('enterName')}
         value={name}
         onChangeText={setName}
         handleOpenKeyboard={handleOpenKeyboard}
       />
       <View style={styles.selectContactButton}>
         <Text style={styles.selectContactButtonText} onPress={selectContact}>
-          Seleccionar de mis contactos
+          {i18n.t('getContacts')}
         </Text>
       </View>
     </View>

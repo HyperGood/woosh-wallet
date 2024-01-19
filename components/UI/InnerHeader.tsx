@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 16,
     marginHorizontal: 16,
-    marginBottom: 32,
+
     position: 'relative',
   },
 });

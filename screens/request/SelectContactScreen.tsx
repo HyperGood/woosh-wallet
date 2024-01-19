@@ -10,6 +10,7 @@ import InnerHeader from '../../components/UI/InnerHeader';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
 import { useRequest } from '../../store/RequestContext';
 
 type Contact = {
@@ -76,9 +77,9 @@ const SelectContactScreen = () => {
     if (phoneNumber && name) {
       setContacts((prev) => {
         if (prev) {
-          return [...prev, { name, phoneNumber, amount: 0 }];
+          return [...prev, { name, phoneNumber: countryCode + phoneNumber, amount: 0 }];
         } else {
-          return [{ name, phoneNumber, amount: 0 }];
+          return [{ name, phoneNumber: countryCode + phoneNumber, amount: 0 }];
         }
       });
       setPhoneNumber('');
@@ -135,10 +136,10 @@ const SelectContactScreen = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.wrapper}>
-        <InnerHeader title="Request" />
-        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+        <InnerHeader title={i18n.t('requestHeaderTitle')} />
+        <View style={{ flex: 1, justifyContent: 'space-between', marginTop: 32 }}>
           <View>
-            <Text style={styles.title}>Agrega contactos</Text>
+            <Text style={styles.title}>{i18n.t('requestSelectContactTitle')}</Text>
             <Pressable
               onPress={handleOpenBottomSheet}
               style={{
@@ -165,7 +166,7 @@ const SelectContactScreen = () => {
               </View>
               <Text
                 style={{ color: COLORS.primary[400], fontFamily: 'Satoshi-Bold', fontSize: 18 }}>
-                Add a contact
+                {i18n.t('addContact')}
               </Text>
             </Pressable>
             {contacts && contacts?.length > 0 && (
@@ -198,7 +199,8 @@ const SelectContactScreen = () => {
 
           <View style={styles.buttonWrapper}>
             <Button
-              title="Next"
+              title={i18n.t('next')}
+              icon="arrow-right"
               type="primary"
               onPress={() => handleNext()}
               disabled={!contacts || contacts.length === 0}
@@ -206,7 +208,7 @@ const SelectContactScreen = () => {
           </View>
         </View>
         <BottomSheet ref={addContactRef}>
-          <Text style={styles.modalText}>Agrega Un Contacto</Text>
+          <Text style={styles.modalText}>{i18n.t('addContact')}</Text>
           <View style={{ gap: 24, paddingHorizontal: 16 }}>
             <ContactForm
               phoneNumber={phoneNumber}
@@ -218,7 +220,13 @@ const SelectContactScreen = () => {
               handleOpenKeyboard={handleOpenKeyboard}
             />
             <View style={{ flexDirection: 'row', marginTop: 16 }}>
-              <Button title="Add" type="primary" onPress={handleAddContact} disabled={!name} />
+              <Button
+                title={i18n.t('add')}
+                icon="plus"
+                type="primary"
+                onPress={handleAddContact}
+                disabled={!name}
+              />
             </View>
           </View>
         </BottomSheet>

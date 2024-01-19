@@ -1,77 +1,70 @@
-import firestore from '@react-native-firebase/firestore';
 import * as Clipboard from 'expo-clipboard';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Link } from 'expo-router';
-import { useEffect } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Alert, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
-import DefaultTransactionCard from '../../components/transactions/UI/DefaultTransactionCard';
+import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
-import { useAccount } from '../../store/SmartAccountContext';
-import { useTransaction } from '../../store/TransactionContext';
-import { useUserData } from '../../store/UserDataContext';
+import i18n from '../../constants/i18n';
+import { useRequest } from '../../store/RequestContext';
 
 const SuccessScreen = () => {
-  const { transactionData, signature } = useTransaction();
-  const { address } = useAccount();
-  const { userData } = useUserData();
-
-  useEffect(() => {
-    if (!transactionData) {
-      console.log('No transaction data found');
-      return;
-    }
-    console.log('Sending transaction to firestore...');
-    firestore()
-      .collection('transactions')
-      .add({
-        ...transactionData,
-        sender: userData.name || address,
-        senderAddress: address,
-        createdAt: new Date(),
-        signature,
-      })
-      .then(() => {
-        console.log('Transaction added!');
-      });
-  }, []);
-
-  if (!transactionData) {
-    return null;
-  }
-  const { recipientName, description } = transactionData;
-  const amount = Number(transactionData.amount);
-  const date = new Date().toLocaleDateString();
+  const { requestData } = useRequest();
+  const totalAmount = requestData?.totalAmount || 1;
 
   const copyToClipboard = async () => {
-    await Clipboard.setStringAsync(signature);
+    await Clipboard.setStringAsync('Request Link');
     Alert.alert('Copied to clipboard!');
   };
   return (
-    <View style={styles.container}>
+    <View style={{ width: '100%', flex: 1 }}>
       <LinearGradient
         colors={['#00FF47', '#19181D']}
         style={styles.background}
         end={{ x: 0.3, y: 0.7 }}
       />
-      <Link href="/(app)">
-        <Text style={styles.description}>Go home</Text>
-      </Link>
-      <Text style={styles.title}>Sent! 🥳</Text>
-      <Text style={styles.description}>A claim link has been sent to </Text>
-      <DefaultTransactionCard
-        amount={amount}
-        recipientName={recipientName || ''}
-        description={description}
-        date={date}
-      />
-      <Pressable onPress={copyToClipboard}>
-        <Text style={styles.description}>Secret: {signature}</Text>
-      </Pressable>
-      <View style={styles.buttonWrapper}>
-        <Button title="Share" type="primary" icon="share" onPress={() => {}} />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View />
+        <View style={{ alignSelf: 'flex-start', position: 'absolute', top: 100, left: 16 }}>
+          <BackButton backFunction={() => router.push('/')} size={24} />
+        </View>
+        <View style={{ alignItems: 'center', width: '100%', padding: 16 }}>
+          <Text style={styles.title}>
+            {i18n.t('requestSuccessTitle1')} ${totalAmount} {i18n.t('requestSuccessTitle2')}:
+          </Text>
+          {requestData?.contacts && requestData.contacts?.length > 0 && (
+            <FlatList
+              data={requestData?.contacts}
+              renderItem={({ item, index }) => (
+                <ContactListItem
+                  name={item.name}
+                  phoneNumber={item.phoneNumber}
+                  amount={item.amount.toString()}
+                />
+              )}
+              keyExtractor={(item) => item.phoneNumber}
+              style={styles.contactsContainer}
+              ItemSeparatorComponent={() => (
+                <View
+                  style={{
+                    height: 1,
+                    backgroundColor: COLORS.light,
+                    opacity: 0.05,
+                    width: '75%',
+                    alignSelf: 'center',
+                    marginVertical: 8,
+                  }}
+                />
+              )}
+            />
+          )}
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Button title={i18n.t('copyLink')} type="primary" icon="link" onPress={copyToClipboard} />
+        </View>
+      </SafeAreaView>
     </View>
   );
 };
@@ -81,12 +74,21 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
   },
   background: {
     position: 'absolute',
     width: '100%',
     height: '100%',
+  },
+  contactsContainer: {
+    marginTop: 24,
+    marginHorizontal: 16,
+    backgroundColor: COLORS.gray[800],
+    borderRadius: 24,
+    paddingVertical: 8,
+    width: '100%',
   },
   title: {
     fontSize: 48,
@@ -102,5 +104,6 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     flexDirection: 'row',
+    paddingHorizontal: 16,
   },
 });

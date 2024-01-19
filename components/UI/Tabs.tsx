@@ -1,9 +1,11 @@
-import { useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
 
-export type TabOption = string;
+export type TabOption = {
+  title: string;
+  value: string;
+};
 
 type TabsProps = {
   options: TabOption[];
@@ -31,10 +33,10 @@ const Tabs: React.FC<TabsProps> = ({ options, activeTab, onTabPress }) => {
     <View style={styles.tabsContainer}>
       {options.map((option) => (
         <Tab
-          key={option}
-          title={option}
+          key={option.value}
+          title={option.title}
           onPress={() => onTabPress(option)}
-          isActive={activeTab === option}
+          isActive={activeTab.value === option.value}
         />
       ))}
     </View>
