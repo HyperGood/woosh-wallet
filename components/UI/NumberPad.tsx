@@ -122,11 +122,13 @@ const NumberPad = ({
           </View>
         )}
       </View>
-      <Input
-        placeholder={i18n.t('noteInputPlaceholder')}
-        value={description}
-        onChangeText={setDescription}
-      />
+      <View style={{ paddingHorizontal: 16 }}>
+        <Input
+          placeholder={i18n.t('noteInputPlaceholder')}
+          value={description}
+          onChangeText={setDescription}
+        />
+      </View>
       <View style={styles.numberPad}>
         {Array(4)
           .fill(0)
