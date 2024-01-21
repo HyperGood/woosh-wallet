@@ -1,8 +1,8 @@
 import firestore from '@react-native-firebase/firestore';
+import * as Sentry from '@sentry/react-native';
 import { Link, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import * as Sentry from 'sentry-expo';
 
 import Button from '../components/UI/Button';
 import { COLORS } from '../constants/global-styles';
@@ -38,7 +38,7 @@ export default function Page() {
               router.replace('/');
             } catch (error) {
               console.error(error);
-              Sentry.Native.captureException(error);
+              Sentry.captureException(error);
             }
           }}
         />

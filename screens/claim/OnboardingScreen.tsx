@@ -2,6 +2,7 @@ import { LocalAccountSigner } from '@alchemy/aa-core';
 import { Feather } from '@expo/vector-icons';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import * as Sentry from '@sentry/react-native';
 import { ECDSAProvider } from '@zerodev/sdk';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
@@ -14,7 +15,6 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import * as Sentry from 'sentry-expo';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
@@ -100,7 +100,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
       setAddress(address);
     } catch (error) {
       console.error('Error in onboarding screen', error);
-      Sentry.Native.captureException(error);
+      Sentry.captureException(error);
       setIsLoading(false);
       // Handle error
     }
@@ -149,7 +149,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         });
     } catch (error) {
       console.error(error);
-      Sentry.Native.captureException(error);
+      Sentry.captureException(error);
       setIsLoading(false);
       // Handle error
     }

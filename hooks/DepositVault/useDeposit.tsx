@@ -1,7 +1,7 @@
+import * as Sentry from '@sentry/react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useState } from 'react';
 import { Alert } from 'react-native';
-import * as Sentry from 'sentry-expo';
 import { Hex, encodeFunctionData, parseUnits } from 'viem';
 
 import { chain } from '../../constants/viemPublicClient';
@@ -68,7 +68,7 @@ export const useDeposit = () => {
     } catch (e) {
       setDepositError(e);
       console.log(e);
-      Sentry.Native.captureException(e);
+      Sentry.captureException(e);
       Alert.alert('Transaction Failed!!');
     } finally {
       setIsDepositing(false);

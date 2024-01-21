@@ -1,10 +1,10 @@
+import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
-import { Slot } from 'expo-router';
+import { Slot, useNavigationContainerRef } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
-import * as Sentry from 'sentry-expo';
 
 import SessionProvider from '../store/AuthContext';
 import SmartAccountProvider from '../store/SmartAccountContext';
@@ -14,18 +14,33 @@ export const storage = new MMKV();
 
 SplashScreen.preventAutoHideAsync();
 
-export default function Layout() {
+const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
+
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  debug: true,
+  integrations: [
+    new Sentry.ReactNativeTracing({
+      // Pass instrumentation to be used as `routingInstrumentation`
+      routingInstrumentation,
+      // ...
+    }),
+  ],
+});
+
+function Layout() {
+  const ref = useNavigationContainerRef();
   const [fontsLoaded, fontError] = useFonts({
     Satoshi: require('../assets/fonts/Satoshi-Regular.ttf'),
     'Satoshi-Bold': require('../assets/fonts/Satoshi-Bold.ttf'),
     FHOscar: require('../assets/fonts/FHOscar-Medium.otf'),
   });
 
-  Sentry.init({
-    dsn: 'https://84f72a6f2f2b8e115eccd24a1acaf490@o4506101264809984.ingest.sentry.io/4506555616395264',
-    enableInExpoDevelopment: false,
-    debug: true,
-  });
+  useEffect(() => {
+    if (ref) {
+      routingInstrumentation.registerNavigationContainer(ref);
+    }
+  }, [ref]);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -52,3 +67,5 @@ export default function Layout() {
     </SessionProvider>
   );
 }
+
+export default Sentry.wrap(Layout);

@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import * as Sentry from 'sentry-expo';
+import * as Sentry from '@sentry/react-native';
 
 import { Transaction } from '../models/Transaction';
 import { User } from '../models/User';
@@ -16,7 +16,7 @@ export const fetchTransactions = async (): Promise<Partial<Transaction>[]> => {
     })) as Partial<Transaction>[];
   } catch (error) {
     console.error('Error fetching transactions: ', error);
-    Sentry.Native.captureException(error);
+    Sentry.captureException(error);
     return [];
   }
 };
@@ -51,7 +51,7 @@ export const fetchTransactionsByEthAddress = async (
     })) as Partial<Transaction>[];
   } catch (error) {
     console.error('Error fetching transactions: ', error);
-    Sentry.Native.captureException(error);
+    Sentry.captureException(error);
     return [];
   }
 };
@@ -70,7 +70,7 @@ export const fetchUserByEthAddress = async (ethAddress: string): Promise<Partial
     }
   } catch (error) {
     console.error('Error fetching user by ethAddress: ', error);
-    Sentry.Native.captureException(error);
+    Sentry.captureException(error);
     return null;
   }
 };

@@ -1,6 +1,6 @@
+import * as Sentry from '@sentry/react-native';
 import { useState } from 'react';
 import { Alert } from 'react-native';
-import * as Sentry from 'sentry-expo';
 import { encodeFunctionData, isHex } from 'viem';
 
 import { chain } from '../../constants/viemPublicClient';
@@ -39,7 +39,7 @@ export const useWithdraw = () => {
       withdrawHash = hash;
     } catch (e) {
       setWithdrawError(e);
-      Sentry.Native.captureException(e);
+      Sentry.captureException(e);
       Alert.alert('Transaction Failed!!');
     } finally {
       setIsWithdrawing(false);
