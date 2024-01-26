@@ -85,7 +85,7 @@
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS"
       ],
-      "package": "com.hypergood.wooshmvpmobile",
+      "package": "com.hypergood.wooshmvp",
       "runtimeVersion": {
         "policy": "appVersion"
       }

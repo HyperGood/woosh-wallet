@@ -2,6 +2,7 @@ import { Link, router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -130,20 +131,17 @@ const SelectContactScreen = () => {
                   flex: 1,
                   padding: 32,
                   alignItems: 'center',
-                  justifyContent: 'center',
                   backgroundColor: COLORS.light,
                   borderRadius: 16,
+                  flexDirection: 'row',
+                  gap: 8,
                 }}
                 onPress={getPhoneContacts}>
-                <Text
-                  style={{
-                    color: COLORS.dark,
-                    fontFamily: 'Satoshi-Bold',
-                    fontSize: 16,
-                    textDecorationLine: 'underline',
-                  }}>
-                  {i18n.t('getContacts')}
-                </Text>
+                <Image
+                  source={require('../../assets/images/contacts-icon.png')}
+                  style={{ width: 32, height: 32 }}
+                />
+                <Text style={styles.selectContactButtonText}>{i18n.t('getContacts')}</Text>
               </Pressable>
             </View>
           )}
@@ -169,6 +167,11 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingBottom: 40,
     justifyContent: 'space-between',
+  },
+  selectContactButtonText: {
+    color: COLORS.primary[600],
+    fontFamily: 'Satoshi-Bold',
+    fontSize: 18,
   },
   contact: {
     gap: 10,

@@ -36,7 +36,7 @@ const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: Intro
             {transactionData.sender} {i18n.t('sentYou')}
           </Text>
           <Text style={styles.title}>
-            {transactionData.amount} {transactionData.token}
+            {transactionData.amount} {/*transactionData.token*/} USD
           </Text>
           <Text style={styles.description}>{i18n.t('claimIntroScreenDescription')}</Text>
         </View>

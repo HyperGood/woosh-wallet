@@ -49,8 +49,8 @@ const EnterAmountScreen = () => {
   return (
     <ScrollView style={{ flex: 1, width: '100%' }}>
       <View style={styles.wrapper}>
-        <BackButton />
         <View>
+          <BackButton />
           <Text style={styles.title}>{i18n.t('sendingTo')}</Text>
           <View style={styles.recipient}>
             {/* <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} /> */}
