@@ -64,7 +64,6 @@ export const useUserBalance = () => {
           setFiatBalance(formattedBalance * usdcPrice);
           storage.set('usdcPrice', usdcPrice);
         } else {
-          // Retrieve the fiatBalance from MMKV
           const usdcPrice = storage.getNumber('usdcPrice');
           if (usdcPrice) {
             setFiatBalance(usdcPrice * formattedBalance);
