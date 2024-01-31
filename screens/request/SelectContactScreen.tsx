@@ -1,7 +1,16 @@
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Keyboard, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  Keyboard,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Animated, {
@@ -35,6 +44,7 @@ type Contact = {
 };
 
 const INITIAL_COUNTRY_CODE = '+52';
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const SelectContactScreen = () => {
   const addContactRef = useRef<BottomSheetRefProps>(null);
@@ -135,19 +145,22 @@ const SelectContactScreen = () => {
   }, [close, isActionTrayOpened]);
 
   const handleOpenKeyboard = useCallback(() => {
+    //Check if the bottom sheet is open
     const isActive = addContactRef.current?.isActive();
-    const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', (e) => {
-      if (isActive && step === 0) {
-        console.log('scrolling');
-        addContactRef.current?.scrollTo(-e.endCoordinates.height + 30);
-      }
+    const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', (evt) => {
+      // Use a negative value to scroll up, positive to scroll down, 0 to scroll to default position
+      //If bottom sheet height === screenHeight, don't scroll
+      const MAX_VALUE = SCREEN_HEIGHT * 0.88;
+      const bottomSheetHeight = addContactRef.current?.getHeight()!;
+      const scrollValue = bottomSheetHeight === MAX_VALUE ? 0 : -(MAX_VALUE - bottomSheetHeight);
+
+      addContactRef.current?.scrollTo(scrollValue);
     });
     const keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', () => {
-      if (isActive && step === 0) {
+      if (isActive) {
         addContactRef.current?.scrollTo(0);
       }
     });
-
     // Cleanup listeners on unmount
     return () => {
       keyboardWillShowListener.remove();
@@ -173,7 +186,9 @@ const SelectContactScreen = () => {
   const rContentStyle = useAnimatedStyle(() => {
     return {
       // Spring animations. Spring animations everywhere! 😅
-      height: withSpring(rContentHeight.value),
+      height: withSpring(rContentHeight.value, {
+        damping: 20,
+      }),
     };
   }, []);
 

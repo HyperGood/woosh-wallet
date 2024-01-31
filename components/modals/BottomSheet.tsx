@@ -27,20 +27,27 @@ export type BottomSheetRefProps = {
   open: () => void;
   isActive: () => boolean;
   close: () => void;
+  getHeight: () => number;
 };
 
 const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
   ({ children, maxHeight = SCREEN_HEIGHT }, ref) => {
+    //Define shared values for reanimated
     const translateY = useSharedValue(maxHeight);
-
     const active = useSharedValue(false);
+    const height = useSharedValue(0);
 
+    //This function scrolls the bottom sheet to the given destination
     const scrollTo = useCallback((destination: number) => {
       'worklet';
+      //Active value is used to determine if the bottom sheet is open or closed
+      //If the destination is not the max height, the bottom sheet is open
+      // 0 = to the top of the screen & maxHeight = to the bottom of the screen (closed)
       active.value = destination !== maxHeight;
+      //Animate the bottom sheet to the given destination
       translateY.value = withSpring(destination, {
         mass: 0.4,
-        damping: 20,
+        damping: 12,
       });
     }, []);
 
@@ -63,6 +70,7 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
         scrollTo,
         isActive,
         close,
+        getHeight: () => height.value,
       }),
       [scrollTo, isActive, close]
     );
@@ -119,7 +127,11 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
           ]}
         />
         <GestureDetector gesture={gesture}>
-          <Animated.View style={[styles.bottomSheetContainer, reanimatedBottomSheetStyle]}>
+          <Animated.View
+            style={[styles.bottomSheetContainer, reanimatedBottomSheetStyle]}
+            onLayout={(evt) => {
+              height.value = evt.nativeEvent.layout.height;
+            }}>
             <View style={styles.line} />
             <Animated.View layout={Layout} entering={FadeIn} exiting={FadeOut}>
               {children}

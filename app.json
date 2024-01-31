@@ -1,14 +1,9 @@
 {
   "expo": {
-    "name": "Woosh MVP",
+    "name": "Woosh",
     "slug": "woosh-mvp-mobile",
     "version": "1.0.0",
     "scheme": "woosh-mvp-mobile",
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
-    },
     "plugins": [
       "expo-router",
       [
@@ -67,8 +62,8 @@
       "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Allow Woosh to use Face ID",
-        "NSContactsUsageDescription": "Allow Woosh to access your contacts so you can send funds to anyone in your contacts list."
+        "NSFaceIDUsageDescription": "Allow Woosh to use Face ID to keep your account safe",
+        "NSContactsUsageDescription": "Allow Woosh to access your contacts so you can send funds to anyone in your contacts list, even if they don't have an account."
       },
       "runtimeVersion": "1.0.0"
     },

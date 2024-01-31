@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { TextInput, StyleSheet, View } from 'react-native';
 
 import { COLORS } from '../../constants/global-styles';
@@ -11,7 +11,7 @@ interface InputProps {
   value: string;
   theme?: 'light' | 'dark';
   icon?: boolean;
-  keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad'; // Added keyboardType prop
+  keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
   handleOpenKeyboard?: () => void;
 }
 
@@ -46,7 +46,7 @@ const Input = ({
         keyboardType={keyboardType}
         returnKeyType="done"
       />
-      {icon ? <Feather name="search" size={24} color="black" style={styles.icon} /> : null}
+      {icon ? <Feather name="search" size={24} color={COLORS.light} style={styles.icon} /> : null}
     </View>
   );
 };
