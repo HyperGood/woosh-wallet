@@ -149,7 +149,6 @@ const SelectContactScreen = () => {
     const isActive = addContactRef.current?.isActive();
     const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', (evt) => {
       // Use a negative value to scroll up, positive to scroll down, 0 to scroll to default position
-      //If bottom sheet height === screenHeight, don't scroll
       const MAX_VALUE = SCREEN_HEIGHT * 0.88;
       const bottomSheetHeight = addContactRef.current?.getHeight()!;
       const scrollValue = bottomSheetHeight === MAX_VALUE ? 0 : -(MAX_VALUE - bottomSheetHeight);
@@ -308,7 +307,7 @@ const SelectContactScreen = () => {
                 style={{ flex: 1, backgroundColor: COLORS.gray[800] }}>
                 <>
                   <Pressable
-                    style={{ marginLeft: 16, position: 'absolute' }}
+                    style={{ marginLeft: 16, position: 'absolute', padding: 8 }}
                     onPress={() => setStep(0)}>
                     <Feather name="arrow-left" size={24} color={COLORS.light} />
                   </Pressable>

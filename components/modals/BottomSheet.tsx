@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useImperativeHandle } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View, Keyboard } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolate,
@@ -7,6 +7,7 @@ import Animated, {
   FadeOut,
   Layout,
   interpolate,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -51,6 +52,10 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
       });
     }, []);
 
+    const dismissKeyboard = () => {
+      Keyboard.dismiss();
+    };
+
     const close = useCallback(() => {
       'worklet';
       return scrollTo(maxHeight);
@@ -85,9 +90,11 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
         translateY.value = Math.max(translateY.value, MAX_TRANSLATE_Y);
       })
       .onEnd((event) => {
+        'worklet';
         if (event.translationY > 100) {
           // Close the Action Tray when the user swipes down
           close();
+          runOnJS(dismissKeyboard)();
         } else {
           // Restore to the previous position if the users doesn't swipe down enough
           scrollTo(context.value.y);
