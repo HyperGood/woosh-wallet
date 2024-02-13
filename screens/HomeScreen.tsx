@@ -1,7 +1,7 @@
 import { Link, useFocusEffect } from 'expo-router';
 import { Skeleton } from 'moti/skeleton';
 import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 
 import { fetchTransactionsByEthAddress } from '../api/firestoreService';
 import Balance from '../components/Balance';
@@ -11,6 +11,7 @@ import PreviousTransactions from '../components/transactions/UI/PreviousTransact
 import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
 import { useAccount } from '../store/SmartAccountContext';
+import { scale } from '../utils/scalingFunctions';
 
 const HomeScreen = () => {
   const [transactions, setTransactions] = useState<any>();
@@ -31,7 +32,7 @@ const HomeScreen = () => {
 
   return (
     <ScrollView style={styles.wrapper} showsVerticalScrollIndicator={false}>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Header />
         <Balance />
         <Skeleton show={!transactions} height={120} width="100%">
@@ -53,7 +54,7 @@ const HomeScreen = () => {
         <Skeleton show={!transactions} height={600} width="100%">
           <PreviousTransactions transactions={transactions} />
         </Skeleton>
-      </View>
+      </SafeAreaView>
     </ScrollView>
   );
 };
@@ -67,14 +68,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 72,
     width: '100%',
   },
   buttonsContainer: {
     flexDirection: 'row',
     gap: 8,
     width: '100%',
-    marginBottom: 80,
+    marginBottom: scale(48),
     paddingHorizontal: 12,
   },
 });

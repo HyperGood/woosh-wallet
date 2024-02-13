@@ -7,6 +7,7 @@ import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import IconButton from './UI/IconButton';
 import { COLORS } from '../constants/global-styles';
 import { useUserBalance } from '../hooks/useUserBalance';
+import { scale } from '../utils/scalingFunctions';
 
 const Balance = () => {
   const token = 'USD';
@@ -45,7 +46,7 @@ const Balance = () => {
 export default Balance;
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: 48,
+    marginBottom: scale(24),
     alignItems: 'center',
   },
   container: {

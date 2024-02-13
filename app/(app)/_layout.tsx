@@ -15,7 +15,7 @@ export default function Layout() {
   const [loading, setLoading] = useState(false);
   const { token } = useSession();
   const { setEcdsaProvider } = useAccount();
-  const { setUserData } = useUserData();
+  const { setUserData, setIsFetchingUserData } = useUserData();
 
   useEffect(() => {
     if (token) {
@@ -40,11 +40,18 @@ export default function Layout() {
   }, [token]);
 
   useEffect(() => {
-    console.log('Address: ', address);
     if (address) {
-      fetchUserByEthAddress(address).then((user) => {
-        setUserData(user);
-      });
+      setIsFetchingUserData(true);
+      fetchUserByEthAddress(address)
+        .then((user) => {
+          setUserData(user);
+          setIsFetchingUserData(false);
+        })
+        .catch((e) => {
+          console.error(e);
+          Sentry.captureException(e);
+          setIsFetchingUserData(false);
+        });
     }
   }, [address]);
 

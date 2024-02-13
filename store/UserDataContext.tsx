@@ -3,11 +3,15 @@ import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useStat
 interface UserDataContextType {
   userData: any | null;
   setUserData: Dispatch<SetStateAction<any | null>>;
+  isFetchingUserData: boolean;
+  setIsFetchingUserData: Dispatch<SetStateAction<boolean>>;
 }
 
 export const UserDataContext = createContext<UserDataContextType>({
   userData: null,
   setUserData: () => {},
+  isFetchingUserData: false,
+  setIsFetchingUserData: () => {},
 });
 
 export function useUserData() {
@@ -21,10 +25,12 @@ interface UserDataProviderProps {
 
 function UserDataProvider({ children }: UserDataProviderProps) {
   const [userData, setUserData] = useState<any | null>(null);
-
+  const [isFetchingUserData, setIsFetchingUserData] = useState<boolean>(false);
   const value = {
     userData,
     setUserData,
+    isFetchingUserData,
+    setIsFetchingUserData,
   };
 
   return <UserDataContext.Provider value={value}>{children}</UserDataContext.Provider>;

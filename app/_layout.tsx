@@ -21,9 +21,7 @@ Sentry.init({
   debug: true,
   integrations: [
     new Sentry.ReactNativeTracing({
-      // Pass instrumentation to be used as `routingInstrumentation`
       routingInstrumentation,
-      // ...
     }),
   ],
 });

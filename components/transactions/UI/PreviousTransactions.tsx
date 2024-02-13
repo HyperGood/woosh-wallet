@@ -83,19 +83,16 @@ export default PreviousTransactions;
 const styles = StyleSheet.create({
   emptyStateContainer: {
     flex: 1,
-    width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: COLORS.light,
     borderRadius: 16,
-    padding: 40,
+    paddingTop: 40,
   },
   emptyStateText: {
     fontSize: 24,
     fontFamily: 'Satoshi-Bold',
     color: COLORS.dark,
     textAlign: 'center',
-    opacity: 0.6,
   },
 
   container: {

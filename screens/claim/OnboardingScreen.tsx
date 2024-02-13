@@ -30,7 +30,7 @@ interface OnboardingScreenProps {
 }
 
 const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
-  const [name, setName] = useState(transactionData.sender || '');
+  const [name, setName] = useState(transactionData.recipientName || '');
   const [image, setImage] = useState<any>(null);
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);

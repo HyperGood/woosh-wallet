@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 
-import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import PhoneNumberInput from '../../components/UI/PhoneNumberInput';
@@ -20,6 +19,7 @@ import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { usePhoneContacts } from '../../store/ContactsContext';
 import { useTransaction } from '../../store/TransactionContext';
+import { minMaxScale } from '../../utils/scalingFunctions';
 
 const SelectContactScreen = () => {
   const { setTransactionData } = useTransaction();
@@ -51,7 +51,6 @@ const SelectContactScreen = () => {
     <KeyboardAvoidingView
       style={styles.wrapper}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <BackButton />
       <View style={{ flex: 1, justifyContent: 'space-between' }}>
         <View style={{ gap: 16 }}>
           <Text style={styles.title}>{i18n.t('sendSelectContactTitle')}</Text>
@@ -129,7 +128,8 @@ const SelectContactScreen = () => {
               <Pressable
                 style={{
                   flex: 1,
-                  padding: 32,
+                  paddingVertical: 24,
+                  paddingHorizontal: 16,
                   alignItems: 'center',
                   backgroundColor: COLORS.light,
                   borderRadius: 16,
@@ -166,8 +166,9 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     paddingBottom: 40,
-    justifyContent: 'space-between',
+    paddingHorizontal: minMaxScale(12, 16),
   },
+
   selectContactButtonText: {
     color: COLORS.primary[600],
     fontFamily: 'Satoshi-Bold',
@@ -198,16 +199,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   title: {
-    fontSize: 48,
+    fontSize: minMaxScale(40, 48),
     color: COLORS.light,
     fontFamily: 'Satoshi-Bold',
     letterSpacing: -0.02,
-    lineHeight: 52,
-    marginHorizontal: 32,
+    lineHeight: minMaxScale(48, 56),
   },
   buttonWrapper: {
     marginBottom: 24,
     flexDirection: 'row',
-    marginHorizontal: 12,
   },
 });

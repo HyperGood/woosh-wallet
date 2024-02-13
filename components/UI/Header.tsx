@@ -11,18 +11,21 @@ import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
+import { scale } from '../../utils/scalingFunctions';
 
 const Header = () => {
-  const { userData } = useUserData();
+  const { userData, isFetchingUserData } = useUserData();
   const { address } = useAccount();
   const { logout } = useSession();
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (userData) {
-      setIsLoading(false);
-    }
+    setIsLoading(isFetchingUserData);
+  }, [isFetchingUserData]);
+
+  useEffect(() => {
+    console.log('userData:', userData);
   }, [userData]);
 
   const username = userData?.username || 'username';
@@ -85,14 +88,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     width: '100%',
-    marginBottom: 40,
+    marginBottom: scale(24),
+    paddingTop: 16,
   },
   image: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    borderColor: COLORS.gray[400],
-    borderWidth: 1,
   },
   username: {
     fontFamily: 'Satoshi-Bold',
