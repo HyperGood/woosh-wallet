@@ -17,6 +17,7 @@ const Header = () => {
   const { userData, isFetchingUserData } = useUserData();
   const { address } = useAccount();
   const { logout } = useSession();
+  const [username, setUsername] = useState('');
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,10 +26,13 @@ const Header = () => {
   }, [isFetchingUserData]);
 
   useEffect(() => {
-    console.log('userData:', userData);
-  }, [userData]);
+    if (userData || address) {
+      console.log('userData:', userData);
+      const truncatedAddress = address?.slice(0, 4) + '...' + address?.slice(-4);
+      setUsername(userData?.username || truncatedAddress);
+    }
+  }, [userData, address]);
 
-  const username = userData?.username || 'username';
   const name = userData?.name;
   const reference = storage().ref(`avatars/${name}.jpg`);
   const [imageSrc, setImageSrc] = useState<any>(placeholderUser);
@@ -66,7 +70,7 @@ const Header = () => {
         </Skeleton>
         <Skeleton show={isLoading} height={24} width={200} {...SkeletonCommonProps}>
           <View>
-            <Text style={styles.username}>${username}</Text>
+            <Text style={styles.username}>{username}</Text>
           </View>
         </Skeleton>
       </View>

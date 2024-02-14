@@ -5,11 +5,10 @@ import { FlatList, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Button from '../../components/UI/Button';
-import InnerHeader from '../../components/UI/InnerHeader';
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
-import { useRequest } from '../../store/RequestContext';
 import i18n from '../../constants/i18n';
+import { useRequest } from '../../store/RequestContext';
 
 const SplitsScreen = () => {
   const { requestData, setRequestData } = useRequest();
