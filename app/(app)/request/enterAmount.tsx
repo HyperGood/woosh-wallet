@@ -1,15 +1,16 @@
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 
+import PageHeader from '../../../components/UI/PageHeader';
 import { COLORS } from '../../../constants/global-styles';
+import i18n from '../../../constants/i18n';
 import RequestEnterAmountScreen from '../../../screens/request/EnterAmountScreen';
 
 const enterAmount = () => {
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.container}>
-        <RequestEnterAmountScreen />
-      </View>
-    </View>
+    <SafeAreaView style={styles.wrapper}>
+      <PageHeader pageTitle={i18n.t('requestHeaderTitle')} />
+      <RequestEnterAmountScreen />
+    </SafeAreaView>
   );
 };
 
@@ -18,10 +19,6 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     backgroundColor: COLORS.dark,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 72,
+    paddingTop: 24,
   },
 });

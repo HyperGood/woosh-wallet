@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import Button from '../../components/UI/Button';
-import InnerHeader from '../../components/UI/InnerHeader';
 import NumberPad from '../../components/UI/NumberPad';
 import { TabOption } from '../../components/UI/Tabs';
 import { COLORS } from '../../constants/global-styles';
@@ -43,7 +42,6 @@ const RequestEnterAmountScreen = () => {
   return (
     <ScrollView style={{ flex: 1, width: '100%' }}>
       <View style={styles.wrapper}>
-        <InnerHeader title={i18n.t('requestHeaderTitle')} />
         <NumberPad
           onChange={setAmount}
           description={description}

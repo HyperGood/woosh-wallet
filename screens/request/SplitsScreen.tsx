@@ -83,37 +83,33 @@ const SplitsScreen = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.wrapper}>
-        <InnerHeader title={i18n.t('requestHeaderTitle')} />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginHorizontal: 16,
+          }}>
+          <Text style={styles.title}>Total</Text>
+          <Text style={styles.titleNumber}>
+            ${totalAmount ? Number(totalAmount).toFixed(2) : '0.00'}
+          </Text>
+        </View>
 
-        <View style={{ marginTop: 32 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginHorizontal: 16,
-            }}>
-            <Text style={styles.title}>Total</Text>
-            <Text style={styles.titleNumber}>
-              ${totalAmount ? Number(totalAmount).toFixed(2) : '0.00'}
-            </Text>
-          </View>
+        <View style={styles.divider} />
 
-          <View style={styles.divider} />
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginHorizontal: 16,
-              marginTop: 24,
-            }}>
-            <Text style={styles.subTitle}>{i18n.t('from')}: </Text>
-            <Pressable onPress={handleUndo}>
-              <Text style={styles.undo}>{i18n.t('undo')}</Text>
-            </Pressable>
-          </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginHorizontal: 16,
+            marginTop: 24,
+          }}>
+          <Text style={styles.subTitle}>{i18n.t('from')}: </Text>
+          <Pressable onPress={handleUndo}>
+            <Text style={styles.undo}>{i18n.t('undo')}</Text>
+          </Pressable>
         </View>
 
         {requestData?.contacts && requestData.contacts?.length > 0 && (

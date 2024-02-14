@@ -7,7 +7,7 @@ import EnterAmountScreen from '../../../screens/send/EnterAmountScreen';
 const enterAmount = () => {
   return (
     <SafeAreaView style={styles.wrapper}>
-      <PageHeader />
+      <PageHeader pageTitle="Send Funds" />
       <EnterAmountScreen />
     </SafeAreaView>
   );

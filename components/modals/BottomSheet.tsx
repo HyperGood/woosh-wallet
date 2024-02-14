@@ -17,7 +17,7 @@ import Animated, {
 import { COLORS } from '../../constants/global-styles';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 50;
+const MAX_TRANSLATE_Y = -SCREEN_HEIGHT;
 
 type BottomSheetProps = {
   children?: React.ReactNode;
@@ -129,7 +129,14 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
           animatedProps={rBackDropProps}
           onTouchStart={close}
           style={[
-            { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)' },
+            {
+              height: SCREEN_HEIGHT,
+              width: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              backgroundColor: 'rgba(0,0,0,0.4)',
+            },
             rBackDropStyle,
           ]}
         />
@@ -156,7 +163,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.gray[800],
     position: 'absolute',
     borderRadius: 25,
-    bottom: 30,
+    bottom: 0,
     borderCurve: 'continuous',
   },
   line: {

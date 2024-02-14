@@ -4,7 +4,7 @@ import BackButton from './BackButton';
 import { COLORS } from '../../constants/global-styles';
 import { minMaxScale } from '../../utils/scalingFunctions';
 
-const PageHeader = () => {
+const PageHeader = ({ pageTitle }: { pageTitle: string }) => {
   return (
     <View
       style={{
@@ -15,7 +15,7 @@ const PageHeader = () => {
         marginBottom: minMaxScale(16, 24),
       }}>
       <BackButton />
-      <Text style={styles.pageTitle}>Send Funds</Text>
+      <Text style={styles.pageTitle}>{pageTitle}</Text>
       <View />
     </View>
   );
@@ -26,5 +26,6 @@ const styles = StyleSheet.create({
     color: COLORS.light,
     fontSize: minMaxScale(16, 24),
     fontFamily: 'Satoshi-Bold',
+    textTransform: 'capitalize',
   },
 });

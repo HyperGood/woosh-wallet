@@ -28,7 +28,6 @@ import Animated, {
 
 import Button from '../../components/UI/Button';
 import ContactForm from '../../components/UI/ContactForm';
-import InnerHeader from '../../components/UI/InnerHeader';
 import Input from '../../components/UI/Input';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 import ContactListItem from '../../components/request/ContactListItem';
@@ -36,6 +35,7 @@ import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { usePhoneContacts } from '../../store/ContactsContext';
 import { useRequest } from '../../store/RequestContext';
+import { minMaxScale } from '../../utils/scalingFunctions';
 
 type Contact = {
   name: string;
@@ -179,12 +179,16 @@ const SelectContactScreen = () => {
 
   const rContentHeight = useDerivedValue(() => {
     // Just a simple interpolation to make the content height dynamic based on the step
-    return interpolate(step, [0, 1, 2], [520, 700, 250], Extrapolate.CLAMP);
+    return interpolate(
+      step,
+      [0, 1, 2],
+      [520, SCREEN_HEIGHT > 700 ? 700 : SCREEN_HEIGHT - 80, 250],
+      Extrapolate.CLAMP
+    );
   }, [step]);
 
   const rContentStyle = useAnimatedStyle(() => {
     return {
-      // Spring animations. Spring animations everywhere! 😅
       height: withSpring(rContentHeight.value, {
         damping: 20,
       }),
@@ -192,77 +196,66 @@ const SelectContactScreen = () => {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.wrapper}>
-        <InnerHeader title={i18n.t('requestHeaderTitle')} />
-        <View style={{ flex: 1, justifyContent: 'space-between', marginTop: 32 }}>
-          <View>
-            <Text style={styles.title}>{i18n.t('requestSelectContactTitle')}</Text>
-            <Pressable
-              onPress={toggleActionTray}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8,
-                backgroundColor: '#2C2C2E',
-                paddingVertical: 24,
-                paddingHorizontal: 16,
-                borderRadius: 24,
-                marginHorizontal: 16,
-                marginTop: 24,
-              }}>
-              <View
-                style={{
-                  backgroundColor: COLORS.primary[400],
-                  borderRadius: 100,
-                  height: 32,
-                  width: 32,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Feather name="plus" size={16} color={COLORS.light} />
-              </View>
-              <Text
-                style={{ color: COLORS.primary[400], fontFamily: 'Satoshi-Bold', fontSize: 18 }}>
-                {i18n.t('addContact')}
-              </Text>
-            </Pressable>
-            {contacts && contacts?.length > 0 && (
-              <FlatList
-                data={contacts}
-                renderItem={({ item, index }) => (
-                  <ContactListItem
-                    name={item.name}
-                    phoneNumber={item.phoneNumber}
-                    onDelete={() => handleDeleteContact(index)}
-                  />
-                )}
-                keyExtractor={(item) => item.phoneNumber}
-                style={styles.contactsContainer}
-                ItemSeparatorComponent={() => (
-                  <View
-                    style={{
-                      height: 1,
-                      backgroundColor: COLORS.light,
-                      opacity: 0.05,
-                      width: '75%',
-                      alignSelf: 'center',
-                      marginVertical: 8,
-                    }}
-                  />
-                )}
-              />
-            )}
-          </View>
+    <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
+      <SafeAreaView style={{ flex: 1, width: '100%' }}>
+        <View style={styles.wrapper}>
+          <View style={{ flex: 1, justifyContent: 'space-between', marginTop: 32 }}>
+            <View>
+              <Text style={styles.title}>{i18n.t('requestSelectContactTitle')}</Text>
+              <Pressable onPress={toggleActionTray} style={styles.addContactButton}>
+                <View
+                  style={{
+                    backgroundColor: COLORS.primary[400],
+                    borderRadius: 100,
+                    height: 32,
+                    width: 32,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Feather name="plus" size={16} color={COLORS.light} />
+                </View>
+                <Text
+                  style={{ color: COLORS.primary[400], fontFamily: 'Satoshi-Bold', fontSize: 18 }}>
+                  {i18n.t('addContact')}
+                </Text>
+              </Pressable>
+              {contacts && contacts?.length > 0 && (
+                <FlatList
+                  data={contacts}
+                  renderItem={({ item, index }) => (
+                    <ContactListItem
+                      name={item.name}
+                      phoneNumber={item.phoneNumber}
+                      onDelete={() => handleDeleteContact(index)}
+                    />
+                  )}
+                  keyExtractor={(item) => item.phoneNumber}
+                  style={styles.contactsContainer}
+                  ItemSeparatorComponent={() => (
+                    <View
+                      style={{
+                        height: 1,
+                        backgroundColor: COLORS.light,
+                        opacity: 0.05,
+                        width: '75%',
+                        alignSelf: 'center',
+                        marginVertical: 8,
+                      }}
+                    />
+                  )}
+                />
+              )}
+            </View>
 
-          <View style={styles.buttonWrapper}>
-            <Button
-              title={i18n.t('next')}
-              icon="arrow-right"
-              type="primary"
-              onPress={() => handleNext()}
-              disabled={!contacts || contacts.length === 0}
-            />
+            <View style={styles.buttonWrapper}>
+              <Button
+                title={i18n.t('next')}
+                icon="arrow-right"
+                type="primary"
+                onPress={() => handleNext()}
+                disabled={!contacts || contacts.length === 0}
+              />
+            </View>
           </View>
         </View>
         <BottomSheet ref={addContactRef}>
@@ -398,29 +391,37 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     width: '100%',
-    paddingBottom: 40,
+    paddingBottom: 24,
+    paddingHorizontal: 16,
     justifyContent: 'space-between',
     backgroundColor: COLORS.dark,
   },
+  addContactButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#2C2C2E',
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    marginTop: 24,
+  },
   contactsContainer: {
     marginTop: 24,
-    marginHorizontal: 16,
     backgroundColor: COLORS.gray[800],
     borderRadius: 24,
     paddingVertical: 8,
   },
   title: {
-    fontSize: 48,
+    fontSize: minMaxScale(40, 48),
     color: COLORS.light,
     fontFamily: 'Satoshi-Bold',
     letterSpacing: -0.02,
-    lineHeight: 52,
-    marginHorizontal: 32,
+    lineHeight: minMaxScale(48, 56),
   },
   buttonWrapper: {
     marginTop: 24,
     flexDirection: 'row',
-    marginHorizontal: 12,
   },
   modalText: {
     fontSize: 32,
