@@ -8,7 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useEffect, useState } from 'react';
-import { Text, SafeAreaView, StyleSheet, View, Pressable, Image } from 'react-native';
+import { Text, SafeAreaView, StyleSheet, View, Pressable, Image, ScrollView } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -23,6 +23,7 @@ import i18n from '../../constants/i18n';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
+import { minMaxScale, scale, verticalScale } from '../../utils/scalingFunctions';
 
 interface OnboardingScreenProps {
   transactionData: any;
@@ -179,69 +180,79 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {isLoading ? (
-        <Animated.View
-          style={[
-            {
-              flex: 1,
-              width: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            },
-            fadeInAnimatedStyle,
-          ]}>
-          <View style={{ alignItems: 'center', gap: 8 }}>
-            {/*It would be cool to have two progress bars one for each state */}
-            <LottieView
-              source={require('../../assets/animations/loading.json')}
-              autoPlay
-              loop
-              style={{ width: 40, height: 40 }}
-            />
-            <Text style={{ color: COLORS.light, fontSize: 24, marginTop: 16 }}>
-              {loadingState}...
-            </Text>
-          </View>
-        </Animated.View>
-      ) : (
-        <>
+    <ScrollView style={{ flex: 1, width: '100%' }} showsVerticalScrollIndicator={false}>
+      <SafeAreaView style={styles.container}>
+        {isLoading ? (
           <Animated.View
             style={[
-              { width: '100%', marginTop: 64, gap: 16, alignItems: 'center' },
-              fadeOutAnimatedStyle,
+              {
+                flex: 1,
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              },
+              fadeInAnimatedStyle,
             ]}>
-            <Text style={styles.title}>{i18n.t('onboardingTitle')}</Text>
-            <Input placeholder="Enter your name" onChangeText={setName} value={name} />
-            <Input placeholder="Enter your username" onChangeText={setUsername} value={username} />
-            <View style={{ width: '100%', padding: 16, gap: 16, alignItems: 'center' }}>
-              <Text style={{ color: COLORS.light, fontSize: 24, fontFamily: 'Satoshi-Bold' }}>
-                {i18n.t('setProfilePicture')}
+            <View style={{ alignItems: 'center', gap: 8 }}>
+              {/*It would be cool to have two progress bars one for each state */}
+              <LottieView
+                source={require('../../assets/animations/loading.json')}
+                autoPlay
+                loop
+                style={{ width: 40, height: 40 }}
+              />
+              <Text style={{ color: COLORS.light, fontSize: 24, marginTop: 16 }}>
+                {loadingState}...
               </Text>
-              <Pressable style={styles.imagePicker} onPress={pickImage}>
-                {image ? (
-                  <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
-                ) : (
-                  <View style={{ gap: 4, alignItems: 'center' }}>
-                    <Feather name="camera" size={24} color={COLORS.dark} />
-                    <Text>{i18n.t('uploadPhoto')}</Text>
-                  </View>
-                )}
-              </Pressable>
             </View>
           </Animated.View>
+        ) : (
+          <>
+            <Animated.View
+              style={[
+                {
+                  width: '100%',
+                  marginVertical: 16,
+                  gap: 16,
+                  alignItems: 'center',
+                  paddingHorizontal: 16,
+                },
+                fadeOutAnimatedStyle,
+              ]}>
+              <Text style={styles.title}>{i18n.t('onboardingTitle')}</Text>
+              <Input placeholder="Enter your name" onChangeText={setName} value={name} />
+              <Input
+                placeholder="Enter your username"
+                onChangeText={setUsername}
+                value={username}
+              />
+              <View style={{ width: '100%', padding: 16, gap: 16, alignItems: 'center' }}>
+                <Text style={styles.profilePictureTitle}>{i18n.t('setProfilePicture')}</Text>
+                <Pressable style={styles.imagePicker} onPress={pickImage}>
+                  {image ? (
+                    <Image source={{ uri: image }} style={{ width: 250, height: 250 }} />
+                  ) : (
+                    <View style={{ gap: 4, alignItems: 'center' }}>
+                      <Feather name="camera" size={24} color={COLORS.dark} />
+                      <Text>{i18n.t('uploadPhoto')}</Text>
+                    </View>
+                  )}
+                </Pressable>
+              </View>
+            </Animated.View>
 
-          <View style={{ flexDirection: 'row' }}>
-            <Button
-              title={i18n.t('createAccountAndClaim')}
-              onPress={onButtonClick}
-              type="primary"
-              disabled={!name || !username || !image}
-            />
-          </View>
-        </>
-      )}
-    </SafeAreaView>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+              <Button
+                title={i18n.t('createAccountAndClaim')}
+                onPress={onButtonClick}
+                type="primary"
+                disabled={!name || !username || !image}
+              />
+            </View>
+          </>
+        )}
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 export default OnboardingScreen;
@@ -253,17 +264,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   title: {
-    fontSize: 48,
+    fontSize: minMaxScale(40, 48),
     color: COLORS.light,
     fontFamily: 'Satoshi-Bold',
     letterSpacing: -0.02,
-    lineHeight: 52,
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    lineHeight: minMaxScale(48, 56),
     width: '100%',
   },
+  profilePictureTitle: {
+    color: COLORS.light,
+    fontSize: minMaxScale(16, 24),
+    fontFamily: 'Satoshi-Bold',
+    letterSpacing: -0.02,
+  },
   imagePicker: {
-    height: 250,
+    height: scale(250),
     aspectRatio: 1,
     backgroundColor: COLORS.gray[400],
     borderRadius: 125,

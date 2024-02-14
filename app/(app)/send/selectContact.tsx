@@ -7,7 +7,7 @@ import SelectContactScreen from '../../../screens/send/SelectContactScreen';
 const enterAmount = () => {
   return (
     <SafeAreaView style={styles.wrapper}>
-      <PageHeader />
+      <PageHeader pageTitle="Send Funds" />
       <SelectContactScreen />
     </SafeAreaView>
   );

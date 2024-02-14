@@ -6,6 +6,7 @@ import Button from '../../components/UI/Button';
 import PhoneNumberInput from '../../components/UI/PhoneNumberInput';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
+import { minMaxScale } from '../../utils/scalingFunctions';
 
 interface IntroScreenProps {
   transactionData: any;
@@ -36,7 +37,12 @@ const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: Intro
             {transactionData.sender} {i18n.t('sentYou')}
           </Text>
           <Text style={styles.title}>
-            {transactionData.amount} {/*transactionData.token*/} USD
+            $
+            {parseFloat(transactionData.amount).toLocaleString('en-US', {
+              maximumFractionDigits: 5,
+              minimumFractionDigits: 2,
+            })}{' '}
+            USD
           </Text>
           <Text style={styles.description}>{i18n.t('claimIntroScreenDescription')}</Text>
         </View>
@@ -70,6 +76,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: '100%',
     paddingTop: 64,
+    paddingHorizontal: 16,
   },
   description: {
     color: 'white',
@@ -77,15 +84,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Satoshi',
   },
   title: {
-    fontSize: 48,
+    fontSize: minMaxScale(40, 48),
     color: COLORS.light,
     fontFamily: 'Satoshi-Bold',
     letterSpacing: -0.02,
-    lineHeight: 52,
+    lineHeight: minMaxScale(48, 56),
     maxWidth: 300,
   },
   textContainer: {
-    marginHorizontal: 16,
     marginBottom: 32,
     gap: 4,
   },
@@ -94,7 +100,6 @@ const styles = StyleSheet.create({
     color: COLORS.light,
     fontFamily: 'Satoshi-Bold',
     letterSpacing: -0.02,
-    lineHeight: 52,
-    maxWidth: 300,
+    lineHeight: 32,
   },
 });

@@ -4,6 +4,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
 import { useAccount } from '../../../store/SmartAccountContext';
+import { scale } from '../../../utils/scalingFunctions';
 
 interface TranscationCardProps {
   amount: number;
@@ -32,7 +33,8 @@ const DefaultTransactionCard: React.FC<TranscationCardProps> = ({
             <Text style={styles.date}>{date}</Text>
           </View>
           <Text style={[styles.amount, sender !== address && styles.positive]}>
-            ${amount.toLocaleString('us', { maximumFractionDigits: 5, minimumFractionDigits: 2 })}
+            $
+            {amount.toLocaleString('en-US', { maximumFractionDigits: 5, minimumFractionDigits: 2 })}
           </Text>
         </View>
         <View style={{ alignItems: 'flex-start', gap: 4 }}>
@@ -59,8 +61,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    height: 375,
-    width: 275,
+    width: scale(275),
+    aspectRatio: 3 / 4,
   },
   tag: {
     borderRadius: 100,

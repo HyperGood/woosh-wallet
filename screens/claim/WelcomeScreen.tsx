@@ -7,6 +7,7 @@ import DefaultTransactionCard from '../../components/transactions/UI/DefaultTran
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useSession } from '../../store/AuthContext';
+import { minMaxScale } from '../../utils/scalingFunctions';
 
 interface WelcomeScreenProps {
   transactionData: any;
@@ -58,11 +59,11 @@ const WelcomeScreen = ({
                 <Text style={styles.description}>{i18n.t('welcomeScreenDescription')}</Text>
               </Skeleton>
             </View>
-            <View style={{ transform: [{ rotate: '1deg' }] }}>
+            <View style={{ transform: [{ rotate: '1deg' }], marginVertical: 8 }}>
               <Skeleton {...SkeletonCommonProps}>
                 {transactionData && (
                   <DefaultTransactionCard
-                    amount={transactionData.amount}
+                    amount={parseFloat(transactionData.amount)}
                     sender={transactionData.sender}
                     description={transactionData.description}
                     date={transactionData.createdAt.toDate().toDateString()}
@@ -73,7 +74,7 @@ const WelcomeScreen = ({
           </>
         )}
         {!loadingTransactionData && !transactionData?.claimedBy && (
-          <View style={{ flexDirection: 'row', paddingBottom: 32, paddingHorizontal: 16 }}>
+          <View style={{ flexDirection: 'row', paddingBottom: 24, paddingHorizontal: 16 }}>
             <Button title={i18n.t('getStarted')} onPress={nextScreenFunction} type="primary" />
           </View>
         )}
@@ -95,11 +96,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Satoshi',
   },
   title: {
-    fontSize: 48,
+    fontSize: minMaxScale(40, 48),
     color: COLORS.light,
     fontFamily: 'Satoshi-Bold',
     letterSpacing: -0.02,
-    lineHeight: 52,
+    lineHeight: minMaxScale(48, 56),
     maxWidth: 300,
     textTransform: 'capitalize',
   },
