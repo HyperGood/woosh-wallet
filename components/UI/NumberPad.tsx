@@ -7,6 +7,7 @@ import Tabs, { TabOption } from './Tabs';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useUserBalance } from '../../hooks/useUserBalance';
+import { scale } from '../../utils/scalingFunctions';
 
 interface NumberPadProps {
   onChange: (amount: string) => void;
@@ -165,12 +166,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   amount: {
-    fontSize: 80,
+    fontSize: scale(80),
     fontFamily: 'FHOscar',
     color: COLORS.light,
   },
   cents: {
-    fontSize: 40,
+    fontSize: scale(40),
     fontFamily: 'FHOscar',
     color: COLORS.light,
   },
@@ -181,12 +182,12 @@ const styles = StyleSheet.create({
   },
   currencyText: {
     color: COLORS.dark,
-    fontSize: 16,
+    fontSize: scale(16),
     fontFamily: 'Satoshi-Bold',
   },
   numberPad: {
-    paddingHorizontal: 24,
-    gap: 40,
+    paddingHorizontal: scale(24),
+    gap: scale(40),
     marginTop: 24,
   },
   pressedNumber: {
@@ -197,13 +198,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   number: {
-    fontSize: 36,
+    fontSize: scale(36),
     color: COLORS.light,
     fontFamily: 'Satoshi-Bold',
   },
   numberWrapper: {
-    width: 64,
-    height: 64,
+    width: scale(64),
+    height: scale(64),
     justifyContent: 'center',
     alignItems: 'center',
   },

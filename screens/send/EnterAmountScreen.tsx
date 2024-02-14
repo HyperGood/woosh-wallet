@@ -3,7 +3,6 @@ import LottieView from 'lottie-react-native';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
 import NumberPad from '../../components/UI/NumberPad';
 import { COLORS } from '../../constants/global-styles';
@@ -50,11 +49,10 @@ const EnterAmountScreen = () => {
     <ScrollView style={{ flex: 1, width: '100%' }}>
       <View style={styles.wrapper}>
         <View>
-          <BackButton />
-          <Text style={styles.title}>{i18n.t('sendingTo')}</Text>
           <View style={styles.recipient}>
-            {/* <Image style={styles.image} source={require('../../assets/images/temp/janet.jpg')} /> */}
-            <Text style={styles.recipientName}>{transactionData?.recipientName}</Text>
+            <Text style={styles.recipientName}>
+              {i18n.t('sendingTo')} {transactionData?.recipientName}
+            </Text>
             <Text style={styles.recipientPhone}>{transactionData?.recipientPhone}</Text>
           </View>
           {(isDepositing || isSaving) && !depositError ? (
@@ -97,22 +95,13 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     justifyContent: 'space-between',
   },
-  title: {
-    color: COLORS.light,
-    marginHorizontal: 16,
-    fontFamily: 'Satoshi-Bold',
-    fontSize: 16,
-    marginBottom: 8,
-    marginTop: 8,
-    textTransform: 'capitalize',
-  },
   recipient: {
     marginHorizontal: 16,
-    gap: 8,
-    marginBottom: 16,
+    gap: 4,
+    marginBottom: 8,
   },
   recipientName: {
-    fontSize: 32,
+    fontSize: 24,
     fontFamily: 'Satoshi-Bold',
     color: COLORS.light,
   },
