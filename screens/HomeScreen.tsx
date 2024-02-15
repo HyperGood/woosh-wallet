@@ -1,7 +1,8 @@
 import { Link, useFocusEffect } from 'expo-router';
 import { Skeleton } from 'moti/skeleton';
 import { useCallback, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchTransactionsByEthAddress } from '../api/firestoreService';
 import Balance from '../components/Balance';
@@ -14,6 +15,7 @@ import { useAccount } from '../store/SmartAccountContext';
 import { scale } from '../utils/scalingFunctions';
 
 const HomeScreen = () => {
+  const insets = useSafeAreaInsets();
   const [transactions, setTransactions] = useState<any>();
   const { address } = useAccount();
 
@@ -31,8 +33,11 @@ const HomeScreen = () => {
   );
 
   return (
-    <ScrollView style={styles.wrapper} showsVerticalScrollIndicator={false}>
-      <SafeAreaView style={styles.container}>
+    <View style={styles.wrapper}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingTop: insets.top }}
+        showsVerticalScrollIndicator={false}>
         <Header />
         <Balance />
         <Skeleton show={!transactions} height={120} width="100%">
@@ -54,21 +59,20 @@ const HomeScreen = () => {
         <Skeleton show={!transactions} height={600} width="100%">
           <PreviousTransactions transactions={transactions} />
         </Skeleton>
-      </SafeAreaView>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 export default HomeScreen;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: COLORS.dark,
     width: '100%',
   },
   container: {
     flex: 1,
-    alignItems: 'center',
     width: '100%',
+    backgroundColor: COLORS.dark,
   },
   buttonsContainer: {
     flexDirection: 'row',

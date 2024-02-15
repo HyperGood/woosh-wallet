@@ -8,13 +8,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useEffect, useState } from 'react';
-import { Text, SafeAreaView, StyleSheet, View, Pressable, Image, ScrollView } from 'react-native';
+import { Text, StyleSheet, View, Pressable, Image, ScrollView } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
@@ -23,7 +24,7 @@ import i18n from '../../constants/i18n';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
-import { minMaxScale, scale, verticalScale } from '../../utils/scalingFunctions';
+import { minMaxScale, scale } from '../../utils/scalingFunctions';
 
 interface OnboardingScreenProps {
   transactionData: any;
@@ -31,6 +32,7 @@ interface OnboardingScreenProps {
 }
 
 const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
+  const insets = useSafeAreaInsets();
   const [name, setName] = useState(transactionData.recipientName || '');
   const [image, setImage] = useState<any>(null);
   const [username, setUsername] = useState('');
@@ -180,8 +182,11 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   };
 
   return (
-    <ScrollView style={{ flex: 1, width: '100%' }} showsVerticalScrollIndicator={false}>
-      <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1, width: '100%' }}>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingTop: insets.top }}>
         {isLoading ? (
           <Animated.View
             style={[
@@ -207,7 +212,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
             </View>
           </Animated.View>
         ) : (
-          <>
+          <View style={{ flex: 1, width: '100%', justifyContent: 'space-between' }}>
             <Animated.View
               style={[
                 {
@@ -249,10 +254,10 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
                 disabled={!name || !username || !image}
               />
             </View>
-          </>
+          </View>
         )}
-      </SafeAreaView>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 export default OnboardingScreen;
@@ -260,8 +265,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
   },
   title: {
     fontSize: minMaxScale(40, 48),
