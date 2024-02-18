@@ -85,7 +85,7 @@ export const useUserBalance = () => {
   useEffect(() => {
     setIsFetchingBalance(true);
     if (address) fetchBalance();
-  }, [address]);
+  }, [address, usdcPrice]);
 
   return {
     tokenBalance,

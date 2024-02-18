@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "WooshMVP.app"
-               BlueprintName = "WooshMVP"
-               ReferencedContainer = "container:WooshMVP.xcodeproj">
+               BuildableName = "Woosh.app"
+               BlueprintName = "Woosh"
+               ReferencedContainer = "container:Woosh.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "WooshMVPTests.xctest"
-               BlueprintName = "WooshMVPTests"
-               ReferencedContainer = "container:WooshMVP.xcodeproj">
+               BuildableName = "WooshTests.xctest"
+               BlueprintName = "WooshTests"
+               ReferencedContainer = "container:Woosh.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "WooshMVP.app"
-            BlueprintName = "WooshMVP"
-            ReferencedContainer = "container:WooshMVP.xcodeproj">
+            BuildableName = "Woosh.app"
+            BlueprintName = "Woosh"
+            ReferencedContainer = "container:Woosh.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "WooshMVP.app"
-            BlueprintName = "WooshMVP"
-            ReferencedContainer = "container:WooshMVP.xcodeproj">
+            BuildableName = "Woosh.app"
+            BlueprintName = "Woosh"
+            ReferencedContainer = "container:Woosh.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
