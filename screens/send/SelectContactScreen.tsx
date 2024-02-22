@@ -1,33 +1,41 @@
 import { Link, router } from 'expo-router';
-import { useRef, useState } from 'react';
-import {
-  FlatList,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { Dimensions, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ModalDropdown from 'react-native-modal-dropdown';
+import Animated, {
+  Easing,
+  FadeOut,
+  Layout,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
+import ContactSelector from '../../components/ContactSelector';
 import Button from '../../components/UI/Button';
+import ContactForm from '../../components/UI/ContactForm';
 import Input from '../../components/UI/Input';
-import PhoneNumberInput from '../../components/UI/PhoneNumberInput';
+import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
+import { useKeyboardBottomSheetAdjustment } from '../../hooks/BottomSheet/useKeyboardBottomSheetAdjustment';
+import { useToggleBottomSheet } from '../../hooks/BottomSheet/useToggleBottomSheet';
 import { usePhoneContacts } from '../../store/ContactsContext';
 import { useTransaction } from '../../store/TransactionContext';
 import { minMaxScale } from '../../utils/scalingFunctions';
 
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 const SelectContactScreen = () => {
+  const addContactRef = useRef<BottomSheetRefProps>(null);
   const { setTransactionData } = useTransaction();
   const { phoneContacts, getPhoneContacts } = usePhoneContacts();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [countryCode, setCountryCode] = useState('+52'); // default to US
   const [recipient, setRecipient] = useState('');
-  const [searchText, setSearchText] = useState(''); // Add this line
+  const [searchText, setSearchText] = useState('');
+  const isActionTrayOpened = useSharedValue(false);
 
   const countryCodes = ['+52', '+1']; // Array of country codes
 
@@ -37,7 +45,7 @@ const SelectContactScreen = () => {
 
   const handleNext = (phoneNumber: string, recipient: string, countryCode: string) => {
     setTransactionData({
-      recipientPhone: (countryCode + phoneNumber).replace(/\s/g, ''),
+      recipientPhone: (countryCode + phoneNumber).replace(/[\s()-]/g, ''),
       recipientName: recipient,
       amount: '0',
       token: 'USDc',
@@ -47,117 +55,103 @@ const SelectContactScreen = () => {
 
   const dropdownRef = useRef<ModalDropdown | null>(null);
 
+  const close = useCallback(() => {
+    addContactRef.current?.close();
+    isActionTrayOpened.value = false;
+  }, []);
+
+  const toggleBottomSheet = useToggleBottomSheet(addContactRef, isActionTrayOpened, close);
+
+  const { keyboardBottomSheetAdjustment } = useKeyboardBottomSheetAdjustment(addContactRef);
+
+  const rContentStyle = useAnimatedStyle(() => {
+    return {
+      height: withSpring(SCREEN_HEIGHT > 700 ? 700 : SCREEN_HEIGHT - 80, {
+        damping: 20,
+      }),
+    };
+  }, []);
+
   return (
-    <KeyboardAvoidingView
-      style={styles.wrapper}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <View style={{ flex: 1, justifyContent: 'space-between' }}>
-        <View style={{ gap: 16 }}>
+    <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
+      <SafeAreaView style={{ flex: 1, width: '100%' }}>
+        <View style={{ flex: 1, justifyContent: 'space-between', paddingHorizontal: 16 }}>
           <Text style={styles.title}>{i18n.t('sendSelectContactTitle')}</Text>
-          <PhoneNumberInput
-            onPhoneNumberChange={setPhoneNumber}
-            onCountryCodeChange={setCountryCode}
-            initialCountryCode={countryCode}
-            initialPhoneNumber={phoneNumber}
+          <ContactForm
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            countryCode={countryCode}
+            setCountryCode={setCountryCode}
+            name={recipient}
+            setName={setRecipient}
+            handleOpenKeyboard={keyboardBottomSheetAdjustment}
+            selectContact={() => {
+              getPhoneContacts();
+              toggleBottomSheet();
+            }}
           />
-          <Input placeholder={i18n.t('enterName')} onChangeText={setRecipient} value={recipient} />
-        </View>
-        <View style={{ flex: 1, marginTop: 16 }}>
-          {phoneContacts ? (
-            <View style={{ flex: 1 }}>
-              <Input
-                placeholder={i18n.t('searchContacts')}
-                onChangeText={setSearchText}
-                value={searchText}
-                theme="light"
-                icon
+          <View style={styles.buttonWrapper}>
+            <Link href="/(app)/send/enterAmount" asChild>
+              <Button
+                title={i18n.t('next')}
+                type="primary"
+                onPress={() => handleNext(phoneNumber, recipient, countryCode)}
+                disabled={!phoneNumber}
               />
-              <FlatList
-                data={filteredContacts}
-                style={styles.container}
-                keyExtractor={(item) => item.id}
-                ListHeaderComponent={
-                  <View
-                    style={{
-                      borderBottomWidth: 1,
-                      paddingTop: 8,
-                      paddingBottom: 16,
-                      borderBottomColor: COLORS.gray[400],
-                    }}>
-                    <Text
-                      style={{
-                        color: COLORS.dark,
-                        fontFamily: 'Satoshi-Bold',
-                        textTransform: 'uppercase',
-                        opacity: 0.6,
-                      }}>
-                      Contacts
-                    </Text>
-                  </View>
-                }
-                contentContainerStyle={{ paddingBottom: 40 }}
-                ListEmptyComponent={<Text>No contacts found</Text>}
-                renderItem={({ item }) => (
-                  <Pressable
-                    onPress={() => {
-                      const selectedPhoneNumber = item.phoneNumbers[0].number;
-                      const selectedRecipient = item.name;
-                      const match = selectedPhoneNumber.match(/^\+\d{1,3}/);
-                      const newCountryCode = match ? match[0] : '+52';
-                      const phoneNumberWithoutCountryCode = selectedPhoneNumber.replace(
-                        /^\+\d{1,3}/,
-                        ''
-                      );
-                      setCountryCode(newCountryCode);
-                      setPhoneNumber(phoneNumberWithoutCountryCode);
-                      setRecipient(selectedRecipient);
-                      const selectedIndex = countryCodes.indexOf(newCountryCode);
-                      if (selectedIndex !== -1 && dropdownRef.current) {
-                        dropdownRef.current.select(selectedIndex);
-                      }
-                      handleNext(phoneNumberWithoutCountryCode, selectedRecipient, newCountryCode);
-                    }}
-                    style={styles.contact}>
-                    <Text style={styles.contactName}>{item.name}</Text>
-                  </Pressable>
-                )}
-              />
-            </View>
-          ) : (
-            <View style={{ flexDirection: 'row' }}>
-              <Pressable
-                style={{
-                  flex: 1,
-                  paddingVertical: 24,
-                  paddingHorizontal: 16,
-                  alignItems: 'center',
-                  backgroundColor: COLORS.light,
-                  borderRadius: 16,
-                  flexDirection: 'row',
-                  gap: 8,
-                }}
-                onPress={getPhoneContacts}>
-                <Image
-                  source={require('../../assets/images/contacts-icon.png')}
-                  style={{ width: 32, height: 32 }}
-                />
-                <Text style={styles.selectContactButtonText}>{i18n.t('getContacts')}</Text>
-              </Pressable>
-            </View>
-          )}
+            </Link>
+          </View>
         </View>
-        <View style={styles.buttonWrapper}>
-          <Link href="/(app)/send/enterAmount" asChild>
-            <Button
-              title={i18n.t('next')}
-              type="primary"
-              onPress={() => handleNext(phoneNumber, recipient, countryCode)}
-              disabled={!phoneNumber}
-            />
-          </Link>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+        <BottomSheet ref={addContactRef}>
+          <Animated.View style={rContentStyle}>
+            <Animated.View
+              layout={Layout.easing(Easing.linear).duration(250)}
+              exiting={FadeOut.delay(100)}
+              style={{ flex: 1, backgroundColor: COLORS.gray[800] }}>
+              <Text style={styles.modalText}>{i18n.t('addContact')}</Text>
+              <View style={{ gap: 24, paddingHorizontal: 16, flex: 1 }}>
+                <View style={{ flex: 1 }}>
+                  <Input
+                    placeholder={i18n.t('searchContacts')}
+                    onChangeText={setSearchText}
+                    value={searchText}
+                    icon
+                  />
+                  <FlatList
+                    data={filteredContacts}
+                    style={styles.container}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                    ListEmptyComponent={<Text>No contacts found on your phone</Text>}
+                    ItemSeparatorComponent={() => (
+                      <View
+                        style={{
+                          height: 1,
+                          backgroundColor: COLORS.light,
+                          opacity: 0.05,
+                          width: '75%',
+                          alignSelf: 'center',
+                        }}
+                      />
+                    )}
+                    renderItem={({ item }) => (
+                      <ContactSelector
+                        item={item}
+                        setPhoneNumber={setPhoneNumber}
+                        setCountryCode={setCountryCode}
+                        setName={setRecipient}
+                        countryCodes={countryCodes}
+                        dropdownRef={dropdownRef}
+                        close={close}
+                      />
+                    )}
+                  />
+                </View>
+              </View>
+            </Animated.View>
+          </Animated.View>
+        </BottomSheet>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 export default SelectContactScreen;
@@ -168,30 +162,25 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingHorizontal: minMaxScale(12, 16),
   },
-
+  selectContactButton: {
+    flex: 1,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    backgroundColor: COLORS.light,
+    borderRadius: 24,
+    flexDirection: 'row',
+    gap: 8,
+  },
   selectContactButtonText: {
     color: COLORS.primary[600],
     fontFamily: 'Satoshi-Bold',
     fontSize: 18,
   },
-  contact: {
-    gap: 10,
-    paddingVertical: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray[400],
-  },
-  contactName: {
-    color: COLORS.dark,
-    fontSize: 20,
-    fontFamily: 'Satoshi-Bold',
-  },
-  contactNumber: {
-    color: COLORS.dark,
-    fontSize: 20,
-  },
   container: {
-    backgroundColor: COLORS.light,
+    backgroundColor: COLORS.gray[600],
     flex: 1,
+    height: '100%',
     marginTop: 16,
     borderRadius: 16,
     paddingTop: 16,
@@ -208,5 +197,13 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     marginBottom: 24,
     flexDirection: 'row',
+  },
+  modalText: {
+    fontSize: 32,
+    textAlign: 'center',
+    fontFamily: 'Satoshi-Bold',
+    color: COLORS.light,
+    marginTop: 16,
+    marginBottom: 32,
   },
 });
