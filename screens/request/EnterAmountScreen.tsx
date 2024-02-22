@@ -59,7 +59,7 @@ const RequestEnterAmountScreen = () => {
               setDescription('');
               handleNextPress();
             }}
-            disabled={amount === '0'}
+            disabled={parseFloat(amount) <= 0}
           />
         </View>
       </View>

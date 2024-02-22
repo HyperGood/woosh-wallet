@@ -27,7 +27,7 @@ const NumberPad = ({
   handleTabPress,
 }: NumberPadProps) => {
   const [amount, setAmount] = useState('0');
-  const [cents, setCents] = useState('00');
+  const [cents, setCents] = useState('');
 
   const [isDecimal, setIsDecimal] = useState(false);
   const currency = '🇺🇸 USD';
@@ -36,6 +36,9 @@ const NumberPad = ({
   const onNumberPress = (number: string) => {
     if (number === '.') {
       setIsDecimal(true);
+      if (amount === '0' && cents === '') {
+        onChange('0.');
+      }
     } else if (isDecimal) {
       setCents((prevCents) => {
         const newCents = prevCents === '00' && number !== '0' ? number : prevCents + number;
@@ -63,16 +66,16 @@ const NumberPad = ({
       setCents((prevCents) => {
         const newCents = prevCents.slice(0, -1);
         const finalAmount = amount + (newCents ? '.' + newCents : '');
-        onChange(finalAmount); // call the passed callback function
-        return newCents || '00';
+        onChange(finalAmount);
+        return newCents;
       });
-      if (cents === '0') {
+      if (cents === '') {
         setIsDecimal(false);
       }
     } else {
       setAmount((prevAmount) => {
         const newAmount = prevAmount.slice(0, -1) || '0';
-        onChange(newAmount); // call the passed callback function
+        onChange(newAmount);
         return newAmount;
       });
     }
@@ -102,9 +105,10 @@ const NumberPad = ({
             </Text>
           </Pressable>
         )}
+
         <Text style={styles.amount}>
-          ${formatAmount(amount)}.
-          <Text style={styles.cents}>{cents.length < 2 ? cents.padEnd(2, '0') : cents}</Text>
+          ${formatAmount(amount)}
+          {isDecimal || cents ? <Text style={styles.cents}>.{cents}</Text> : null}
         </Text>
 
         <View style={styles.currencyWrapper}>
