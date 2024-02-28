@@ -1,3 +1,46 @@
+/**
+ * BottomSheet Component
+ *
+ * A reusable component for creating a bottom sheet in the project.
+ * It provides functionality for three main use cases: opening, closing,
+ * and scrolling the bottom sheet, along with gesture-based interaction
+ * for dragging the sheet up and down.
+ * All of this powered by the reanimated library.
+ *
+ * @param props - The props for the BottomSheet component.
+ * @param props.children - The content to be rendered within the bottom sheet. By default it takes the screen height.
+ * @param props.maxHeight - The maximum height of the bottom sheet when fully expanded.
+ * 
+ * @returns A React component representing the BottomSheet.
+ * 
+ * How to use it:
+ * - Import the component.
+ * - Wrap the component around the content you want to display in the bottom sheet.
+ * - Pass the ref prop to get access to the methods, this prop needs to be declared using "useRef" React hook.
+ * - Pass the maxHeight prop to set the maximum height of the bottom sheet using a number.
+ * - Use the scrollTo method to scroll the bottom sheet to a specific position.
+ * - Use the open method to open the bottom sheet.
+ * - Use the close method to close the bottom sheet.
+ * - Use the isActive method to check if the bottom sheet is open or closed.
+ * - Use the getHeight method to get the current height of the bottom sheet.
+ * 
+ * @example
+ * 
+ * Methods usage:
+ * 
+ * const bottomSheetRef = useRef<BottomSheetRefProps>(null);
+ * bottomSheetRef.current?.scrollTo(100);
+ * bottomSheetRef.current?.open();
+ * bottomSheetRef.current?.close();
+ * bottomSheetRef.current?.isActive();
+ * bottomSheetRef.current?.getHeight();
+ * const content...
+ * 
+ * Component usage:
+ * 
+ * <BottomSheet ref={bottomSheetRef}>{content}</BottomSheet>
+ *
+ */
 import { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { Dimensions, StyleSheet, View, Keyboard } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
