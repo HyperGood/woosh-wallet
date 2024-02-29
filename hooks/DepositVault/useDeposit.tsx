@@ -1,3 +1,40 @@
+/**
+ * useDeposit Hook
+ * 
+ * A custom hook for handling deposit functionality in the project.
+ * It provides methods for depositing funds using hash to an account
+ * with "SmartAccountContext", handling authentication, and managing
+ * related deposit states.
+ * 
+ * @returns An object (hook) containing methods and states for deposit handling.
+ * 
+ * How to use it:
+ * - Import the hook.
+ * - Call the hook to get access to the deposit method and related states.
+ * - Use the deposit method to initiate the deposit process with a specified amount passed in a string format and using USDc token.
+ * - Check the depositHash state to obtain the hash of the deposit transaction.
+ * - Check the isDepositing state to determine if the deposit process is in progress (Is Depositing).
+ * - Check the depositError state to get and handle any errors that occur during depositing.
+ * 
+ * @example
+ * 
+ * Methods/States declaration:
+ * 
+ * const { deposit, depositHash, isDepositing, depositError } = useDeposit();
+ * 
+ * Methods/States usage:
+ * 
+ * deposit('100'); // To make a deposit of 100 USDc
+ * 
+ * if (isDepositing) {
+ *      // Content displayed while depositing
+ * } else if (depositError) {
+ *      // Handle error/Content displayed if an error occurs
+ * } else if (depositHash) {
+ *      // If the transaction is successful then the deposit hash is available, so you can use
+ *      // it either as an indicator or as a response for the user.
+ * }
+ */
 import * as Sentry from '@sentry/react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useState } from 'react';
