@@ -1,16 +1,17 @@
 /**
  * useDeposit Hook
  * 
- * A custom hook for handling deposit functionality in the project.
- * It provides methods for depositing funds using hash to an account
- * with "SmartAccountContext", handling authentication, and managing
- * related deposit states.
+ * A custom hook for handling deposit functionality to the DepositVault in the project.
+ * It provides methods for depositing funds with signatures with "SmartAccountContext",
+ * using phone authentication, for authorization and managing related
+ * deposit states.
+ * This handles USDc approval and transaction execution.
  * 
  * @returns An object (hook) containing methods and states for deposit handling.
  * 
  * How to use it:
  * - Import the hook.
- * - Call the hook to get access to the deposit method and related states.
+ * - Call the hook to get access to the deposit method, deposit transaciton hash, and transaction status
  * - Use the deposit method to initiate the deposit process with a specified amount passed in a string format and using USDc token.
  * - Check the depositHash state to obtain the hash of the deposit transaction.
  * - Check the isDepositing state to determine if the deposit process is in progress (Is Depositing).
