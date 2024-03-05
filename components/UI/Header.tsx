@@ -104,6 +104,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Satoshi-Bold',
     fontSize: 16,
     letterSpacing: -0.02,
-    color: COLORS.primary[400],
+    color: COLORS.dark,
   },
 });
