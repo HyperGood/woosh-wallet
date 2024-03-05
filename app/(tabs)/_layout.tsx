@@ -1,25 +1,58 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
+
+import HomeIcon from '../../assets/images/icons/HomeIcon';
+import QRIcon from '../../assets/images/icons/QRIcon';
+import TransactionIcon from '../../assets/images/icons/TransactionIcon';
+import { COLORS } from '../../constants/global-styles';
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: COLORS.primary[600],
+        tabBarInactiveTintColor: COLORS.dark,
+        tabBarActiveBackgroundColor: COLORS.primary[200],
+        tabBarBackground: () => <BlurView />,
+        tabBarStyle: {
+          borderRadius: 100,
+          height: 72,
+          alignItems: 'center',
+          marginHorizontal: 16,
+          marginBottom: 24,
+          paddingBottom: 0,
+          position: 'absolute',
+          backgroundColor: 'white',
+        },
+        tabBarItemStyle: {
+          borderRadius: 100,
+          height: '100%',
+        },
+      }}>
       <Tabs.Screen
         name="(home)"
         options={{
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <HomeIcon color={color} fill={focused ? color : 'transparent'} />
+          ),
+          headerShown: false,
+          tabBarShowLabel: false,
         }}
       />
       <Tabs.Screen
         name="qr"
         options={{
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
+          tabBarIcon: ({ color }) => <QRIcon color={color} />,
+          headerShown: false,
+          tabBarShowLabel: false,
         }}
       />
       <Tabs.Screen
         name="transactions"
         options={{
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
+          tabBarIcon: ({ color }) => <TransactionIcon color={color} />,
+          headerShown: false,
+          tabBarShowLabel: false,
         }}
       />
     </Tabs>
