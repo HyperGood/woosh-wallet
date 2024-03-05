@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
-import { Slot, Stack, useNavigationContainerRef } from 'expo-router';
+import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { StatusBar } from 'react-native';

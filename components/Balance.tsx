@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
+import YieldIcon from '../assets/images/icons/YieldIcon';
 import { COLORS } from '../constants/global-styles';
 import { useUserBalance } from '../hooks/useUserBalance';
 import { scale } from '../utils/scalingFunctions';
@@ -34,7 +35,7 @@ const Balance = () => {
           {tokenBalance} {token}
         </Text>
         <View style={styles.yieldWrapper}>
-          <Text style={styles.yieldText}>Icon</Text>
+          <YieldIcon />
           <Text style={styles.yieldText}>+{yieldPerBlock} USD/s</Text>
         </View>
       </View>
