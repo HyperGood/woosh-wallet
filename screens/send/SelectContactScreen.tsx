@@ -50,7 +50,7 @@ const SelectContactScreen = () => {
       amount: '0',
       token: 'USDc',
     });
-    router.push('/(app)/send/enterAmount');
+    router.push('/send/enterAmount');
   };
 
   const dropdownRef = useRef<ModalDropdown | null>(null);
@@ -91,7 +91,7 @@ const SelectContactScreen = () => {
             }}
           />
           <View style={styles.buttonWrapper}>
-            <Link href="/(app)/send/enterAmount" asChild>
+            <Link href="/send/enterAmount" asChild>
               <Button
                 title={i18n.t('next')}
                 type="primary"

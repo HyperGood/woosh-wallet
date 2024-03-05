@@ -42,7 +42,7 @@ const HomeScreen = () => {
         <Balance />
         <Skeleton show={!transactions} height={120} width="100%">
           <View style={styles.buttonsContainer}>
-            <Link href="/(app)/request/enterAmount" asChild>
+            <Link href="/request/enterAmount" asChild>
               <Button
                 title={i18n.t('request')}
                 icon="arrow-down-left"
@@ -51,7 +51,7 @@ const HomeScreen = () => {
                 onPress={() => {}}
               />
             </Link>
-            <Link href="/(app)/send/selectContact" asChild>
+            <Link href="/send/selectContact" asChild>
               <Button title={i18n.t('send')} icon="send" type="primary" onPress={() => {}} />
             </Link>
           </View>

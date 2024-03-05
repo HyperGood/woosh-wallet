@@ -72,7 +72,7 @@ const SplitsScreen = () => {
           ...requestData,
         })
         .then(() => {
-          router.push('/(app)/request/success');
+          router.push('/request/success');
         });
     } catch (error) {
       console.log(error);

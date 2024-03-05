@@ -102,7 +102,7 @@ const SelectContactScreen = () => {
 
   useEffect(() => {
     if (isNextClicked) {
-      router.push('/(app)/request/splits');
+      router.push('/request/splits');
       setIsNextClicked(false); // reset the flag
     }
   }, [requestData, isNextClicked]);

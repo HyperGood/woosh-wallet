@@ -1,8 +1,8 @@
 import { SafeAreaView, StyleSheet } from 'react-native';
 
-import PageHeader from '../../../components/UI/PageHeader';
-import { COLORS } from '../../../constants/global-styles';
-import SelectContactScreen from '../../../screens/send/SelectContactScreen';
+import PageHeader from '../../../../components/UI/PageHeader';
+import { COLORS } from '../../../../constants/global-styles';
+import SelectContactScreen from '../../../../screens/send/SelectContactScreen';
 
 const enterAmount = () => {
   return (

@@ -22,7 +22,7 @@ const RequestEnterAmountScreen = () => {
   };
 
   const handleNextPress = () => {
-    router.push('/(app)/request/selectContact');
+    router.push('/request/selectContact');
   };
 
   useEffect(() => {

@@ -4,11 +4,11 @@ import { ECDSAProvider } from '@zerodev/sdk';
 import { Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 
-import { fetchUserByEthAddress } from '../../api/firestoreService';
-import { useSession } from '../../store/AuthContext';
-import { ContactProvider } from '../../store/ContactsContext';
-import { useAccount } from '../../store/SmartAccountContext';
-import { useUserData } from '../../store/UserDataContext';
+import { fetchUserByEthAddress } from '../../../api/firestoreService';
+import { useSession } from '../../../store/AuthContext';
+import { ContactProvider } from '../../../store/ContactsContext';
+import { useAccount } from '../../../store/SmartAccountContext';
+import { useUserData } from '../../../store/UserDataContext';
 
 export default function Layout() {
   const [address, setAddress] = useState('');

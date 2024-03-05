@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { TransactionProvider } from '../../../store/TransactionContext';
+import { TransactionProvider } from '../../../../store/TransactionContext';
 
 export default function Layout() {
   return (

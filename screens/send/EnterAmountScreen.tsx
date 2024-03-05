@@ -32,7 +32,7 @@ const EnterAmountScreen = () => {
         } else {
           console.log('Updated transaction is not an object: ', updatedTransactionData);
         }
-        router.push('/(app)/send/success');
+        router.push('/send/success');
       }
     })();
   }, [depositHash]);

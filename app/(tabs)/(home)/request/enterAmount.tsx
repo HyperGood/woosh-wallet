@@ -1,9 +1,9 @@
 import { SafeAreaView, StyleSheet } from 'react-native';
 
-import PageHeader from '../../../components/UI/PageHeader';
-import { COLORS } from '../../../constants/global-styles';
-import i18n from '../../../constants/i18n';
-import RequestEnterAmountScreen from '../../../screens/request/EnterAmountScreen';
+import PageHeader from '../../../../components/UI/PageHeader';
+import { COLORS } from '../../../../constants/global-styles';
+import i18n from '../../../../constants/i18n';
+import RequestEnterAmountScreen from '../../../../screens/request/EnterAmountScreen';
 
 const enterAmount = () => {
   return (

@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import SuccessScreen from '../../../screens/request/SuccessScreen';
+import SuccessScreen from '../../../../screens/request/SuccessScreen';
 
 const Success = () => {
   return (

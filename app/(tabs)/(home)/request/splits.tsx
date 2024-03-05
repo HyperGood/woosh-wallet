@@ -1,9 +1,9 @@
 import { SafeAreaView, StyleSheet } from 'react-native';
 
-import PageHeader from '../../../components/UI/PageHeader';
-import { COLORS } from '../../../constants/global-styles';
-import i18n from '../../../constants/i18n';
-import SplitsScreen from '../../../screens/request/SplitsScreen';
+import PageHeader from '../../../../components/UI/PageHeader';
+import { COLORS } from '../../../../constants/global-styles';
+import i18n from '../../../../constants/i18n';
+import SplitsScreen from '../../../../screens/request/SplitsScreen';
 
 const splits = () => {
   return (
