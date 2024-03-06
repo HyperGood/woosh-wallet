@@ -9,18 +9,40 @@ import publicClient, { chain } from '../constants/viemPublicClient';
 import { TokenAddresses, usdcAddress } from '../references/tokenAddresses';
 import { useAccount } from '../store/SmartAccountContext';
 
+interface Token {
+  name: string;
+  address: string;
+  decimals: number;
+}
+
+interface Balance {
+  usdc: number;
+  ausdc: number;
+}
+
 export const useUserBalance = () => {
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
-  const [fiatBalance, setFiatBalance] = useState<number>(0);
+  const [tokenBalances, setTokenBalances] = useState<Balance>({ usdc: 0, ausdc: 0 });
+  const [fiatBalances, setFiatBalances] = useState<Balance>({ usdc: 0, ausdc: 0 });
   const [isFetchingBalance, setIsFetchingBalance] = useState<boolean>(true);
   const [errorFetchingBalance, setErrorFetchingBalance] = useState<string | null>(null);
   const { address } = useAccount();
   const { tokenPrices } = useTokenPrices();
   const usdcPrice = tokenPrices?.['usd-coin'].mxn;
   const chainId = chain.id;
-  const tokenAddress =
-    chainId && chainId in usdcAddress ? usdcAddress[chainId as keyof TokenAddresses][0] : '0x12';
-  const tokenDecimals = 6;
+
+  const USDC: Token = {
+    name: 'USDc',
+    address:
+      chainId && chainId in usdcAddress ? usdcAddress[chainId as keyof TokenAddresses][0] : '0x12',
+    decimals: 6,
+  };
+
+  const AUSDC: Token = {
+    name: 'aUSDc',
+    address: '0x16da4541ad1807f4443d92d26044c1147406eb80',
+    decimals: 6,
+  };
+
   const contract = {
     abi: [
       {
@@ -45,28 +67,49 @@ export const useUserBalance = () => {
         outputs: [{ type: 'string' }],
       },
     ],
-    address: tokenAddress,
   } as const;
 
   const fetchBalance = async () => {
     setIsFetchingBalance(true);
     try {
       if (address) {
-        const balance = await publicClient.readContract({
+        const usdcBalance = await publicClient.readContract({
           ...contract,
+          address: USDC.address as `0x${string}`,
           functionName: 'balanceOf',
           args: [address],
         });
-        const formattedBalance = Number(formatUnits(balance, tokenDecimals));
-        storage.set('balance', formattedBalance);
-        setTokenBalance(formattedBalance);
+        const formattedUsdcBalance = Number(formatUnits(usdcBalance, USDC.decimals));
+
+        const ausdcBalance = await publicClient.readContract({
+          ...contract,
+          address: AUSDC.address as `0x${string}`,
+          functionName: 'balanceOf',
+          args: [address],
+        });
+        const formattedAusdcBalance = Number(formatUnits(ausdcBalance, AUSDC.decimals));
+
+        storage.set('usdcBalance', formattedUsdcBalance);
+        storage.set('usdtBalance', formattedAusdcBalance);
+
+        setTokenBalances({
+          usdc: formattedUsdcBalance,
+          ausdc: formattedAusdcBalance,
+        });
+
         if (usdcPrice) {
-          setFiatBalance(formattedBalance * usdcPrice);
+          setFiatBalances({
+            usdc: formattedUsdcBalance * usdcPrice,
+            ausdc: formattedAusdcBalance * usdcPrice,
+          });
           storage.set('usdcPrice', usdcPrice);
         } else {
-          const usdcPrice = storage.getNumber('usdcPrice');
-          if (usdcPrice) {
-            setFiatBalance(usdcPrice * formattedBalance);
+          const storedUsdcPrice = storage.getNumber('usdcPrice');
+          if (storedUsdcPrice) {
+            setFiatBalances({
+              usdc: formattedUsdcBalance * storedUsdcPrice,
+              ausdc: formattedAusdcBalance * storedUsdcPrice,
+            });
           } else {
             throw new Error("Couldn't fetch balance and no stored balance found");
           }
@@ -88,8 +131,8 @@ export const useUserBalance = () => {
   }, [address, usdcPrice]);
 
   return {
-    tokenBalance,
-    fiatBalance,
+    tokenBalances,
+    fiatBalances,
     isFetchingBalance,
     errorFetchingBalance,
     refetchBalance: fetchBalance,
