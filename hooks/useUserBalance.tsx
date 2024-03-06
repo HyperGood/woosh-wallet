@@ -127,7 +127,16 @@ export const useUserBalance = () => {
 
   useEffect(() => {
     setIsFetchingBalance(true);
-    if (address) fetchBalance();
+    if (address) {
+      fetchBalance();
+
+      publicClient.watchBlockNumber({
+        onBlockNumber: (blocknumber) => {
+          console.log('blocknumber', blocknumber);
+          fetchBalance();
+        },
+      });
+    }
   }, [address, usdcPrice]);
 
   return {

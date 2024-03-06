@@ -45,7 +45,7 @@ const Balance = () => {
 
       <View style={styles.bottomWrapper}>
         <Text style={styles.tokenBalance}>
-          {totalTokenBalance.toFixed(6)} {token}
+          {totalTokenBalance} {token}
         </Text>
         <View style={styles.yieldWrapper}>
           <YieldIcon />
