@@ -65,7 +65,7 @@
     "react-native-web": "~0.19.6",
     "viem": "^1.19.11",
     "wagmi": "^1.4.8",
-    "expo-camera": "~14.0.5"
+    "expo-camera": "~14.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

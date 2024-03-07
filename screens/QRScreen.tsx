@@ -1,14 +1,9 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Link, router } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
-import { COLORS } from '../constants/global-styles';
-import i18n from '../constants/i18n';
-import React, { useState, useEffect } from 'react';
-import Button from '../components/UI/Button';
-import QRIcon from '../assets/images/icons/QRIcon';
-
 import { CameraView, useCameraPermissions } from 'expo-camera/next';
 import * as Clipboard from 'expo-clipboard';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+import Button from '../components/UI/Button';
 
 const QRScreen = () => {
   const [permission, requestPermission] = useCameraPermissions();
@@ -24,23 +19,16 @@ const QRScreen = () => {
     return () => clearTimeout(timer);
   }, [showAlert]);
 
-  if(!permission){
-    <View style={styles.container}>
-      <Text>No tienes permisos para acceder a la cámara.</Text>
-      <Button title="Solicitar permisos" onPress={requestPermission} />
-    </View>
+  if (!permission || !permission.granted) {
+    return (
+      <View style={styles.container}>
+        <Text>No tienes permisos para acceder a la cámara.</Text>
+        <Button title="Solicitar permisos" onPress={requestPermission} />
+      </View>
+    );
   }
 
-  if (!permission?.granted) {
-    <View style={styles.container}>
-      <Text>No tienes permisos para acceder a la cámara.</Text>
-      <Button title="Solicitar permisos" onPress={requestPermission} />
-    </View>
-  }
-
-  
-
-  const handleBarcodeScanned = async ({ type="qr", data }: { type: string, data: string }) => {
+  const handleBarcodeScanned = async ({ type = 'qr', data }: { type: string; data: string }) => {
     setShowAlert(true);
     await Clipboard.setStringAsync(data);
   };
@@ -48,7 +36,7 @@ const QRScreen = () => {
   function createWallet() {
     console.log('Creating wallet Wallet');
   }
-  
+
   return (
     <View style={styles.container}>
       <CameraView
@@ -56,62 +44,67 @@ const QRScreen = () => {
           barcodeTypes: ['qr'],
         }}
         style={styles.camera}
-        facing={'back'}
-        onBarcodeScanned={handleBarcodeScanned}
-      />
-      {showAlert && (
-        <View style={styles.alertContainer}>
-          <Text style={styles.alertText}>Código copiado al portapapeles</Text>
-        </View>
-      )}
+        facing="back"
+        onBarcodeScanned={handleBarcodeScanned}>
+        {showAlert && (
+          <View style={styles.alertContainer}>
+            <Text style={styles.alertText}>Código copiado al portapapeles</Text>
+          </View>
+        )}
+
+        {
+          // <View style={styles.container}>
+          //   <View
+          //     style={{
+          //       alignSelf: 'flex-start',
+          //       paddingTop: 56,
+          //       paddingLeft: 16,
+          //     }}>
+          //     <Pressable style={styles.backButton} onPress={() => router.push('/')}>
+          //       <Feather name="arrow-left" size={24} color={COLORS.dark} style={{ opacity: 0.5 }} />
+          //     </Pressable>
+          //   </View>
+          //   <View
+          //     style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 100 }}>
+          //     <View style={styles.qRPlaceHolder}>
+          //       <QRIcon color={COLORS.dark} />
+          //     </View>
+          //     <Text style={styles.accountName}>$account1</Text>
+          //     {true && (
+          //       <View>
+          //         <Text style={{ fontSize: 17, fontFamily: 'Satoshi', textAlign: 'center' }}>
+          //           Requesting
+          //         </Text>
+          //         <Text style={styles.number}>
+          //           $500.
+          //           <Text style={styles.decimal}>00 MXN</Text>
+          //         </Text>
+          //         <Text
+          //           style={{ fontSize: 17, fontFamily: 'Satoshi', opacity: 0.5, textAlign: 'center' }}>
+          //           26.79 USDc
+          //         </Text>
+          //       </View>
+          //     )}
+          //     <View style={styles.buttonContainer}>
+          //       <Link href="/" asChild>
+          //         <Button title="Edit Amount" type="primary" onPress={createWallet} />
+          //       </Link>
+          //     </View>
+          //   </View>
+          // </View>
+        }
+      </CameraView>
     </View>
-    // <View style={styles.container}>
-    //   <View
-    //     style={{
-    //       alignSelf: 'flex-start',
-    //       paddingTop: 56,
-    //       paddingLeft: 16,
-    //     }}>
-    //     <Pressable style={styles.backButton} onPress={() => router.push('/')}>
-    //       <Feather name="arrow-left" size={24} color={COLORS.dark} style={{ opacity: 0.5 }} />
-    //     </Pressable>
-    //   </View>
-    //   <View
-    //     style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 100 }}>
-    //     <View style={styles.qRPlaceHolder}>
-    //       <QRIcon color={COLORS.dark} />
-    //     </View>
-    //     <Text style={styles.accountName}>$account1</Text>
-    //     {true && (
-    //       <View>
-    //         <Text style={{ fontSize: 17, fontFamily: 'Satoshi', textAlign: 'center' }}>
-    //           Requesting
-    //         </Text>
-    //         <Text style={styles.number}>
-    //           $500.
-    //           <Text style={styles.decimal}>00 MXN</Text>
-    //         </Text>
-    //         <Text
-    //           style={{ fontSize: 17, fontFamily: 'Satoshi', opacity: 0.5, textAlign: 'center' }}>
-    //           26.79 USDc
-    //         </Text>
-    //       </View>
-    //     )}
-    //     <View style={styles.buttonContainer}>
-    //       <Link href="/" asChild>
-    //         <Button title="Edit Amount" type="primary" onPress={createWallet} />
-    //       </Link>
-    //     </View>
-    //   </View>
-    // </View>
   );
 };
 export default QRScreen;
 const styles = StyleSheet.create({
-  container:{
+  container: {
     flex: 1,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
   },
   camera: {
     flex: 1,
@@ -132,7 +125,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     textAlign: 'center',
     fontFamily: 'Satoshi',
-  }
+  },
   // container: {
   //   flex: 1,
   //   backgroundColor: COLORS.primary[400],
