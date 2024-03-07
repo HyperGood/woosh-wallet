@@ -1,7 +1,13 @@
+import { Link, router } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
+import { COLORS } from '../constants/global-styles';
+import i18n from '../constants/i18n';
+import QRIcon from '../assets/images/icons/QRIcon';
+
 import { CameraView, useCameraPermissions } from 'expo-camera/next';
 import * as Clipboard from 'expo-clipboard';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/UI/Button';
 
@@ -39,61 +45,72 @@ const QRScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          position: 'absolute',
+          zIndex: 9999,
+          top: 44,
+          left: 16,
+        }}>
+        <Pressable style={styles.backButton} onPress={() => router.push('/')}>
+          <Feather name="arrow-left" size={24} color={COLORS.dark} style={{ opacity: 0.5 }} />
+        </Pressable>
+      </View>
       <CameraView
         barcodeScannerSettings={{
           barcodeTypes: ['qr'],
         }}
         style={styles.camera}
         facing="back"
-        onBarcodeScanned={handleBarcodeScanned}>
-        {showAlert && (
-          <View style={styles.alertContainer}>
-            <Text style={styles.alertText}>Código copiado al portapapeles</Text>
-          </View>
-        )}
+        onBarcodeScanned={handleBarcodeScanned}
+      />
+      {showAlert && (
+        <View style={styles.alertContainer}>
+          <Text style={styles.alertText}>Código copiado al portapapeles</Text>
+        </View>
+      )}
 
-        {
-          // <View style={styles.container}>
-          //   <View
-          //     style={{
-          //       alignSelf: 'flex-start',
-          //       paddingTop: 56,
-          //       paddingLeft: 16,
-          //     }}>
-          //     <Pressable style={styles.backButton} onPress={() => router.push('/')}>
-          //       <Feather name="arrow-left" size={24} color={COLORS.dark} style={{ opacity: 0.5 }} />
-          //     </Pressable>
-          //   </View>
-          //   <View
-          //     style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 100 }}>
-          //     <View style={styles.qRPlaceHolder}>
-          //       <QRIcon color={COLORS.dark} />
-          //     </View>
-          //     <Text style={styles.accountName}>$account1</Text>
-          //     {true && (
-          //       <View>
-          //         <Text style={{ fontSize: 17, fontFamily: 'Satoshi', textAlign: 'center' }}>
-          //           Requesting
-          //         </Text>
-          //         <Text style={styles.number}>
-          //           $500.
-          //           <Text style={styles.decimal}>00 MXN</Text>
-          //         </Text>
-          //         <Text
-          //           style={{ fontSize: 17, fontFamily: 'Satoshi', opacity: 0.5, textAlign: 'center' }}>
-          //           26.79 USDc
-          //         </Text>
-          //       </View>
-          //     )}
-          //     <View style={styles.buttonContainer}>
-          //       <Link href="/" asChild>
-          //         <Button title="Edit Amount" type="primary" onPress={createWallet} />
-          //       </Link>
-          //     </View>
-          //   </View>
-          // </View>
-        }
-      </CameraView>
+      {
+        // <View style={styles.container}>
+        //   <View
+        //     style={{
+        //       alignSelf: 'flex-start',
+        //       paddingTop: 44,
+        //       paddingLeft: 16,
+        //     }}>
+        //     <Pressable style={styles.backButton} onPress={() => router.push('/')}>
+        //       <Feather name="arrow-left" size={24} color={COLORS.dark} style={{ opacity: 0.5 }} />
+        //     </Pressable>
+        //   </View>
+        //   <View
+        //     style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 100 }}>
+        //     <View style={styles.qRPlaceHolder}>
+        //       <QRIcon color={COLORS.dark} />
+        //     </View>
+        //     <Text style={styles.accountName}>$account1</Text>
+        //     {true && (
+        //       <View>
+        //         <Text style={{ fontSize: 17, fontFamily: 'Satoshi', textAlign: 'center' }}>
+        //           Requesting
+        //         </Text>
+        //         <Text style={styles.number}>
+        //           $500.
+        //           <Text style={styles.decimal}>00 MXN</Text>
+        //         </Text>
+        //         <Text
+        //           style={{ fontSize: 17, fontFamily: 'Satoshi', opacity: 0.5, textAlign: 'center' }}>
+        //           26.79 USDc
+        //         </Text>
+        //       </View>
+        //     )}
+        //     <View style={styles.buttonContainer}>
+        //       <Link href="/" asChild>
+        //         <Button title="Edit Amount" type="primary" onPress={createWallet} />
+        //       </Link>
+        //     </View>
+        //   </View>
+        // </View>
+      }
     </View>
   );
 };
@@ -105,6 +122,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+  },
+  backButton: {
+    backgroundColor: COLORS.light,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   camera: {
     flex: 1,
