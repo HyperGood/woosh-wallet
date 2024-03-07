@@ -1,4 +1,5 @@
 // hooks/useUserBalance.tsx
+import firestore from '@react-native-firebase/firestore';
 import * as Sentry from '@sentry/react-native';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
@@ -18,6 +19,17 @@ interface Token {
 interface Balance {
   usdc: number;
   ausdc: number;
+}
+
+interface BalanceUpdateData {
+  ausdcBalance: number;
+  usdcBalance: number;
+  lastUpdated: Date;
+  user: any;
+  yield?: {
+    allTime: number;
+  };
+  createdAt?: Date;
 }
 
 export const useUserBalance = () => {
@@ -69,6 +81,45 @@ export const useUserBalance = () => {
     ],
   } as const;
 
+  const saveBalanceToFirestore = async (
+    address: string,
+    ausdcBalance: number,
+    usdcBalance: number
+  ) => {
+    const userBalanceRef = firestore().collection('userBalances').doc(address);
+    const userBalanceSnapshot = await userBalanceRef.get();
+
+    let allTimeYield = 0;
+    let documentDataToUpdate: BalanceUpdateData = {
+      ausdcBalance,
+      usdcBalance,
+      lastUpdated: new Date(),
+      user: firestore().doc(`users/${address}`),
+    };
+
+    if (userBalanceSnapshot.exists) {
+      const balanceData = userBalanceSnapshot.data();
+      console.log('balanceData', balanceData);
+      allTimeYield = balanceData?.yield?.allTime || 0;
+
+      let yieldGenerated;
+      if (userBalanceSnapshot.data()?.ausdcBalance)
+        yieldGenerated = ausdcBalance - userBalanceSnapshot.data()?.ausdcBalance;
+      else yieldGenerated = 0;
+
+      documentDataToUpdate.yield = {
+        allTime: allTimeYield + yieldGenerated,
+      };
+    } else {
+      documentDataToUpdate = {
+        ...documentDataToUpdate,
+        createdAt: new Date(),
+      };
+    }
+
+    await userBalanceRef.set(documentDataToUpdate, { merge: true });
+  };
+
   const fetchBalance = async () => {
     setIsFetchingBalance(true);
     try {
@@ -90,7 +141,7 @@ export const useUserBalance = () => {
         const formattedAusdcBalance = Number(formatUnits(ausdcBalance, AUSDC.decimals));
 
         storage.set('usdcBalance', formattedUsdcBalance);
-        storage.set('usdtBalance', formattedAusdcBalance);
+        storage.set('ausdcBalance', formattedAusdcBalance);
 
         setTokenBalances({
           usdc: formattedUsdcBalance,
@@ -114,6 +165,7 @@ export const useUserBalance = () => {
             throw new Error("Couldn't fetch balance and no stored balance found");
           }
         }
+        return { usdc: formattedUsdcBalance, ausdc: formattedAusdcBalance };
       } else {
         setErrorFetchingBalance("There's no address! Couldn't fetch balance");
       }
@@ -128,12 +180,12 @@ export const useUserBalance = () => {
   useEffect(() => {
     setIsFetchingBalance(true);
     if (address) {
-      fetchBalance();
-
       publicClient.watchBlockNumber({
-        onBlockNumber: (blocknumber) => {
-          console.log('blocknumber', blocknumber);
-          fetchBalance();
+        onBlockNumber: async () => {
+          const fetchedBalances = await fetchBalance();
+
+          if (fetchedBalances)
+            await saveBalanceToFirestore(address, fetchedBalances.ausdc, fetchedBalances.usdc);
         },
       });
     }
