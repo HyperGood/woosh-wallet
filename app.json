@@ -41,6 +41,12 @@
           "project": "woosh-mobile-app",
           "organization": "hypergood"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Woosh to access your camera so you can scan QR codes"
+        }
       ]
     ],
     "experiments": {
@@ -78,6 +84,7 @@
         "android.permission.USE_FINGERPRINT",
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_CONTACTS",
+        "android.permission.CAMERA",
         "android.permission.WRITE_CONTACTS"
       ],
       "package": "com.hypergood.wooshmvp",

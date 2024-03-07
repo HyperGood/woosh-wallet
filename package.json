@@ -64,7 +64,8 @@
     "react-native-svg": "14.1.0",
     "react-native-web": "~0.19.6",
     "viem": "^1.19.11",
-    "wagmi": "^1.4.8"
+    "wagmi": "^1.4.8",
+    "expo-camera": "~14.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
