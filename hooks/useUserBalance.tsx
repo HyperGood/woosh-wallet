@@ -179,7 +179,9 @@ export const useUserBalance = () => {
 
   useEffect(() => {
     setIsFetchingBalance(true);
+
     if (address) {
+      fetchBalance();
       publicClient.watchBlockNumber({
         onBlockNumber: async () => {
           const fetchedBalances = await fetchBalance();

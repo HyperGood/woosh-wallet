@@ -5,6 +5,7 @@ import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
 import YieldIcon from '../assets/images/icons/YieldIcon';
 import { COLORS } from '../constants/global-styles';
+import { useAaveData } from '../hooks/AAVE/useAaveData';
 import { useUserBalance } from '../hooks/useUserBalance';
 import { scale } from '../utils/scalingFunctions';
 
@@ -13,10 +14,21 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const Balance = () => {
   const token = 'USD';
   const mainCurrency = 'MXN';
-  const yieldPerBlock = 0.000001;
-  const { fiatBalances, tokenBalances, isFetchingBalance, refetchBalance } = useUserBalance();
+  const { fiatBalances, tokenBalances, refetchBalance } = useUserBalance();
   const [totalFiatBalance, setTotalFiatBalance] = useState<number>(0);
   const [totalTokenBalance, setTotalTokenBalance] = useState<number>(0);
+  const [interestPerBlock, setInterestPerBlock] = useState<number>(0);
+  const usdcApy = useAaveData();
+
+  function calculateInterest(principal: number, apy: number): number {
+    const apyDecimal = apy / 100;
+    console.log('apyDecimal', apyDecimal);
+    const annualInterest = principal * apyDecimal;
+    console.log('annualInterest', annualInterest);
+    const interestPerSecond = annualInterest / 31536000;
+    console.log('interestPerSecond', interestPerSecond);
+    return interestPerSecond;
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -30,6 +42,7 @@ const Balance = () => {
     }
     if (tokenBalances) {
       setTotalTokenBalance(tokenBalances.ausdc + tokenBalances.usdc);
+      setInterestPerBlock(calculateInterest(tokenBalances.ausdc, usdcApy));
     }
   }, [fiatBalances]);
 
@@ -49,7 +62,9 @@ const Balance = () => {
         </Text>
         <View style={styles.yieldWrapper}>
           <YieldIcon />
-          <Text style={styles.yieldText}>+{yieldPerBlock} USD/s</Text>
+          <Text style={styles.yieldText}>
+            +{interestPerBlock.toFixed(7)} USD/s ({usdcApy.toFixed(2)}% APY)
+          </Text>
         </View>
       </View>
     </View>

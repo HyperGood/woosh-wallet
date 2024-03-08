@@ -9,7 +9,10 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@aave/contract-helpers": "^1.25.0",
+    "@aave/math-utils": "^1.25.0",
     "@alchemy/aa-core": "^0.1.0-alpha.23",
+    "@bgd-labs/aave-address-book": "^2.23.0",
     "@ethersproject/shims": "^5.7.0",
     "@expo/vector-icons": "^14.0.0",
     "@noble/secp256k1": "^2.0.0",
@@ -20,7 +23,7 @@
     "@sentry/react-native": "5.16.0",
     "@turnkey/http": "^2.5.0",
     "@zerodev/sdk": "^4.5.2",
-    "ethers": "^6.9.2",
+    "ethers": "^5.7.2",
     "expo": "^50.0.2",
     "expo-app-loading": "^2.1.1",
     "expo-application": "~5.8.3",
