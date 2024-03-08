@@ -62,9 +62,7 @@ const Balance = () => {
         </Text>
         <View style={styles.yieldWrapper}>
           <YieldIcon />
-          <Text style={styles.yieldText}>
-            +{interestPerBlock.toFixed(7)} USD/s ({usdcApy.toFixed(2)}% APY)
-          </Text>
+          <Text style={styles.yieldText}>+{interestPerBlock.toFixed(7)} USD/s</Text>
         </View>
       </View>
     </View>
