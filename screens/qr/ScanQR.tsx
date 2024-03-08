@@ -1,13 +1,9 @@
-import { Link, router } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
-import { COLORS } from '../../constants/global-styles';
-import i18n from '../../constants/i18n';
-
-import { CameraView, useCameraPermissions } from 'expo-camera/next';
-import * as Clipboard from 'expo-clipboard';
 import React, { useState, useEffect } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { CameraView, useCameraPermissions } from 'expo-camera/next';
 
+import i18n from '../../constants/i18n';
 import Button from '../../components/UI/Button';
 
 const ScanQR = ({}) => {
@@ -26,10 +22,10 @@ const ScanQR = ({}) => {
 
   if (!permission || !permission.granted) {
     return (
-      <View style={styles.container}>
-        <Text>No tienes permisos para acceder a la cámara.</Text>
-        <Button title="Solicitar permisos" onPress={requestPermission} />
-      </View>
+      <>
+        <Text>You do not have permission to access the camera.</Text>
+        <Button title="Request Permission" onPress={requestPermission} />
+      </>
     );
   }
 
@@ -50,7 +46,7 @@ const ScanQR = ({}) => {
       />
       {showAlert && (
         <View style={styles.alertContainer}>
-          <Text style={styles.alertText}>Código copiado al portapapeles</Text>
+          <Text style={styles.alertText}>{i18n.t('qRCopied')}</Text>
         </View>
       )}
     </>
@@ -58,13 +54,6 @@ const ScanQR = ({}) => {
 };
 export default ScanQR;
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
   camera: {
     flex: 1,
     width: '100%',

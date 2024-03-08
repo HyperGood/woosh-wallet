@@ -24,6 +24,7 @@ Sentry.init({
       routingInstrumentation,
     }),
   ],
+  enabled: !__DEV__, //ADD THIS (Don't add comment to code)
 });
 
 function Layout() {

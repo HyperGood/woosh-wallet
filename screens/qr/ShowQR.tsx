@@ -1,14 +1,6 @@
-import { Link, router } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
-import { COLORS } from '../../constants/global-styles';
-import i18n from '../../constants/i18n';
-import QRIcon from '../../assets/images/icons/QRIcon';
-import { useTokenPrices } from '../../hooks/useTokenPrices';
-
-import React, { Key, useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Dimensions,
-  Image,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -16,33 +8,58 @@ import {
   TextInput,
   View,
 } from 'react-native';
-
-import Button from '../../components/UI/Button';
-
-import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BlurView } from 'expo-blur';
+import { Skeleton } from 'moti/skeleton';
+
+import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
+import QRIcon from '../../assets/images/icons/QRIcon';
+import { useTokenPrices } from '../../hooks/useTokenPrices';
+import { useAccount } from '../../store/SmartAccountContext';
+import { useUserData } from '../../store/UserDataContext';
+import Button from '../../components/UI/Button';
+import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 
 const windowWidth = Dimensions.get('window').width;
 
 const ShowQR = ({}) => {
   const changeAmountRef = useRef<BottomSheetRefProps>(null);
   const isActionTrayOpened = useSharedValue(false);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const { userData, isFetchingUserData } = useUserData();
+  const { address } = useAccount();
+  const [username, setUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [amountMXN, setAmountMXN] = useState('0.00');
   const [amountUSDc, setAmountUSDc] = useState('0.00');
   const [usingMXN, setUsingMXN] = useState(true);
   const { tokenPrices } = useTokenPrices();
   const usdcPrice = tokenPrices?.['usd-coin'].mxn;
 
+  useEffect(() => {
+    setIsLoading(isFetchingUserData);
+  }, [isFetchingUserData]);
+
+  useEffect(() => {
+    if (userData || address) {
+      const truncatedAddress = address?.slice(0, 4) + '...' + address?.slice(-4);
+      setUsername(userData?.username || truncatedAddress);
+    }
+  }, [userData, address]);
+
   const close = useCallback(() => {
     changeAmountRef.current?.close();
     isActionTrayOpened.value = false;
+    setIsBottomSheetOpen(false);
   }, []);
 
   const toggleActionTray = useCallback(() => {
     const isActive = changeAmountRef.current?.isActive() ?? false;
     isActionTrayOpened.value = !isActive;
     isActive ? close() : changeAmountRef.current?.open();
+    setIsBottomSheetOpen(!isActive);
   }, [close, isActionTrayOpened]);
 
   const handleSave = () => {
@@ -67,7 +84,7 @@ const ShowQR = ({}) => {
     }
     if (usingMXN) {
       setAmountMXN(value);
-      const amountUSDc = (parseFloat(value) / usdcPrice).toFixed(6);
+      const amountUSDc = (parseFloat(value) / usdcPrice).toFixed(2);
       setAmountUSDc(amountUSDc);
     } else {
       setAmountUSDc(value);
@@ -80,49 +97,55 @@ const ShowQR = ({}) => {
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
       <SafeAreaView style={{ flex: 1, width: '100%' }}>
         <View style={styles.container}>
-          <View
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 100 }}>
+          {isBottomSheetOpen && (
+            <BlurView style={styles.blurBackground} intensity={20} tint="dark" />
+          )}
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <View style={styles.qRPlaceHolder}>
               <QRIcon color={COLORS.dark} />
             </View>
-            <Text style={styles.accountName}>$account1</Text>
+            {isLoading ? (
+              <Skeleton
+                height={90}
+                width={windowWidth}
+                radius={10}
+                {...SkeletonCommonProps}></Skeleton>
+            ) : (
+              <Text
+                style={[
+                  styles.accountName,
+                  parseFloat(amountMXN) !== 0 ? { fontSize: 24 } : { fontSize: 32 },
+                ]}>
+                {username}
+              </Text>
+            )}
             {parseFloat(amountMXN) !== 0 && (
               <View>
                 <Text style={{ fontSize: 17, fontFamily: 'Satoshi', textAlign: 'center' }}>
-                  Requesting
+                  {i18n.t('requesting')}
                 </Text>
                 <Text style={styles.number}>
                   ${amountMXN.split('.')[0]}.
                   <Text style={styles.decimal}>
                     {amountMXN.split('.')[1] ? amountMXN.split('.')[1].padEnd(2, '0') : '00'}
-                    <Text style={styles.mainCurrency}>MXN</Text>
+                    <Text style={styles.mainCurrency}> MXN</Text>
                   </Text>
                 </Text>
-                <Text
-                  style={{
-                    fontSize: 17,
-                    fontFamily: 'Satoshi',
-                    opacity: 0.5,
-                    textAlign: 'center',
-                  }}>
-                  {parseFloat(amountUSDc).toFixed(2)} USDc
-                </Text>
+                <Text style={styles.tokenAmount}>{parseFloat(amountUSDc).toFixed(2)} USDc</Text>
               </View>
             )}
             <View style={styles.buttonContainer}>
-              {/* <Link href="/" asChild> */}
               <Button
-                title={parseFloat(amountMXN) !== 0 ? 'Edit Amount' : 'Enter an Amount'}
+                title={parseFloat(amountMXN) !== 0 ? i18n.t('editAmount') : i18n.t('enterAnAmount')}
                 type="primary"
                 onPress={toggleActionTray}
               />
-              {/* </Link> */}
             </View>
           </View>
           <View style={styles.bottomSheetContainer}>
             <BottomSheet ref={changeAmountRef} colorMode="light">
               <View style={styles.changeAmountContainer}>
-                <Text style={styles.enterAmountTitle}>Enter Amount</Text>
+                <Text style={styles.enterAmountTitle}>{i18n.t('enterAmount')}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 15 }}>
                   <View style={{ flex: 1, height: 1, backgroundColor: 'gray', opacity: 0.5 }} />
                 </View>
@@ -133,7 +156,8 @@ const ShowQR = ({}) => {
                       style={styles.amountNumberUp}
                       onChangeText={handleAmountChange}
                       value={usingMXN ? amountMXN : amountUSDc}
-                      keyboardType="numeric"
+                      keyboardType="number-pad"
+                      selectTextOnFocus={true}
                     />
                     <Text style={{ fontSize: 16, paddingBottom: 16 }}>
                       {usingMXN ? ' MXN' : ' USDc'}
@@ -145,7 +169,7 @@ const ShowQR = ({}) => {
                     </Text>
                   </Pressable>
                 </View>
-                <Button title="Save" type="primary" onPress={handleSave} />
+                <Button title={i18n.t('save')} type="primary" onPress={handleSave} />
               </View>
             </BottomSheet>
           </View>
@@ -160,7 +184,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary[400],
     width: '100%',
-    paddingTop: 150,
   },
   backButton: {
     backgroundColor: COLORS.light,
@@ -184,6 +207,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.dark,
     marginVertical: 20,
+    textAlign: 'center',
   },
   number: {
     fontSize: 64,
@@ -198,11 +222,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Satoshi',
   },
+  tokenAmount: {
+    fontSize: 17,
+    fontFamily: 'Satoshi',
+    opacity: 0.5,
+    textAlign: 'center',
+  },
   buttonContainer: {
-    width: 224,
+    width: 230,
     marginTop: 24,
     flexDirection: 'row',
-  }, //------------------------------
+  },
   bottomSheetContainer: {
     position: 'absolute',
     width: windowWidth,
@@ -237,5 +267,8 @@ const styles = StyleSheet.create({
     fontFamily: 'FHOscar',
     color: COLORS.dark,
     textAlign: 'center',
+  },
+  blurBackground: {
+    ...StyleSheet.absoluteFillObject,
   },
 });
