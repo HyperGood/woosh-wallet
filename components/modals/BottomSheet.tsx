@@ -22,6 +22,7 @@ const MAX_TRANSLATE_Y = -SCREEN_HEIGHT;
 type BottomSheetProps = {
   children?: React.ReactNode;
   maxHeight?: number;
+  colorMode?: 'light' | 'dark';
 };
 export type BottomSheetRefProps = {
   scrollTo: (destination: number) => void;
@@ -32,7 +33,7 @@ export type BottomSheetRefProps = {
 };
 
 const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
-  ({ children, maxHeight = SCREEN_HEIGHT }, ref) => {
+  ({ children, maxHeight = SCREEN_HEIGHT, colorMode = 'dark' }, ref) => {
     //Define shared values for reanimated
     const translateY = useSharedValue(maxHeight);
     const active = useSharedValue(false);
@@ -123,6 +124,8 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
       };
     });
 
+    const bottomSheetColor = colorMode === 'light' ? COLORS.light : COLORS.gray[800];
+
     return (
       <>
         <Animated.View
@@ -142,7 +145,11 @@ const BottomSheet = forwardRef<BottomSheetRefProps, BottomSheetProps>(
         />
         <GestureDetector gesture={gesture}>
           <Animated.View
-            style={[styles.bottomSheetContainer, reanimatedBottomSheetStyle]}
+            style={[
+              styles.bottomSheetContainer,
+              { backgroundColor: bottomSheetColor },
+              reanimatedBottomSheetStyle,
+            ]}
             onLayout={(evt) => {
               height.value = evt.nativeEvent.layout.height;
             }}>
