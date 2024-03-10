@@ -29,6 +29,10 @@ const ScanQR = ({}) => {
     );
   }
 
+  //if no amount is in the qr code handle that
+
+  //for now assume that the qr code has an amount
+
   const handleBarcodeScanned = async ({ type = 'qr', data }: { type: string; data: string }) => {
     setShowAlert(true);
     await Clipboard.setStringAsync(data);
