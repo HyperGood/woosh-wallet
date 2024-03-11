@@ -12,6 +12,7 @@ import QRScan from '../assets/images/icons/QRScan';
 
 const QRScreen = () => {
   const [showScanQR, setShowScanQR] = useState(true);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   const showScanQRScreen = () => {
     setShowScanQR(true);
@@ -27,15 +28,14 @@ const QRScreen = () => {
         style={{
           position: 'absolute',
           zIndex: 9999,
-          top: 76,
+          top: 45,
           left: 16,
         }}>
         <Pressable style={styles.backButton} onPress={() => router.push('/')}>
           <Feather name="arrow-left" size={24} color={COLORS.dark} style={{ opacity: 0.5 }} />
         </Pressable>
-        {/* <Link href="/" asChild> */}
       </View>
-      <View style={styles.navigation}>
+      <View style={[{display: isBottomSheetOpen ? "none" : "flex"}, styles.navigation]}>
         <Pressable
           style={[
             styles.navigationButton,
@@ -59,7 +59,7 @@ const QRScreen = () => {
           </Text>
         </Pressable>
       </View>
-      {showScanQR ? <ScanQR /> : <ShowQR />}
+      {showScanQR ? <ScanQR /> : <ShowQR isBottomSheetOpen={isBottomSheetOpen} setIsBottomSheetOpen={setIsBottomSheetOpen}/>}
     </View>
   );
 };
@@ -81,13 +81,13 @@ const styles = StyleSheet.create({
   },
   navigation: {
     position: 'absolute',
-    top: 10,
+    bottom: 24,
     flexDirection: 'row',
     width: 400,
     height: 72,
     backgroundColor: COLORS.light,
     borderRadius: 50,
-    zIndex: 9999,
+    zIndex: 1,
   },
   navigationButton: {
     flexDirection: 'row',

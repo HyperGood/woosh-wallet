@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Dispatch, SetStateAction } from 'react';
 import {
   Dimensions,
   Pressable,
@@ -24,10 +24,14 @@ import BottomSheet, { BottomSheetRefProps } from '../../components/modals/Bottom
 
 const windowWidth = Dimensions.get('window').width;
 
-const ShowQR = ({}) => {
+interface IProps {
+  isBottomSheetOpen: boolean;
+  setIsBottomSheetOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+const ShowQR = ({isBottomSheetOpen, setIsBottomSheetOpen}: IProps ) => {
   const changeAmountRef = useRef<BottomSheetRefProps>(null);
   const isActionTrayOpened = useSharedValue(false);
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const { userData, isFetchingUserData } = useUserData();
   const { address } = useAccount();
   const [username, setUsername] = useState('');
@@ -237,7 +241,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: windowWidth,
     bottom: 0,
-    zIndex: 9999,
   },
   changeAmountContainer: {
     padding: 20,
