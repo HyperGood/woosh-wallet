@@ -37,19 +37,26 @@ const ScanQR = () => {
       // parse the data
       const transactionData = JSON.parse(data);
       console.log('transactionData', transactionData);
-      // if it's a valid address and there's a value, send the value to the address
-      if (transactionData.address && transactionData.value) {
+
+      // Function to reset scanned state and optionally show alert
+      const resetScannedState = (showAlert: boolean = false, logMessage: string) => {
+        console.log(logMessage);
+        if (showAlert) setShowAlert(true);
+        setTimeout(() => {
+          setScanned(false);
+        }, 2000);
+      };
+
+      if (transactionData.address && transactionData.amount) {
         // send the value to the address
-        console.log('sending');
-        sendUSDc(transactionData.value, transactionData.address);
+        sendUSDc(transactionData.amount.toString(), transactionData.address);
+        resetScannedState(false, 'sending');
       } else if (transactionData.address) {
         // alert the user that there's no value
-        console.log('no value');
-        setShowAlert(true);
+        resetScannedState(true, 'no value');
       } else {
-        console.log('invalid address');
         // alert the user that the address is invalid
-        setShowAlert(true);
+        resetScannedState(true, 'invalid address');
       }
     }
   };
