@@ -1,5 +1,5 @@
 import { BlurView } from 'expo-blur';
-import { Tabs } from 'expo-router';
+import { Tabs, useSegments } from 'expo-router';
 
 import HomeIcon from '../../assets/images/icons/HomeIcon';
 import QRIcon from '../../assets/images/icons/QRIcon';
@@ -7,6 +7,9 @@ import TransactionIcon from '../../assets/images/icons/TransactionIcon';
 import { COLORS } from '../../constants/global-styles';
 
 export default function TabLayout() {
+  const segments: string[] = useSegments();
+  const hide: boolean = segments.includes("settingshelp");
+
   return (
     <Tabs
       screenOptions={{
@@ -23,6 +26,7 @@ export default function TabLayout() {
           paddingBottom: 0,
           position: 'absolute',
           backgroundColor: 'white',
+          display: hide ? "none" : "flex",
         },
         tabBarItemStyle: {
           borderRadius: 100,

@@ -12,6 +12,7 @@ import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
 import { scale } from '../../utils/scalingFunctions';
+import { Link } from 'expo-router';
 
 const Header = () => {
   const { userData, isFetchingUserData } = useUserData();
@@ -69,9 +70,9 @@ const Header = () => {
           </Pressable>
         </Skeleton>
         <Skeleton show={isLoading} height={24} width={200} {...SkeletonCommonProps}>
-          <View>
+          <Link href="/settingshelp/" asChild>
             <Text style={styles.username}>{username}</Text>
-          </View>
+          </Link>
         </Skeleton>
       </View>
 
