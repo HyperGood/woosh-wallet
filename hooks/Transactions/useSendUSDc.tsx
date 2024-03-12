@@ -8,16 +8,16 @@ import { chain } from '../../constants/viemPublicClient';
 import { usdcAddress, TokenAddresses } from '../../references/tokenAddresses';
 import { useAccount } from '../../store/SmartAccountContext';
 
-export const useSendERC20 = () => {
-  const [depositHash, setDepositHash] = useState<string | null>(null);
+export const useSendUSDc = () => {
+  const [tranactionHash, setTransactionHash] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
-  const [depositError, setDepositError] = useState<any>(null);
+  const [transactionError, setTransactionError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
   const chainId = chain.id;
   const tokenAddress = usdcAddress[chainId as keyof TokenAddresses][0];
   const tokenDecimals = 6;
 
-  const deposit = async (amount: string, recipientAddress: `0x${string}`) => {
+  const sendUSDc = async (amount: string, recipientAddress: `0x${string}`) => {
     setIsSending(true);
     try {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
@@ -57,11 +57,11 @@ export const useSendERC20 = () => {
             args: [recipientAddress, parseUnits(amount, tokenDecimals)],
           }),
         });
-        setDepositHash(transactionData.hash);
+        setTransactionHash(transactionData.hash);
         setIsSending(false);
       }
     } catch (e) {
-      setDepositError(e);
+      setTransactionError(e);
       console.log(e);
       Sentry.captureException(e);
       Alert.alert('Transaction Failed!!');
@@ -70,5 +70,5 @@ export const useSendERC20 = () => {
     }
   };
 
-  return { deposit, depositHash, isSending, depositError };
+  return { sendUSDc, tranactionHash, isSending, transactionError };
 };

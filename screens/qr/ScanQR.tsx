@@ -1,14 +1,16 @@
+import { CameraView, useCameraPermissions } from 'expo-camera/next';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import * as Clipboard from 'expo-clipboard';
-import { CameraView, useCameraPermissions } from 'expo-camera/next';
 
-import i18n from '../../constants/i18n';
 import Button from '../../components/UI/Button';
+import i18n from '../../constants/i18n';
+import { useSendUSDc } from '../../hooks/Transactions/useSendUSDc';
 
-const ScanQR = ({}) => {
+const ScanQR = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [showAlert, setShowAlert] = useState(false);
+  const { sendUSDc } = useSendUSDc();
+  const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -29,13 +31,27 @@ const ScanQR = ({}) => {
     );
   }
 
-  //if no amount is in the qr code handle that
-
-  //for now assume that the qr code has an amount
-
   const handleBarcodeScanned = async ({ type = 'qr', data }: { type: string; data: string }) => {
-    setShowAlert(true);
-    await Clipboard.setStringAsync(data);
+    if (!scanned) {
+      setScanned(true);
+      // parse the data
+      const transactionData = JSON.parse(data);
+      console.log('transactionData', transactionData);
+      // if it's a valid address and there's a value, send the value to the address
+      if (transactionData.address && transactionData.value) {
+        // send the value to the address
+        console.log('sending');
+        sendUSDc(transactionData.value, transactionData.address);
+      } else if (transactionData.address) {
+        // alert the user that there's no value
+        console.log('no value');
+        setShowAlert(true);
+      } else {
+        console.log('invalid address');
+        // alert the user that the address is invalid
+        setShowAlert(true);
+      }
+    }
   };
 
   return (
@@ -43,6 +59,7 @@ const ScanQR = ({}) => {
       <CameraView
         barcodeScannerSettings={{
           barcodeTypes: ['qr'],
+          interval: 2000,
         }}
         style={styles.camera}
         facing="back"
