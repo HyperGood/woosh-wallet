@@ -9,7 +9,7 @@ const HelpScreen = () => {
 
   return (
     <View>
-      <Pressable style={styles.contactIcon} onPress={() => router.dismiss(1)}>
+      <Pressable style={styles.goBack} onPress={() => router.dismiss(1)}>
         <Feather name="arrow-left" size={24} color={'#444447'} />
       </Pressable>
       <Text>Hola desde help</Text>
@@ -23,9 +23,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  contactIcon: {
+  goBack: {
     position: 'absolute',
-    top: 50,
+    top: 45,
     left: 10,
   },
 });
