@@ -1,13 +1,80 @@
 import { Feather } from '@expo/vector-icons';
-import { Link, Stack, router } from 'expo-router';
-import { Button, Pressable, Image, SafeAreaView, StyleSheet, Text, View, TextInput, TouchableWithoutFeedback } from 'react-native';
+import { router } from 'expo-router';
+import * as Clipboard from 'expo-clipboard';
+import { Pressable, Image, StyleSheet, Text, View, TextInput, Alert } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import { Skeleton } from 'moti/skeleton';
+import { useEffect, useState } from 'react';
 
-import { COLORS } from '../../constants/global-styles';
+import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import { useSession } from '../../store/AuthContext';
 import SettingsOption from '../../components/settings/SettingsOption';
+import i18n from '../../constants/i18n';
+import { useAccount } from '../../store/SmartAccountContext';
+import { useUserData } from '../../store/UserDataContext';
 
 const SettingsScreen = () => {
   const { logout } = useSession();
+  const { userData, isFetchingUserData } = useUserData();
+  const { address } = useAccount();
+  const [username, setUsername] = useState('');
+  const [joinedOn, setJoinedOn] = useState('');
+
+  useEffect(() => {
+    if (userData || address) {
+      console.log('userData:', userData);
+      const truncatedAddress = address?.slice(0, 4) + '...' + address?.slice(-4);
+      setUsername(userData?.username || truncatedAddress);
+    }
+  }, [userData, address]);
+
+  useEffect(() => {
+    getJoinedOn();
+  }, [isFetchingUserData]);
+
+  function getJoinedOn():void {
+    firestore()
+      .collection('users')
+      .doc(userData?.id)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const createdAtDate = doc.data()?.createdAt.toDate();
+          setJoinedOn(
+            `${createdAtDate.getDate()}/${createdAtDate.getMonth() + 1}/${createdAtDate.getFullYear()}`
+          );
+        } else {
+          console.log('No existe ningún registro del usuario');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener el documento:', error);
+      });
+  }
+
+  
+
+  const updateNameFunction = (newName: string) => {
+    // try {
+    //     firestore()
+    //         .collection('users')
+    //         .doc(userData.id)
+    //         .update({
+    //             name: newName,
+    //         })
+    //         .then(() => {
+    //             Alert.alert("Nombre actualizado con éxito");
+    //         });
+    // } catch (error) {
+    //     Alert.alert("Fallo: " + error);
+    //     // Sentry.captureException(error);
+    // }
+};
+
+  const copyAddressToClipboard = async () => {
+    await Clipboard.setStringAsync(address || 'No address found');
+    Alert.alert('Copied address to clipboard!');
+  };
 
   return (
     <>
@@ -22,25 +89,52 @@ const SettingsScreen = () => {
               style={styles.userImage}
             />
           </View>
+
           <View style={{ justifyContent: 'center', paddingLeft: 18 }}>
-            <Text style={styles.account}>$account1</Text>
-            <Text style={styles.joinedOn}>Joined On: 04/01/2024</Text>
+            <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
+              <Text style={styles.account}>{username}</Text>
+            </Skeleton>
+            <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
+              <Text style={styles.joinedOn}>
+                {i18n.t('joinedOn')}: {joinedOn}
+              </Text>
+            </Skeleton>
           </View>
         </View>
         <View style={{ marginTop: 30, marginBottom: 16 }}>
           <View>
-            <Text style={styles.upperInputText}>Name</Text>
+            <Text style={styles.upperInputText}>{i18n.t('name')}</Text>
             <View style={styles.inputContainer}>
-              <TextInput style={styles.textInput} value={'Name'} />
+              <Skeleton
+                show={isFetchingUserData}
+                width={160}
+                radius="round"
+                {...SkeletonCommonProps}>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder={username}
+                  onSubmitEditing={(event) => {
+                    updateNameFunction(event.nativeEvent.text);
+                  }}
+                />
+              </Skeleton>
               <View style={styles.iconContainer}>
                 <Feather name="edit-2" size={16} color="black" />
               </View>
             </View>
           </View>
           <View style={{ marginTop: 12 }}>
-            <Text style={styles.upperInputText}>ETH Address</Text>
-            <Pressable style={styles.inputContainer} onPress={() => logout()}>
-              <Text style={styles.textInput}>0x123..123</Text>
+            <Text style={styles.upperInputText}>{i18n.t('ethAddress')}</Text>
+            <Pressable style={styles.inputContainer} onPress={copyAddressToClipboard}>
+              <Skeleton
+                show={isFetchingUserData}
+                width={160}
+                radius="round"
+                {...SkeletonCommonProps}>
+                <Text style={styles.textInput}>
+                  {address?.slice(0, 4) + '...' + address?.slice(-4)}
+                </Text>
+              </Skeleton>
               <View style={styles.iconContainer}>
                 <Feather name="link" size={16} color="black" />
               </View>
@@ -49,25 +143,25 @@ const SettingsScreen = () => {
         </View>
         <SettingsOption
           icon={'help-circle'}
-          label={'Help'}
+          label={i18n.t('help')}
           onPress={() => router.push('/settingshelp/help')}
           color={'#00A3FF'}
         />
         <SettingsOption
           icon={'bell'}
-          label={'Notification'}
-          onPress={() => (true)}
+          label={i18n.t('notifications')}
+          onPress={() => true}
           color={'#FFDE68'}
         />
         <SettingsOption
           icon={'eye'}
-          label={'Theme'}
-          onPress={() => (true)}
+          label={i18n.t('theme')}
+          onPress={() => true}
           color={'#1EE51E'}
         />
         <SettingsOption
           icon={'eye-off'}
-          label={'Log Out'}
+          label={i18n.t('logOut')}
           onPress={() => logout()}
           color={'#FF1568'}
         />
@@ -76,13 +170,15 @@ const SettingsScreen = () => {
             alignItems: 'center',
             opacity: 0.4,
             width: '100%',
+            flexGrow: 1,
+            justifyContent: 'flex-end',
           }}>
           <Text style={styles.testText}>Tesnet Mode</Text>
           <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-between' }}>
             <Text style={styles.testText}>Network: Base Sepolia</Text>
             <Text style={styles.testText}>Build 01 - (03/25/2024)</Text>
           </View>
-          <Text style={styles.testText}>Made with 3 in Mexico by HyperGood</Text>
+          <Text style={styles.testText}>{'Made with <3 in Mexico by HyperGood'}</Text>
         </View>
       </View>
     </>
