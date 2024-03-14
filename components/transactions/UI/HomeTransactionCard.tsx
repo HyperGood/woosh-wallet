@@ -1,10 +1,9 @@
-import { Link } from 'expo-router';
 import { Skeleton } from 'moti/skeleton';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
-import { useAccount } from '../../../store/SmartAccountContext';
 import i18n from '../../../constants/i18n';
+import { useSmartAccount } from '../../../store/SmartAccountContext';
 
 interface TranscationCardProps {
   amount: string;
@@ -26,7 +25,7 @@ const HomeTransactionCard: React.FC<TranscationCardProps> = ({
   claimed,
   sender,
 }) => {
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
 
   const claimedTextStyles = claimed ? { opacity: 1 } : { opacity: 0.5 };
 
@@ -70,7 +69,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
     paddingHorizontal: 12,
-    backgroundColor: COLORS.gray[200],
+    backgroundColor: COLORS.gray[400],
     paddingVertical: 20,
     width: '100%',
   },

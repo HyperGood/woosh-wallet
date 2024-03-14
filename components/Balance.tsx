@@ -41,6 +41,7 @@ const Balance = () => {
       setTotalFiatBalance(fiatBalances.ausdc + fiatBalances.usdc);
     }
     if (tokenBalances) {
+      console.log('tokenBalances', tokenBalances);
       setTotalTokenBalance(tokenBalances.ausdc + tokenBalances.usdc);
       setInterestPerBlock(calculateInterest(tokenBalances.ausdc, usdcApy));
     }

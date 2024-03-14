@@ -4,14 +4,14 @@ import { Alert } from 'react-native';
 
 import publicClient, { chain } from '../../constants/viemPublicClient';
 import { Addresses, contractAddress } from '../../references/depositVault-abi';
-import { useAccount } from '../../store/SmartAccountContext';
+import { useSmartAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
 
 export const useSignDeposit = () => {
   const { setSignature, setTransactionData } = useTransaction();
   const [isSigning, setIsSigning] = useState(false);
   const [signError, setSignError] = useState<any>(null);
-  const { ecdsaProvider } = useAccount();
+  const { kernelClient } = useSmartAccount();
   const chainId = chain.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
@@ -91,8 +91,9 @@ export const useSignDeposit = () => {
           types,
           message,
           primaryType: 'Withdrawal',
-        };
-        const signedDeposit = (await ecdsaProvider?.signTypedDataWith6492(typedData)) || '';
+        } as const;
+
+        const signedDeposit = (await kernelClient?.account?.signTypedData(typedData)) || '';
         setSignature(signedDeposit);
       });
     } catch (e) {

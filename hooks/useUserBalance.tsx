@@ -7,8 +7,8 @@ import { formatUnits } from 'viem';
 import { useTokenPrices } from './useTokenPrices';
 import { storage } from '../app/_layout';
 import publicClient, { chain } from '../constants/viemPublicClient';
-import { TokenAddresses, usdcAddress } from '../references/tokenAddresses';
-import { useAccount } from '../store/SmartAccountContext';
+import { AUSDCTokenAddresses, USDCTokenAddresses, aUSDcAddress, usdcAddress } from '../references/tokenAddresses';
+import { useSmartAccount } from '../store/SmartAccountContext';
 
 interface Token {
   name: string;
@@ -37,7 +37,7 @@ export const useUserBalance = () => {
   const [fiatBalances, setFiatBalances] = useState<Balance>({ usdc: 0, ausdc: 0 });
   const [isFetchingBalance, setIsFetchingBalance] = useState<boolean>(true);
   const [errorFetchingBalance, setErrorFetchingBalance] = useState<string | null>(null);
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
   const { tokenPrices } = useTokenPrices();
   const usdcPrice = tokenPrices?.['usd-coin'].mxn;
   const chainId = chain.id;
@@ -45,13 +45,14 @@ export const useUserBalance = () => {
   const USDC: Token = {
     name: 'USDc',
     address:
-      chainId && chainId in usdcAddress ? usdcAddress[chainId as keyof TokenAddresses][0] : '0x12',
+      chainId && chainId in usdcAddress ? usdcAddress[chainId as keyof USDCTokenAddresses][0] : '0x12',
     decimals: 6,
   };
 
   const AUSDC: Token = {
     name: 'aUSDc',
-    address: '0x16da4541ad1807f4443d92d26044c1147406eb80',
+    address:
+      chainId && chainId in aUSDcAddress ? aUSDcAddress[chainId as keyof AUSDCTokenAddresses][0] : '0x12',
     decimals: 6,
   };
 

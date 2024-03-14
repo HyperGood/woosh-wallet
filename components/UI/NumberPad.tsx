@@ -54,7 +54,7 @@ const NumberPad = ({
           finalAmount = newAmount; // allow any number if type is "request"
         } else {
           finalAmount =
-            parseFloat(newAmount) <= tokenBalances.ausdc + tokenBalances.usdc
+            parseFloat(newAmount) <= tokenBalances.ausdc
               ? newAmount
               : prevAmount;
         }
@@ -104,7 +104,7 @@ const NumberPad = ({
         {type === 'send' && (
           <Pressable onPress={setAmountToMax}>
             <Text style={styles.balance}>
-              {i18n.t('youHave')} ${tokenBalances.ausdc + tokenBalances.usdc}
+              {i18n.t('youHave')} ${tokenBalances.ausdc}
             </Text>
           </Pressable>
         )}

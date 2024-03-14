@@ -23,7 +23,7 @@ import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useSession } from '../../store/AuthContext';
-import { useAccount } from '../../store/SmartAccountContext';
+import { useSmartAccount } from '../../store/SmartAccountContext';
 import { minMaxScale, scale } from '../../utils/scalingFunctions';
 
 interface OnboardingScreenProps {
@@ -40,7 +40,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   const [loadingState, setLoadingState] = useState(`${i18n.t('settingUpAccountLabel')}`);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const { authenticate } = useSession();
-  const { setEcdsaProvider, ecdsaProvider } = useAccount();
+  const { setKernelClient, kernelClient } = useSmartAccount();
   const { withdraw } = useWithdraw();
   const reference = storage().ref(`avatars/${name}.jpg`);
 
@@ -79,7 +79,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         projectId: process.env.EXPO_PUBLIC_ZERODEV_ID || '',
         owner: LocalAccountSigner.privateKeyToAccountSigner(token as `0x${string}`),
       });
-      setEcdsaProvider(ecdsaProvider);
+      setKernelClient(ecdsaProvider);
       const address = await ecdsaProvider.getAddress();
       console.log('Zerodev Provider set');
       console.log('Address: ', address);

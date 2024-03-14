@@ -8,12 +8,12 @@ import { TabOption } from '../../components/UI/Tabs';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useRequest } from '../../store/RequestContext';
-import { useAccount } from '../../store/SmartAccountContext';
+import { useSmartAccount } from '../../store/SmartAccountContext';
 
 const RequestEnterAmountScreen = () => {
   const [amount, setAmount] = useState('0');
   const [description, setDescription] = useState('');
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
   const { setRequestData } = useRequest();
   const [activeTab, setActiveTab] = useState<TabOption>({ title: 'Total', value: 'total' });
 
