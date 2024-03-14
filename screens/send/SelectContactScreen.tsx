@@ -94,7 +94,7 @@ const SelectContactScreen = () => {
             <Link href="/send/enterAmount" asChild>
               <Button
                 title={i18n.t('next')}
-                type="primary"
+                type="secondary"
                 onPress={() => handleNext(phoneNumber, recipient, countryCode)}
                 disabled={!phoneNumber}
               />

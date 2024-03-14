@@ -53,7 +53,7 @@ const RequestEnterAmountScreen = () => {
         <View style={styles.buttonWrapper}>
           <Button
             title={i18n.t('next')}
-            type="primary"
+            type="secondary"
             icon="arrow-right"
             onPress={() => {
               setDescription('');

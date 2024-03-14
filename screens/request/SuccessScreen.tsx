@@ -62,7 +62,12 @@ const SuccessScreen = () => {
           )}
         </View>
         <View style={styles.buttonWrapper}>
-          <Button title={i18n.t('copyLink')} type="primary" icon="link" onPress={copyToClipboard} />
+          <Button
+            title={i18n.t('copyLink')}
+            type="secondary"
+            icon="link"
+            onPress={copyToClipboard}
+          />
         </View>
       </SafeAreaView>
     </View>

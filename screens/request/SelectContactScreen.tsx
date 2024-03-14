@@ -229,7 +229,7 @@ const SelectContactScreen = () => {
               <Button
                 title={i18n.t('next')}
                 icon="arrow-right"
-                type="primary"
+                type="secondary"
                 onPress={() => handleNext()}
                 disabled={!contacts || contacts.length === 0}
               />

@@ -84,7 +84,7 @@ const SuccessScreen = () => {
           />
         </View>
         <View style={styles.buttonWrapper}>
-          <Button title={i18n.t('share')} type="primary" icon="share" onPress={onShare} />
+          <Button title={i18n.t('share')} type="secondary" icon="share" onPress={onShare} />
         </View>
       </SafeAreaView>
     </View>

@@ -31,7 +31,7 @@ const NumberPad = ({
 
   const [isDecimal, setIsDecimal] = useState(false);
   const currency = '🇺🇸 USD';
-  const { tokenBalance } = useUserBalance();
+  const { tokenBalances } = useUserBalance();
 
   const onNumberPress = (number: string) => {
     if (number === '.') {
@@ -53,7 +53,10 @@ const NumberPad = ({
         if (type === 'request') {
           finalAmount = newAmount; // allow any number if type is "request"
         } else {
-          finalAmount = parseFloat(newAmount) <= tokenBalance ? newAmount : prevAmount;
+          finalAmount =
+            parseFloat(newAmount) <= tokenBalances.ausdc + tokenBalances.usdc
+              ? newAmount
+              : prevAmount;
         }
         onChange(finalAmount); // call the passed callback function
         return finalAmount;
@@ -88,11 +91,11 @@ const NumberPad = ({
   };
 
   const setAmountToMax = () => {
-    const [wholePart, decimalPart] = tokenBalance.toString().split('.');
+    const [wholePart, decimalPart] = tokenBalances.ausdc.toString().split('.');
     setAmount(wholePart);
     setCents(decimalPart || '00');
     setIsDecimal(!!decimalPart);
-    onChange(tokenBalance.toString());
+    onChange(tokenBalances.ausdc.toString());
   };
 
   return (
@@ -101,7 +104,7 @@ const NumberPad = ({
         {type === 'send' && (
           <Pressable onPress={setAmountToMax}>
             <Text style={styles.balance}>
-              {i18n.t('youHave')} ${tokenBalance}
+              {i18n.t('youHave')} ${tokenBalances.ausdc + tokenBalances.usdc}
             </Text>
           </Pressable>
         )}
@@ -180,7 +183,7 @@ const styles = StyleSheet.create({
     color: COLORS.light,
   },
   currencyWrapper: {
-    backgroundColor: COLORS.gray[200],
+    backgroundColor: COLORS.gray[400],
     borderRadius: 8,
     paddingHorizontal: 4,
   },

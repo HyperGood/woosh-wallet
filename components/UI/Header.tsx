@@ -28,6 +28,7 @@ const Header = () => {
   useEffect(() => {
     if (userData || address) {
       console.log('userData:', userData);
+      console.log('address:', address);
       const truncatedAddress = address?.slice(0, 4) + '...' + address?.slice(-4);
       setUsername(userData?.username || truncatedAddress);
     }

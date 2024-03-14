@@ -72,7 +72,7 @@ const EnterAmountScreen = () => {
               <View style={styles.buttonWrapper}>
                 <Button
                   title={i18n.t('send')}
-                  type="primary"
+                  type="secondary"
                   onPress={() => {
                     deposit(amount);
                     setDescription('');
