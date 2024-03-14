@@ -39,12 +39,12 @@ const SettingsScreen = () => {
           </View>
           <View style={{ marginTop: 12 }}>
             <Text style={styles.upperInputText}>ETH Address</Text>
-            <View style={styles.inputContainer}>
-              <TextInput style={styles.textInput} value={'0x123..123'} editable={false} />
+            <Pressable style={styles.inputContainer} onPress={() => logout()}>
+              <Text style={styles.textInput}>0x123..123</Text>
               <View style={styles.iconContainer}>
                 <Feather name="link" size={16} color="black" />
               </View>
-            </View>
+            </Pressable>
           </View>
         </View>
         <SettingsOption
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     letterSpacing: -0.2,
     color: COLORS.dark,
+    marginBottom: 3,
   },
   joinedOn: {
     fontFamily: 'Satoshi',
