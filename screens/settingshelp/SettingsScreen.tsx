@@ -1,11 +1,15 @@
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
+import * as ImagePicker from 'expo-image-picker';
 import { Pressable, Image, StyleSheet, Text, View, TextInput, Alert } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
 
+import placeholderUser from '../../assets/images/profile.png';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import { useSession } from '../../store/AuthContext';
 import SettingsOption from '../../components/settings/SettingsOption';
@@ -19,6 +23,25 @@ const SettingsScreen = () => {
   const { address } = useAccount();
   const [username, setUsername] = useState('');
   const [joinedOn, setJoinedOn] = useState('');
+  const name = userData?.name;
+  const reference = storage().ref(`avatars/${name}.jpg`);
+  const [image, setImage] = useState<any>(placeholderUser);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const url = await reference.getDownloadURL();
+        setImage(url);
+        console.log('Name:' + name);
+      } catch (error) {
+        console.log('Error fetching image:', error);
+        Sentry.captureException(error);
+        setImage(placeholderUser);
+      }
+    };
+
+    fetchImage();
+  }, []);
 
   useEffect(() => {
     if (userData || address) {
@@ -32,7 +55,7 @@ const SettingsScreen = () => {
     getJoinedOn();
   }, [isFetchingUserData]);
 
-  function getJoinedOn():void {
+  function getJoinedOn(): void {
     firestore()
       .collection('users')
       .doc(userData?.id)
@@ -52,7 +75,33 @@ const SettingsScreen = () => {
       });
   }
 
-  
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+
+    if (!result.canceled) {
+      Alert.alert('Updating image...');
+      try {
+        console.log('Saving profile picture');
+
+        const task = await reference.putFile(result.assets[0].uri);
+        task.state === 'success' && console.log('Profile picture uploaded');
+        const url = await reference.getDownloadURL();
+        firestore().collection('users').doc(userData.id).update({
+          profilePicture: url,
+        });
+        setImage(result.assets[0].uri)
+      } catch (error) {
+        console.error('Error saving profile picture', error);
+        //Sentry.captureException(error);
+      }
+    }
+  };
 
   const updateNameFunction = (newName: string) => {
     // try {
@@ -69,7 +118,7 @@ const SettingsScreen = () => {
     //     Alert.alert("Fallo: " + error);
     //     // Sentry.captureException(error);
     // }
-};
+  };
 
   const copyAddressToClipboard = async () => {
     await Clipboard.setStringAsync(address || 'No address found');
@@ -83,12 +132,12 @@ const SettingsScreen = () => {
           <Feather name="x" size={24} color={'#444447'} />
         </Pressable>
         <View style={{ flexDirection: 'row', marginTop: 56 }}>
-          <View style={{ justifyContent: 'center' }}>
+          <Pressable style={{ justifyContent: 'center' }} onPress={pickImage}>
             <Image
-              source={require('../../assets/images/temp/janet.jpg')}
+              source={typeof image === 'string' ? { uri: image } : image}
               style={styles.userImage}
             />
-          </View>
+          </Pressable>
 
           <View style={{ justifyContent: 'center', paddingLeft: 18 }}>
             <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
@@ -253,5 +302,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Satoshi',
     marginVertical: 4,
     color: '#444447',
-  }
+  },
 });
