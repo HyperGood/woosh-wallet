@@ -102,9 +102,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   bottomWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    alignItems: 'flex-start',
     marginTop: 16,
     gap: 16,
     width: DEVICE_WIDTH - scale(32),
