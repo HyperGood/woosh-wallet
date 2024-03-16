@@ -1,5 +1,7 @@
+import firestore from '@react-native-firebase/firestore';
+import { FlashList } from '@shopify/flash-list';
 import { Link, router } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ModalDropdown from 'react-native-modal-dropdown';
@@ -29,6 +31,12 @@ import { minMaxScale } from '../../utils/scalingFunctions';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
+type Contact = {
+  id: string;
+  name?: string;
+  username?: string;
+};
+
 const SelectContactScreen = () => {
   const insets = useSafeAreaInsets();
   const addContactRef = useRef<BottomSheetRefProps>(null);
@@ -40,6 +48,51 @@ const SelectContactScreen = () => {
   const [searchText, setSearchText] = useState('');
   const isActionTrayOpened = useSharedValue(false);
   const [searchInput, setSearchInput] = useState('');
+  const [searchResults, setSearchResults] = useState<Contact[]>([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (searchInput.trim() === '') {
+        setSearchResults([]);
+        return;
+      }
+
+      // Query for usernames
+      const usernameQuerySnapshot = await firestore()
+        .collection('users')
+        .where('username', '>=', searchInput)
+        .where('username', '<=', searchInput + '\uf8ff')
+        .get();
+
+      // Query for names
+      const nameQuerySnapshot = await firestore()
+        .collection('users')
+        .where('name', '>=', searchInput)
+        .where('name', '<=', searchInput + '\uf8ff')
+        .get();
+
+      // Combine and map the results from both queries
+      const combinedResults = [...usernameQuerySnapshot.docs, ...nameQuerySnapshot.docs].map(
+        (doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })
+      );
+
+      // Remove duplicates (assuming 'id' is unique for each user)
+      const uniqueResults = Array.from(
+        new Map(combinedResults.map((user) => [user.id, user])).values()
+      );
+
+      setSearchResults(uniqueResults);
+    };
+
+    const timeoutId = setTimeout(() => {
+      fetchUsers();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
 
   const countryCodes = ['+52', '+1']; // Array of country codes
 
@@ -109,9 +162,9 @@ const SelectContactScreen = () => {
     </View>
   );
 
-  const renderRecentTitle = () => (
+  const renderTitle = (title: string) => (
     <Text style={{ fontSize: 14, fontFamily: 'Satoshi-Bold', color: COLORS.light, opacity: 0.6 }}>
-      Recents
+      {title}
     </Text>
   );
 
@@ -133,22 +186,33 @@ const SelectContactScreen = () => {
         </Pressable>
       ),
     },
-    { id: 'recentTitle', component: renderRecentTitle() },
+    { id: 'recentTitle', component: renderTitle('Recents') },
     { name: 'Alice', phoneNumber: '+123456789' },
     { name: 'Bob', phoneNumber: '+987654321' },
     { name: 'Charlie', phoneNumber: '+192837465' },
   ];
 
+  const currentDataLength =
+    searchInput !== '' && searchResults.length > 0 ? searchResults.length : data.length;
+
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
-      <FlatList
+      <FlashList
         ListHeaderComponent={renderHeader}
         ListHeaderComponentStyle={{ marginBottom: 24 }}
         ListFooterComponent={renderFooter}
         ListFooterComponentStyle={{ marginTop: 24 }}
-        data={data}
+        data={
+          searchInput !== '' && searchResults
+            ? [
+                { id: 'resultsTitle', component: renderTitle('Other Woosh Users') },
+                ...searchResults,
+              ]
+            : data
+        }
         keyExtractor={(item, index) => index.toString()}
         keyboardShouldPersistTaps="handled"
+        estimatedItemSize={100}
         renderItem={({ item, index }) =>
           item.component ? (
             <View
@@ -165,13 +229,16 @@ const SelectContactScreen = () => {
             <View
               style={{
                 paddingHorizontal: 8,
-                paddingBottom: index === data.length - 1 ? 16 : 0,
+                paddingBottom: index === currentDataLength ? 16 : 0,
                 backgroundColor: COLORS.gray[800],
-                borderBottomLeftRadius: index === data.length - 1 ? 24 : 0,
-                borderBottomRightRadius: index === data.length - 1 ? 24 : 0,
+                borderBottomLeftRadius: index === currentDataLength ? 24 : 0,
+                borderBottomRightRadius: index === currentDataLength ? 24 : 0,
               }}>
-              <ContactListItem name={item.name} phoneNumber={item.phoneNumber} />
-              {index !== data.length - 1 && (
+              <ContactListItem
+                name={item.name}
+                phoneNumber={item.phoneNumber ? item.phoneNumber : item.username}
+              />
+              {index !== currentDataLength && (
                 <View
                   style={{
                     height: 1,

@@ -69,7 +69,8 @@
     "react-native-svg": "14.1.0",
     "react-native-web": "~0.19.6",
     "viem": "^2.8.6",
-    "wagmi": "^1.4.8"
+    "wagmi": "^1.4.8",
+    "@shopify/flash-list": "1.6.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

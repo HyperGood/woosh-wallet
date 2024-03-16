@@ -1981,6 +1981,8 @@ PODS:
     - Firebase/Storage (= 10.22.0)
     - React-Core
     - RNFBApp
+  - RNFlashList (1.6.3):
+    - React-Core
   - RNGestureHandler (2.14.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -2101,6 +2103,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage`)"
+  - "RNFlashList (from `../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -2316,6 +2319,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNFBStorage:
     :path: "../node_modules/@react-native-firebase/storage"
+  RNFlashList:
+    :path: "../node_modules/@shopify/flash-list"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
@@ -2442,6 +2447,7 @@ SPEC CHECKSUMS:
   RNFBApp: 94f7fca150585cb1ad3802a6c6d356e9a8b95b34
   RNFBFirestore: 53dfb7c35036bc901d4ce9e3d1656d4cb346067c
   RNFBStorage: 875be7e3052d262dda9d204ce5afc1a59975c701
+  RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
   RNGestureHandler: 28bdf9a766c081e603120f79e925b72817c751c6
   RNReanimated: 72a18f65f08061d2dcafbf08468811c3c3d22041
   RNScreens: 2b73f5eb2ac5d94fbd61fa4be0bfebd345716825

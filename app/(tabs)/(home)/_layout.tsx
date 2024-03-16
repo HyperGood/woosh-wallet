@@ -69,6 +69,8 @@ export default function Layout() {
     }
   }, [token]);
 
+  //kristofgazso
+
   useEffect(() => {
     if (address) {
       setIsFetchingUserData(true);
