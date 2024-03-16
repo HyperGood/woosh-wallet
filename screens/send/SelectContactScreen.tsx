@@ -35,7 +35,15 @@ type Contact = {
   id: string;
   name?: string;
   username?: string;
+  phoneNumber?: string;
 };
+
+type ItemWithComponent = {
+  id: string;
+  component: React.ReactNode;
+};
+
+type Item = Contact | ItemWithComponent;
 
 const SelectContactScreen = () => {
   const insets = useSafeAreaInsets();
@@ -168,7 +176,7 @@ const SelectContactScreen = () => {
     </Text>
   );
 
-  const data = [
+  const data: Item[] = [
     {
       id: 'selectContact',
       component: (
@@ -187,13 +195,17 @@ const SelectContactScreen = () => {
       ),
     },
     { id: 'recentTitle', component: renderTitle('Recents') },
-    { name: 'Alice', phoneNumber: '+123456789' },
-    { name: 'Bob', phoneNumber: '+987654321' },
-    { name: 'Charlie', phoneNumber: '+192837465' },
+    { id: '123456789', name: 'Alice', phoneNumber: '+123456789' },
+    { id: '987654321', name: 'Bob', phoneNumber: '+987654321' },
+    { id: '192837465', name: 'Charlie', phoneNumber: '+192837465' },
   ];
 
   const currentDataLength =
     searchInput !== '' && searchResults.length > 0 ? searchResults.length : data.length;
+
+  function isItemWithComponent(item: Item): item is ItemWithComponent {
+    return (item as ItemWithComponent).component !== undefined;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
@@ -213,45 +225,51 @@ const SelectContactScreen = () => {
         keyExtractor={(item, index) => index.toString()}
         keyboardShouldPersistTaps="handled"
         estimatedItemSize={100}
-        renderItem={({ item, index }) =>
-          item.component ? (
-            <View
-              style={{
-                paddingTop: index === 0 ? 24 : 16,
-                paddingHorizontal: 8,
-                backgroundColor: COLORS.gray[800],
-                borderTopLeftRadius: index === 0 ? 24 : 0,
-                borderTopRightRadius: index === 0 ? 24 : 0,
-              }}>
-              {item.component}
-            </View>
-          ) : (
-            <View
-              style={{
-                paddingHorizontal: 8,
-                paddingBottom: index === currentDataLength ? 16 : 0,
-                backgroundColor: COLORS.gray[800],
-                borderBottomLeftRadius: index === currentDataLength ? 24 : 0,
-                borderBottomRightRadius: index === currentDataLength ? 24 : 0,
-              }}>
-              <ContactListItem
-                name={item.name}
-                phoneNumber={item.phoneNumber ? item.phoneNumber : item.username}
-              />
-              {index !== currentDataLength && (
-                <View
-                  style={{
-                    height: 1,
-                    backgroundColor: COLORS.light,
-                    opacity: 0.05,
-                    width: '75%',
-                    alignSelf: 'center',
-                  }}
+        renderItem={({ item, index }) => {
+          if (isItemWithComponent(item)) {
+            return (
+              <View
+                style={{
+                  paddingTop: index === 0 ? 24 : 16,
+                  paddingHorizontal: 8,
+                  backgroundColor: COLORS.gray[800],
+                  borderTopLeftRadius: index === 0 ? 24 : 0,
+                  borderTopRightRadius: index === 0 ? 24 : 0,
+                }}>
+                {item.component}
+              </View>
+            );
+          } else {
+            return (
+              <View
+                style={{
+                  paddingHorizontal: 8,
+                  paddingBottom: index === currentDataLength ? 16 : 0,
+                  backgroundColor: COLORS.gray[800],
+                  borderBottomLeftRadius: index === currentDataLength ? 24 : 0,
+                  borderBottomRightRadius: index === currentDataLength ? 24 : 0,
+                }}>
+                <ContactListItem
+                  name={item.name ? item.name : 'Unknown'}
+                  phoneNumber={
+                    item.phoneNumber ? item.phoneNumber : item.username ? item.username : ''
+                  }
                 />
-              )}
-            </View>
-          )
-        }
+                {index !== currentDataLength && (
+                  <View
+                    style={{
+                      height: 1,
+                      backgroundColor: COLORS.light,
+                      opacity: 0.05,
+                      width: '75%',
+                      alignSelf: 'center',
+                    }}
+                  />
+                )}
+              </View>
+            );
+          }
+        }}
         contentContainerStyle={{
           paddingTop: insets.top,
           paddingBottom: 24,
