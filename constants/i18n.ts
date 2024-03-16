@@ -13,7 +13,7 @@ const translations = {
     from: 'From',
     claimed: 'Claimed',
     unclaimed: 'Not Claimed',
-    sendSelectContactTitle: 'Who do you want to send money to?',
+    sendSelectContactTitle: 'Who are you sending to??',
     selectContactPlaceholder: 'Enter a phone number',
     enterName: 'Enter a name',
     getContacts: 'Select from phone contacts',

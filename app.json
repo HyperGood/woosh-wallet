@@ -66,7 +66,7 @@
         "NSContactsUsageDescription": "Allow Woosh to access your contacts so you can send funds to anyone in your contacts list, even if they don't have an account."
       },
       "runtimeVersion": "1.0.0",
-      "associatedDomains": ["applinks:wooshapp.com"],
+      "associatedDomains": ["applinks:wooshapp.com"]
     },
     "android": {
       "adaptiveIcon": {
@@ -95,14 +95,9 @@
               "pathPrefix": "/claim"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
-        },
-        
-      ],
-      
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "extra": {
       "router": {
