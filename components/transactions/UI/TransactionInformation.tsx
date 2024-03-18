@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
@@ -8,32 +8,25 @@ import { openBlockExplorerURL } from '../../../utils/ethereumUtils';
 import Button from '../../UI/Button';
 
 interface TransactionInformationProps {
-  transaction: Transaction;
-  close: () => void;
+  transaction: Transaction | undefined,
 }
 
-const windowWidth = Dimensions.get('window').width;
-
-const TransactionInformation: React.FC<TransactionInformationProps> = ({
-  transaction,
-  close,
-}) => {
-  
+const TransactionInformation: React.FC<TransactionInformationProps> = ({ transaction }) => {
   return (
     <View style={styles.transactionDetailsContainer}>
       <View style={styles.transactionState}>
         <View
           style={[
-            transaction.claimed
+            transaction?.claimed
               ? { backgroundColor: COLORS.secondary[400] }
               : { backgroundColor: 'gold' },
             styles.statusCircle,
           ]}
         />
         <Text style={styles.claimedState}>
-          {transaction.claimed ? i18n.t('claimed') : i18n.t('unclaimed')}
+          {transaction?.claimed ? i18n.t('claimed') : i18n.t('unclaimed')}
         </Text>
-        {transaction.claimed && (
+        {transaction?.claimed && (
           <Text style={styles.cancelTransactionButton}>{i18n.t('cancel')}</Text>
         )}
       </View>
@@ -50,21 +43,21 @@ const TransactionInformation: React.FC<TransactionInformationProps> = ({
               <Feather name="send" size={16} color={COLORS.gray[800]} />
             </View>
             <Text style={styles.sendTo}>
-              {i18n.t('sentTo')}: {transaction.recipientName}
+              {i18n.t('sentTo')}: {transaction?.recipientName}
             </Text>
           </View>
           <Text style={styles.sendData}>
-            {transaction.recipientPhone
-              ? transaction.recipientPhone.replace(
+            {transaction?.recipientPhone
+              ? transaction?.recipientPhone.replace(
                   /^(\+\d{2})(\d{3})(\d{3})(\d{4})$/,
                   '$1-$2-$3-$4'
                 )
               : ''}
           </Text>
-          {transaction.claimed && (
+          {transaction?.claimed && (
             <Text style={styles.sendData}>
               {i18n.t('claimed')}:{' '}
-              {transaction.claimedAt?.toDate().toLocaleString('en-US', {
+              {transaction?.claimedAt?.toDate().toLocaleString('en-US', {
                 month: 'short',
                 day: '2-digit',
                 year: 'numeric',
@@ -78,18 +71,19 @@ const TransactionInformation: React.FC<TransactionInformationProps> = ({
       </View>
       <View style={styles.transactionData}>
         <Text style={styles.totalAmountNumber}>
-          ${transaction.amount.split('.')[0]}.
+          ${transaction?.amount.split('.')[0]}.
           <Text style={styles.totalAmountDecimal}>
-            {transaction.amount.split('.')[1]
-              ? transaction.amount.split('.')[1].padEnd(2, '0')
+            {transaction?.amount.split('.')[1]
+              ? transaction?.amount.split('.')[1].padEnd(2, '0')
               : '00'}
           </Text>
         </Text>
         <Text style={styles.extraTransactionData}>
-          {transaction.amountInUSD ? transaction.amountInUSD.toFixed(2) : '00'} {transaction.token}
+          {transaction?.amountInUSD ? transaction?.amountInUSD.toFixed(2) : '00'}{' '}
+          {transaction?.token}
         </Text>
         <Text style={styles.extraTransactionData}>
-          {transaction.createdAt.toDate().toLocaleString('en-US', {
+          {transaction?.createdAt.toDate().toLocaleString('en-US', {
             month: 'short',
             day: '2-digit',
             year: 'numeric',
@@ -98,16 +92,18 @@ const TransactionInformation: React.FC<TransactionInformationProps> = ({
             hour12: true,
           })}
         </Text>
-        <Pressable style={styles.viewAllButton} onPress={() => openBlockExplorerURL(transaction.transactionHash as `0x${string}`)}>
+        <Pressable
+          style={styles.viewAllButton}
+          onPress={() => openBlockExplorerURL(transaction?.transactionHash as `0x${string}`)}>
           <Text style={styles.viewAllText}>{i18n.t('viewOnBlockchain')}</Text>
         </Pressable>
       </View>
       <View>
         <Button
-          title={transaction.claimed ? i18n.t('shareTransaction') : i18n.t('copyLink')}
+          title={transaction?.claimed ? i18n.t('shareTransaction') : i18n.t('copyLink')}
           icon="link"
           type="primary"
-          onPress={close}
+          onPress={() => (true)}
         />
       </View>
     </View>
@@ -115,13 +111,6 @@ const TransactionInformation: React.FC<TransactionInformationProps> = ({
 };
 export default TransactionInformation;
 const styles = StyleSheet.create({
-  bottomSheetContainer: {
-    position: 'absolute',
-    width: windowWidth,
-    left: -10,
-    bottom: 0,
-    zIndex: 9999,
-  },
   transactionDetailsContainer: {
     padding: 20,
   },
