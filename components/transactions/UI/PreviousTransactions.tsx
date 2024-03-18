@@ -8,12 +8,35 @@ import TransactionInformation from './TransactionInformation';
 import { COLORS } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
 import { Transaction } from '../../../models/Transaction';
+import BottomSheet, { BottomSheetRefProps } from '../../modals/BottomSheet';
+import { useCallback, useRef } from 'react';
+import { useSharedValue } from 'react-native-reanimated';
 
 interface PreviousTransactionsProps {
   transactions: Transaction[] | undefined;
 }
 
 const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
+  const leftTransactionDetailsRefs = Array.from({ length: 50 }, () => useRef<BottomSheetRefProps>(null));
+  const rightTransactionDetailsRefs = Array.from({ length: 50 }, () => useRef<BottomSheetRefProps>(null));
+  const isActionTrayOpened = useSharedValue(false);
+
+  const close = useCallback(() => {
+    leftTransactionDetailsRefs.forEach(ref => {
+      if (ref.current) ref.current.close();
+    });
+    rightTransactionDetailsRefs.forEach((ref) => {
+      if (ref.current) ref.current.close();
+    });
+    isActionTrayOpened.value = false;
+  }, [leftTransactionDetailsRefs, rightTransactionDetailsRefs, isActionTrayOpened]);
+
+  const toggleActionTray = useCallback((ref: React.RefObject<BottomSheetRefProps>) => {
+    const isActive = ref.current?.isActive() ?? false;
+    isActionTrayOpened.value = !isActive;
+    isActive ? close() : ref.current?.open();
+  }, [close, isActionTrayOpened]);
+
   if (!transactions || transactions.length === 0) {
     return (
       <View style={styles.emptyStateContainer}>
@@ -24,6 +47,7 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
   const slicedTransactions = transactions.slice(0, 4);
   const leftTransactions = slicedTransactions.filter((_: any, index: number) => index % 2 === 0);
   const rightTransactions = slicedTransactions.filter((_: any, index: number) => index % 2 !== 0);
+  
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
       <SafeAreaView style={{ flex: 1, width: '100%' }}>
@@ -35,7 +59,9 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
           <View style={styles.cards}>
             <View style={styles.cardsLeft}>
               {leftTransactions.map((transaction: Transaction, index: number) => (
-                <TransactionInformation key={transaction.id} transaction={transaction}>
+                <Pressable
+                  onPress={() => toggleActionTray(leftTransactionDetailsRefs[index])}
+                  key={transaction.id}>
                   <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
                     {transaction.id ? (
                       <TransactionCardHome
@@ -51,12 +77,14 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                       <div>No transaction ID found</div>
                     )}
                   </View>
-                </TransactionInformation>
+                </Pressable>
               ))}
             </View>
             <View style={styles.cardsRight}>
               {rightTransactions.map((transaction: Transaction, index: number) => (
-                <TransactionInformation key={transaction.id} transaction={transaction}>
+                <Pressable
+                  onPress={() => toggleActionTray(rightTransactionDetailsRefs[index])}
+                  key={transaction.id}>
                   <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
                     <TransactionCardHome
                       amount={transaction.amount || '0'}
@@ -68,7 +96,7 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
                       senderName={transaction.sender}
                     />
                   </View>
-                </TransactionInformation>
+                </Pressable>
               ))}
             </View>
           </View>
@@ -79,6 +107,20 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
             </Pressable>
           </Link>
         </View>
+        {leftTransactions.map((transaction: Transaction, index: number) => (
+          <View style={styles.bottomSheetContainer} key={transaction.id}>
+            <BottomSheet ref={leftTransactionDetailsRefs[index]} colorMode="light">
+              <TransactionInformation transaction={transaction} close={close}/>
+            </BottomSheet>
+          </View>
+        ))}
+        {rightTransactions.map((transaction: Transaction, index: number) => (
+          <View style={styles.bottomSheetContainer} key={transaction.id}>
+            <BottomSheet ref={rightTransactionDetailsRefs[index]} colorMode="light">
+              <TransactionInformation transaction={transaction} close={close}/>
+            </BottomSheet>
+          </View>
+        ))}
       </SafeAreaView>
     </GestureHandlerRootView>
   );
@@ -150,5 +192,13 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     fontSize: 16,
     color: COLORS.dark,
+  },
+  // Nuevos
+  bottomSheetContainer: {
+    position: 'absolute',
+    width: "100%",
+    left: 0,
+    bottom: 0,
+    zIndex: 9999,
   },
 });
