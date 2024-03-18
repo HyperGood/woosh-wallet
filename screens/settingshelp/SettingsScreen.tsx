@@ -1,19 +1,19 @@
 import { Feather } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import * as Clipboard from 'expo-clipboard';
-import * as ImagePicker from 'expo-image-picker';
-import { Pressable, Image, StyleSheet, Text, View, TextInput, Alert } from 'react-native';
-import * as Sentry from '@sentry/react-native';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import * as Sentry from '@sentry/react-native';
+import * as Clipboard from 'expo-clipboard';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
 import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
+import { Pressable, Image, StyleSheet, Text, View, TextInput, Alert } from 'react-native';
 
 import placeholderUser from '../../assets/images/profile.png';
-import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
-import { useSession } from '../../store/AuthContext';
 import SettingsOption from '../../components/settings/SettingsOption';
+import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
+import { useSession } from '../../store/AuthContext';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
 
@@ -104,20 +104,20 @@ const SettingsScreen = () => {
   };
 
   const updateNameFunction = (newName: string) => {
-    // try {
-    //     firestore()
-    //         .collection('users')
-    //         .doc(userData.id)
-    //         .update({
-    //             name: newName,
-    //         })
-    //         .then(() => {
-    //             Alert.alert("Nombre actualizado con éxito");
-    //         });
-    // } catch (error) {
-    //     Alert.alert("Fallo: " + error);
-    //     // Sentry.captureException(error);
-    // }
+    if (newName === '') {
+      console.log('Name cannot be empty');
+      return;
+    }
+    try {
+    firestore().collection('users').doc(userData.id).update({
+      name: newName,
+    });
+    } 
+    catch (error) {
+      console.error('Error updating name', error);
+      Sentry.captureException(error);
+    }
+    setUsername(newName);
   };
 
   const copyAddressToClipboard = async () => {
@@ -141,7 +141,7 @@ const SettingsScreen = () => {
 
           <View style={{ justifyContent: 'center', paddingLeft: 18 }}>
             <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
-              <Text style={styles.account}>{username}</Text>
+              <Text style={styles.account}>{userData.username ? `$${userData.username}` : userData.ethAddress}</Text>
             </Skeleton>
             <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
               <Text style={styles.joinedOn}>
@@ -161,10 +161,11 @@ const SettingsScreen = () => {
                 {...SkeletonCommonProps}>
                 <TextInput
                   style={styles.textInput}
-                  placeholder={username}
+                  placeholder={userData.name}
                   onSubmitEditing={(event) => {
                     updateNameFunction(event.nativeEvent.text);
                   }}
+                  placeholderTextColor={COLORS.dark}
                 />
               </Skeleton>
               <View style={styles.iconContainer}>
@@ -249,8 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   account: {
-    fontFamily: 'Satoshi',
-    fontWeight: '700',
+    fontFamily: 'Satoshi-Bold',
     fontSize: 20,
     letterSpacing: -0.2,
     color: COLORS.dark,
