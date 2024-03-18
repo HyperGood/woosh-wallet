@@ -1,138 +1,146 @@
 import { Feather } from '@expo/vector-icons';
-import React, { Key } from 'react';
-import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useCallback, useRef } from 'react';
+import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
 
 import { COLORS } from '../../../constants/global-styles';
-import BottomSheet, { BottomSheetRefProps } from '../../modals/BottomSheet';
-import { useSharedValue } from 'react-native-reanimated';
-import Button from '../../UI/Button';
-import { Link } from 'expo-router';
 import i18n from '../../../constants/i18n';
+import { Transaction } from '../../../models/Transaction';
+import { openBlockExplorerURL } from '../../../utils/ethereumUtils';
+import Button from '../../UI/Button';
+import BottomSheet, { BottomSheetRefProps } from '../../modals/BottomSheet';
 
 interface TransactionInformationProps {
-    children?: React.ReactNode;
-    id?: Key;
-    amount: string;
-    token?: string;
-    amountInUSD: number;
-    recipientName?: string;
-    recipientPhone?: string;
-    claimedAt?: Date;
-    createdAt: Date;
-    claimed?: boolean;
+  children?: React.ReactNode;
+  transaction: Transaction;
 }
 
 const windowWidth = Dimensions.get('window').width;
 
-const TransactionInformation: React.FC<TransactionInformationProps> = ({ children, id, amount, token, amountInUSD, recipientName, recipientPhone, claimedAt, createdAt, claimed }) => {
-    const transactionDetailsRef = useRef<BottomSheetRefProps>(null);
-    const isActionTrayOpened = useSharedValue(false);
+const TransactionInformation: React.FC<TransactionInformationProps> = ({
+  children,
+  transaction,
+}) => {
+  const transactionDetailsRef = useRef<BottomSheetRefProps>(null);
+  const isActionTrayOpened = useSharedValue(false);
 
-    const close = useCallback(() => {
-        transactionDetailsRef.current?.close();
-        isActionTrayOpened.value = false;
-    }, []);
+  const close = useCallback(() => {
+    transactionDetailsRef.current?.close();
+    isActionTrayOpened.value = false;
+  }, []);
 
-    const toggleActionTray = useCallback(() => {
-        const isActive = transactionDetailsRef.current?.isActive() ?? false;
-        isActionTrayOpened.value = !isActive;
-        isActive ? close() : transactionDetailsRef.current?.open();
-    }, [close, isActionTrayOpened]);
-    return (
-      <>
-        <Pressable onPress={toggleActionTray} key={id}>
-          {children}
-        </Pressable>
-        <View style={styles.bottomSheetContainer}>
-          <BottomSheet ref={transactionDetailsRef} colorMode="light">
-            <View style={styles.transactionDetailsContainer}>
-              <View style={styles.transactionState}>
-                <View
-                  style={[
-                    claimed
-                      ? { backgroundColor: COLORS.secondary[400] }
-                      : { backgroundColor: 'gold' },
-                    styles.statusCircle,
-                  ]}
+  const toggleActionTray = useCallback(() => {
+    const isActive = transactionDetailsRef.current?.isActive() ?? false;
+    isActionTrayOpened.value = !isActive;
+    isActive ? close() : transactionDetailsRef.current?.open();
+  }, [close, isActionTrayOpened]);
+  return (
+    <>
+      <Pressable onPress={toggleActionTray} key={transaction.id}>
+        {children}
+      </Pressable>
+      <View style={styles.bottomSheetContainer}>
+        <BottomSheet ref={transactionDetailsRef} colorMode="light">
+          <View style={styles.transactionDetailsContainer}>
+            <View style={styles.transactionState}>
+              <View
+                style={[
+                  transaction.claimed
+                    ? { backgroundColor: COLORS.secondary[400] }
+                    : { backgroundColor: 'gold' },
+                  styles.statusCircle,
+                ]}
+              />
+              <Text style={styles.claimedState}>
+                {transaction.claimed ? i18n.t('claimed') : i18n.t('unclaimed')}
+              </Text>
+              {transaction.claimed && (
+                <Text style={styles.cancelTransactionButton}>{i18n.t('cancel')}</Text>
+              )}
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 15 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: 'gray', opacity: 0.5 }} />
+            </View>
+            <View style={{ flexDirection: 'row', paddingVertical: 20 }}>
+              <View style={{ justifyContent: 'center', paddingHorizontal: 3 }}>
+                <Image
+                  source={require('./temp/lilly.jpg')}
+                  style={styles.transactionUserDataImage}
                 />
-                <Text style={styles.claimedState}>{claimed ? i18n.t('claimed') : i18n.t('unclaimed')}</Text>
-                {claimed && <Text style={styles.cancelTransactionButton}>{i18n.t('cancel')}</Text>}
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 15 }}>
-                <View style={{ flex: 1, height: 1, backgroundColor: 'gray', opacity: 0.5 }} />
-              </View>
-              <View style={{ flexDirection: 'row', paddingVertical: 20 }}>
-                <View style={{ justifyContent: 'center', paddingHorizontal: 3 }}>
-                  <Image
-                    source={require('./temp/lilly.jpg')}
-                    style={styles.transactionUserDataImage}
-                  />
-                </View>
-                <View style={{ paddingHorizontal: 10 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={styles.sendBackground}>
-                      <Feather name="send" size={16} color={COLORS.gray[800]} />
-                    </View>
-                    <Text style={styles.sendTo}>{i18n.t('sentTo')}: {recipientName}</Text>
+              <View style={{ paddingHorizontal: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={styles.sendBackground}>
+                    <Feather name="send" size={16} color={COLORS.gray[800]} />
                   </View>
-                  <Text style={styles.sendData}>
-                    {recipientPhone
-                      ? recipientPhone.replace(/^(\+\d{2})(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3-$4')
-                      : ''}
+                  <Text style={styles.sendTo}>
+                    {i18n.t('sentTo')}: {transaction.recipientName}
                   </Text>
-                  {claimed && (
-                    <Text style={styles.sendData}>
-                      {i18n.t('claimed')}:{' '}
-                      {claimedAt?.toLocaleString('en-US', {
-                        month: 'short',
-                        day: '2-digit',
-                        year: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true,
-                      })}
-                    </Text>
-                  )}
                 </View>
-              </View>
-              <View style={styles.transactionData}>
-                <Text style={styles.totalAmountNumber}>
-                  ${amount.split('.')[0]}.
-                  <Text style={styles.totalAmountDecimal}>
-                    {amount.split('.')[1] ? amount.split('.')[1].padEnd(2, '0') : '00'}
+                <Text style={styles.sendData}>
+                  {transaction.recipientPhone
+                    ? transaction.recipientPhone.replace(
+                        /^(\+\d{2})(\d{3})(\d{3})(\d{4})$/,
+                        '$1-$2-$3-$4'
+                      )
+                    : ''}
+                </Text>
+                {transaction.claimed && (
+                  <Text style={styles.sendData}>
+                    {i18n.t('claimed')}:{' '}
+                    {transaction.claimedAt?.toLocaleString('en-US', {
+                      month: 'short',
+                      day: '2-digit',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                    })}
                   </Text>
-                </Text>
-                <Text style={styles.extraTransactionData}>{amountInUSD.toFixed(2)} {token}</Text>
-                <Text style={styles.extraTransactionData}>
-                  {createdAt.toLocaleString('en-US', {
-                    month: 'short',
-                    day: '2-digit',
-                    year: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true,
-                  })}
-                </Text>
-                <Link href="https://base-sepolia.blockscout.com" asChild>
-                  <Pressable style={styles.viewAllButton}>
-                    <Text style={styles.viewAllText}>{i18n.t('viewOnBlockchain')}</Text>
-                  </Pressable>
-                </Link>
-              </View>
-              <View>
-                <Button
-                  title={claimed ? i18n.t('shareTransaction') : i18n.t('copyLink')}
-                  icon="link"
-                  type="primary"
-                  onPress={() => {}}
-                />
+                )}
               </View>
             </View>
-          </BottomSheet>
-        </View>
-      </>
-    );
+            <View style={styles.transactionData}>
+              <Text style={styles.totalAmountNumber}>
+                ${transaction.amount.split('.')[0]}.
+                <Text style={styles.totalAmountDecimal}>
+                  {transaction.amount.split('.')[1]
+                    ? transaction.amount.split('.')[1].padEnd(2, '0')
+                    : '00'}
+                </Text>
+              </Text>
+              <Text style={styles.extraTransactionData}>
+                {transaction.amountInUSD.toFixed(2)} {transaction.token}
+              </Text>
+              <Text style={styles.extraTransactionData}>
+                {transaction.createdAt.toLocaleString('en-US', {
+                  month: 'short',
+                  day: '2-digit',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </Text>
+              <Pressable
+                style={styles.viewAllButton}
+                onPress={() => openBlockExplorerURL(transaction.transactionHash as `0x${string}`)}>
+                <Text style={styles.viewAllText}>{i18n.t('viewOnBlockchain')}</Text>
+              </Pressable>
+            </View>
+            <View>
+              <Button
+                title={transaction.claimed ? i18n.t('shareTransaction') : i18n.t('copyLink')}
+                icon="link"
+                type="primary"
+                onPress={() => {}}
+              />
+            </View>
+          </View>
+        </BottomSheet>
+      </View>
+    </>
+  );
 };
 export default TransactionInformation;
 const styles = StyleSheet.create({

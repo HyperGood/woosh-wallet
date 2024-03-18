@@ -1,16 +1,16 @@
 import { Feather } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import TransactionCardHome from './HomeTransactionCard';
-import { COLORS } from '../../../constants/global-styles';
-import { Transaction } from '../../../models/Transaction';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import i18n from '../../../constants/i18n';
 import TransactionInformation from './TransactionInformation';
+import { COLORS } from '../../../constants/global-styles';
+import i18n from '../../../constants/i18n';
+import { Transaction } from '../../../models/Transaction';
 
 interface PreviousTransactionsProps {
-  transactions: any;
+  transactions: Transaction[] | undefined;
 }
 
 const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
@@ -34,25 +34,15 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
           </View>
           <View style={styles.cards}>
             <View style={styles.cardsLeft}>
-              {leftTransactions.map((transaction: Partial<Transaction>, index: number) => (                
-                <TransactionInformation
-                  key={transaction.id}
-                  id={transaction.id}
-                  amount={transaction.amount || '0'}
-                  token={transaction.token}
-                  amountInUSD={transaction.amountInUSD || 0}
-                  recipientName={transaction.recipientName}
-                  recipientPhone={transaction.recipientPhone}
-                  claimedAt={transaction.claimedAt ? transaction.claimedAt.toDate() : null}
-                  createdAt={transaction.createdAt.toDate()}
-                  claimed={transaction.claimed}>                  
+              {leftTransactions.map((transaction: Transaction, index: number) => (
+                <TransactionInformation key={transaction.id} transaction={transaction}>
                   <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
                     {transaction.id ? (
                       <TransactionCardHome
                         amount={transaction.amount || '0'}
                         recipientName={transaction.recipientName}
                         description={transaction.description}
-                        date={transaction.createdAt.toDate()}
+                        date={transaction.createdAt?.toDate()}
                         claimed={Boolean(transaction.claimedAt)}
                         sender={transaction.senderAddress}
                         senderName={transaction.sender}
@@ -65,24 +55,14 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
               ))}
             </View>
             <View style={styles.cardsRight}>
-              {rightTransactions.map((transaction: Partial<Transaction>, index: number) => (
-                <TransactionInformation
-                  key={transaction.id}
-                  id={transaction.id}
-                  amount={transaction.amount || '0'}
-                  token={transaction.token}
-                  amountInUSD={transaction.amountInUSD || 0}
-                  recipientName={transaction.recipientName}
-                  recipientPhone={transaction.recipientPhone}
-                  claimedAt={transaction.claimedAt ? transaction.claimedAt.toDate() : null}
-                  createdAt={transaction.createdAt.toDate()}
-                  claimed={transaction.claimed}>
+              {rightTransactions.map((transaction: Transaction, index: number) => (
+                <TransactionInformation key={transaction.id} transaction={transaction}>
                   <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
                     <TransactionCardHome
                       amount={transaction.amount || '0'}
                       recipientName={transaction.recipientName}
                       description={transaction.description}
-                      date={transaction.createdAt.toDate()}
+                      date={transaction.createdAt?.toDate()}
                       claimed={Boolean(transaction.claimedAt)}
                       sender={transaction.senderAddress}
                       senderName={transaction.sender}

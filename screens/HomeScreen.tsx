@@ -11,12 +11,13 @@ import Header from '../components/UI/Header';
 import PreviousTransactions from '../components/transactions/UI/PreviousTransactions';
 import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
+import { Transaction } from '../models/Transaction';
 import { useAccount } from '../store/SmartAccountContext';
 import { scale } from '../utils/scalingFunctions';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const [transactions, setTransactions] = useState<any>();
+  const [transactions, setTransactions] = useState<Transaction[]>();
   const { address } = useAccount();
 
   useFocusEffect(
