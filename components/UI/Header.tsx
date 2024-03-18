@@ -34,8 +34,7 @@ const Header = () => {
     }
   }, [userData, address]);
 
-  const name = userData?.name;
-  const reference = storage().ref(`avatars/${name}.jpg`);
+  const reference = storage().ref(`avatars/${address}.jpg`);
   const [imageSrc, setImageSrc] = useState<any>(placeholderUser);
 
   useEffect(() => {
