@@ -141,7 +141,7 @@ const SettingsScreen = () => {
 
           <View style={{ justifyContent: 'center', paddingLeft: 18 }}>
             <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
-              <Text style={styles.account}>{userData.username ? `$${userData.username}` : userData.ethAddress}</Text>
+              <Text style={styles.account}>{userData.username ? `${userData.username}` : userData.ethAddress}</Text>
             </Skeleton>
             <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
               <Text style={styles.joinedOn}>
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   upperInputText: {
     fontSize: 14,
     marginBottom: 8,
-    fontFamily: 'Satoshi',
+    fontFamily: 'Satoshi-Bold',
     fontWeight: '700',
   },
   textInput: {

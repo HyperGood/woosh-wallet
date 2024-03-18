@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   title: {
-    fontFamily: 'Satoshi',
+    fontFamily: 'Satoshi-Bold',
     fontWeight: '700',
     fontSize: 24,
     textAlignVertical: 'center',

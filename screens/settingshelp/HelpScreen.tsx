@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   title: {
-    fontFamily: 'Satoshi',
+    fontFamily: 'Satoshi-Bold',
     fontWeight: '700',
     fontSize: 40,
     marginTop: 60,
