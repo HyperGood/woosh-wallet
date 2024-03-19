@@ -8,6 +8,10 @@
     "start": "expo start",
     "web": "expo start --web"
   },
+  "engines": {
+    "node": ">=18"
+  },
+  "engineStrict": true,
   "dependencies": {
     "@aave/contract-helpers": "^1.25.0",
     "@aave/math-utils": "^1.25.0",

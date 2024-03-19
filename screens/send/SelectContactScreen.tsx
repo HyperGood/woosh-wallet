@@ -2,7 +2,16 @@ import firestore from '@react-native-firebase/firestore';
 import { FlashList } from '@shopify/flash-list';
 import { Link, router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Animated, {
@@ -14,6 +23,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { normalize } from 'viem/ens';
 
 import ContactSelector from '../../components/ContactSelector';
 import Button from '../../components/UI/Button';
@@ -23,7 +33,7 @@ import BottomSheet, { BottomSheetRefProps } from '../../components/modals/Bottom
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import { useKeyboardBottomSheetAdjustment } from '../../hooks/BottomSheet/useKeyboardBottomSheetAdjustment';
+import publicClient from '../../constants/viemPublicClient';
 import { useToggleBottomSheet } from '../../hooks/BottomSheet/useToggleBottomSheet';
 import { usePhoneContacts } from '../../store/ContactsContext';
 import { useTransaction } from '../../store/TransactionContext';
@@ -36,6 +46,7 @@ type Contact = {
   name?: string;
   username?: string;
   phoneNumber?: string;
+  address?: string;
 };
 
 type ItemWithComponent = {
@@ -57,12 +68,32 @@ const SelectContactScreen = () => {
   const isActionTrayOpened = useSharedValue(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState<Contact[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setIsSearching(true);
       if (searchInput.trim() === '') {
         setSearchResults([]);
+        setIsSearching(false);
         return;
+      }
+
+      if (searchInput.endsWith('.eth')) {
+        const addressFromENS = await publicClient.getEnsAddress({
+          name: normalize(searchInput),
+        });
+        if (addressFromENS) {
+          setSearchResults([
+            {
+              id: addressFromENS,
+              address: addressFromENS,
+              name: searchInput,
+            },
+          ]);
+          setIsSearching(false);
+          return;
+        }
       }
 
       // Query for usernames
@@ -93,13 +124,17 @@ const SelectContactScreen = () => {
       );
 
       setSearchResults(uniqueResults);
+      setIsSearching(false);
     };
 
     const timeoutId = setTimeout(() => {
       fetchUsers();
     }, 500);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+      setIsSearching(false);
+    };
   }, [searchInput]);
 
   const countryCodes = ['+52', '+1']; // Array of country codes
@@ -127,8 +162,6 @@ const SelectContactScreen = () => {
 
   const toggleBottomSheet = useToggleBottomSheet(addContactRef, isActionTrayOpened, close);
 
-  const { keyboardBottomSheetAdjustment } = useKeyboardBottomSheetAdjustment(addContactRef);
-
   const rContentStyle = useAnimatedStyle(() => {
     return {
       height: withSpring(SCREEN_HEIGHT > 700 ? 700 : SCREEN_HEIGHT - 80, {
@@ -136,27 +169,6 @@ const SelectContactScreen = () => {
       }),
     };
   }, []);
-
-  const renderHeader = () => (
-    <View>
-      <PageHeader pageTitle="Send Funds" />
-      <View style={{ flex: 1, justifyContent: 'space-between', gap: 24 }}>
-        <View style={{ gap: 8 }}>
-          <Text style={styles.title}>{i18n.t('sendSelectContactTitle')}</Text>
-          <Text style={{ color: COLORS.gray[400], fontFamily: 'Satoshi-Regular', fontSize: 17 }}>
-            Send funds to anyone in the world, instantly for free, even if they don&apos;t have an
-            account.
-          </Text>
-        </View>
-        <Input
-          placeholder="Username, ETH address, or ENS"
-          value={searchInput}
-          onChangeText={setSearchInput}
-          icon
-        />
-      </View>
-    </View>
-  );
 
   const renderFooter = () => (
     <View style={styles.buttonWrapper}>
@@ -209,21 +221,44 @@ const SelectContactScreen = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
+      <View style={{ flex: 1 }}>
+        <PageHeader pageTitle="Send Funds" />
+        <View style={{ flex: 1, justifyContent: 'space-between', gap: 24 }}>
+          <View style={{ gap: 8 }}>
+            <Text style={styles.title}>{i18n.t('sendSelectContactTitle')}</Text>
+            <Text style={{ color: COLORS.gray[400], fontFamily: 'Satoshi-Regular', fontSize: 17 }}>
+              Send funds to anyone in the world, instantly for free, even if they don&apos;t have an
+              account.
+            </Text>
+          </View>
+          <View style={{ position: 'relative', justifyContent: 'center' }}>
+            <Input
+              placeholder="Username, ETH address, or ENS"
+              value={searchInput}
+              onChangeText={setSearchInput}
+              icon
+            />
+            <ActivityIndicator
+              style={{
+                position: 'absolute',
+                right: 16,
+                opacity: isSearching ? 1 : 0,
+              }}
+              size="small"
+              color={COLORS.light}
+            />
+          </View>
+        </View>
+      </View>
       <FlashList
-        ListHeaderComponent={renderHeader}
-        ListHeaderComponentStyle={{ marginBottom: 24 }}
         ListFooterComponent={renderFooter}
         ListFooterComponentStyle={{ marginTop: 24 }}
         data={
           searchInput !== '' && searchResults
-            ? [
-                { id: 'resultsTitle', component: renderTitle('Other Woosh Users') },
-                ...searchResults,
-              ]
+            ? [{ id: 'resultsTitle', component: renderTitle('Search Results') }, ...searchResults]
             : data
         }
         keyExtractor={(item, index) => index.toString()}
-        keyboardShouldPersistTaps="handled"
         estimatedItemSize={100}
         renderItem={({ item, index }) => {
           if (isItemWithComponent(item)) {
@@ -252,7 +287,13 @@ const SelectContactScreen = () => {
                 <ContactListItem
                   name={item.name ? item.name : 'Unknown'}
                   phoneNumber={
-                    item.phoneNumber ? item.phoneNumber : item.username ? item.username : ''
+                    item.phoneNumber
+                      ? item.phoneNumber
+                      : item.username
+                        ? item.username
+                        : item.address
+                          ? item.address.slice(0, 4) + '...' + item.address.slice(-4)
+                          : ''
                   }
                 />
                 {index !== currentDataLength && (
