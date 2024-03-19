@@ -2,9 +2,9 @@ import { createContext, useState, useContext, ReactNode, Dispatch, SetStateActio
 
 import { Transaction } from '../models/Transaction';
 
-interface TransactionData extends Partial<Transaction> {
+export interface TransactionData extends Partial<Transaction> {
   recipientName?: string;
-  recipientInfo: string;
+  recipientInfo?: string;
   type: 'ethAddress' | 'depositVault';
   amount?: string;
   token?: string;

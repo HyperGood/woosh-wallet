@@ -1,31 +1,31 @@
 /**
  * useSignDeposit Hook
- * 
+ *
  * A custom hook used to handling all the deposit signing functionality in
  * the project. It includes methods for signing, fetching information,
  * and managing related states about the deposit.
- * 
+ *
  * @returns An object (hook) containing methods and states used for deposit signing.
- * 
+ *
  * How to use it:
  * - Import the hook.
  * - Call the hook to get access to the signDeposit method and related states.
  * - Use the signDeposit method to initiate the signing process.
  * - Check the isSigning state to determine if the signing is in progress.
  * - Check the signError state to get any errors that occur during signing if applicable.
- * 
+ *
  * @example
- * 
+ *
  * Methods/States declaration:
- * 
+ *
  * const { signDeposit, isSigning, signError } = useSignDeposit();
- * 
+ *
  * Methods/States usage:
- * 
+ *
  * signDeposit(); //To initiate the signing process
- * 
+ *
  * if (isSigning) { //To check if the signing is in progress
- *      // Content displayed while signing 
+ *      // Content displayed while signing
  * } else if (signError) {
  *      // Handle error/Content displayed if an error occurs
  * } else {
@@ -91,9 +91,8 @@ export const useSignDeposit = () => {
           const updatedData = {
             ...prevData,
             depositIndex: Number(depositIndex),
+            type: prevData?.type || 'depositVault',
           };
-          // Resolve the Promise with the updated data
-          resolve(updatedData);
           return updatedData;
         });
 
