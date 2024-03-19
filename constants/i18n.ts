@@ -57,6 +57,10 @@ const translations = {
     requestSuccessTitle1: 'Request for',
     requestSuccessTitle2: 'was sent to',
     copyLink: 'Copy Link',
+    cancel: 'Cancel',
+    sentTo: 'Sent to',
+    shareTransaction: 'Share Transaction',
+    viewOnBlockchain: 'View on the blockchain',
   },
   es: {
     loginTitle: 'La manera más fácil de recibir dinero de tus amigos',
@@ -114,6 +118,10 @@ const translations = {
     requestSuccessTitle1: 'Solicitud por',
     requestSuccessTitle2: 'fue enviada a',
     copyLink: 'Copiar Link',
+    cancel: 'Cancelar',
+    sentTo: 'Enviado a',
+    shareTransaction: 'Compartir Transacción',
+    viewOnBlockchain: 'Ver en la blockchain',
   },
 };
 
