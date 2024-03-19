@@ -2,9 +2,9 @@ import { Link, useFocusEffect } from 'expo-router';
 import { Skeleton } from 'moti/skeleton';
 import { useCallback, useRef, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchTransactionsByEthAddress } from '../api/firestoreService';
 import Balance from '../components/Balance';
@@ -15,18 +15,15 @@ import PreviousTransactions from '../components/transactions/UI/PreviousTransact
 import TransactionInformation from '../components/transactions/UI/TransactionInformation';
 import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
-import { useSmartAccount } from '../store/SmartAccountContext';
 import { Transaction } from '../models/Transaction';
-import { useAccount } from '../store/SmartAccountContext';
+import { useSmartAccount } from '../store/SmartAccountContext';
 import { scale } from '../utils/scalingFunctions';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const [transactions, setTransactions] = useState<any>();
   const { address } = useSmartAccount();
   const [transactions, setTransactions] = useState<Transaction[]>();
   const [transactionInfo, setTransactionInfo] = useState<Transaction>();
-  const { address } = useAccount();
   const transactionDetailsRefs = useRef<BottomSheetRefProps>(null);
   const isActionTrayOpened = useSharedValue(false);
 
@@ -56,40 +53,38 @@ const HomeScreen = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
-      <SafeAreaView style={{ flex: 1, width: '100%' }}>
-        <View style={styles.wrapper}>
-          <ScrollView
-            style={styles.container}
-            contentContainerStyle={{ paddingTop: insets.top }}
-            showsVerticalScrollIndicator={false}>
-            <Header />
-            <Balance />
-            <Skeleton show={!transactions} height={120} width="100%">
-              <View style={styles.buttonsContainer}>
-                <Link href="/request/enterAmount" asChild>
-                  <Button
-                    title={i18n.t('request')}
-                    icon="arrow-down-left"
-                    type="secondary"
-                    swapIcon
-                    onPress={() => {}}
-                  />
-                </Link>
-                <Link href="/send/selectContact" asChild>
-                  <Button title={i18n.t('send')} icon="send" type="primary" onPress={() => {}} />
-                </Link>
-              </View>
-            </Skeleton>
-            <Skeleton show={!transactions} height={600} width="100%">
-              <PreviousTransactions
-                transactions={transactions}
-                toggleActionTray={toggleActionTray}
-                setTransactionInfo={setTransactionInfo}
-              />
-            </Skeleton>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
+      <View style={styles.wrapper}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingTop: insets.top }}
+          showsVerticalScrollIndicator={false}>
+          <Header />
+          <Balance />
+          <Skeleton show={!transactions} height={120} width="100%">
+            <View style={styles.buttonsContainer}>
+              <Link href="/request/enterAmount" asChild>
+                <Button
+                  title={i18n.t('request')}
+                  icon="arrow-down-left"
+                  type="secondary"
+                  swapIcon
+                  onPress={() => {}}
+                />
+              </Link>
+              <Link href="/send/selectContact" asChild>
+                <Button title={i18n.t('send')} icon="send" type="primary" onPress={() => {}} />
+              </Link>
+            </View>
+          </Skeleton>
+          <Skeleton show={!transactions} height={600} width="100%">
+            <PreviousTransactions
+              transactions={transactions}
+              toggleActionTray={toggleActionTray}
+              setTransactionInfo={setTransactionInfo}
+            />
+          </Skeleton>
+        </ScrollView>
+      </View>
       <View style={styles.bottomSheetContainer}>
         <BottomSheet ref={transactionDetailsRefs} colorMode="light">
           <TransactionInformation transaction={transactionInfo} />
