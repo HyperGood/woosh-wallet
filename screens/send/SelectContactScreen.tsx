@@ -2,16 +2,7 @@ import firestore from '@react-native-firebase/firestore';
 import { FlashList } from '@shopify/flash-list';
 import { Link, router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Animated, {
@@ -29,6 +20,7 @@ import ContactSelector from '../../components/ContactSelector';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import PageHeader from '../../components/UI/PageHeader';
+import SearchInput from '../../components/UI/SearchInput';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
@@ -69,8 +61,27 @@ const SelectContactScreen = () => {
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState<Contact[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const countryCodes = ['+52', '+1'];
 
   useEffect(() => {
+    const fetchAddressFromENS = async (input: string) => {
+      const addressFromENS = await publicClient.getEnsAddress({
+        name: normalize(searchInput),
+      });
+      return addressFromENS
+        ? [{ id: addressFromENS, address: addressFromENS, name: searchInput }]
+        : [];
+    };
+
+    const fetchUsersByField = async (field: string) => {
+      const querySnapshot = await firestore()
+        .collection('users')
+        .where(field, '>=', searchInput)
+        .where(field, '<=', searchInput + '\uf8ff')
+        .get();
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    };
+
     const fetchUsers = async () => {
       setIsSearching(true);
       if (searchInput.trim() === '') {
@@ -79,51 +90,17 @@ const SelectContactScreen = () => {
         return;
       }
 
+      let results = [];
       if (searchInput.endsWith('.eth')) {
-        const addressFromENS = await publicClient.getEnsAddress({
-          name: normalize(searchInput),
-        });
-        if (addressFromENS) {
-          setSearchResults([
-            {
-              id: addressFromENS,
-              address: addressFromENS,
-              name: searchInput,
-            },
-          ]);
-          setIsSearching(false);
-          return;
-        }
+        results = await fetchAddressFromENS(searchInput);
+      } else {
+        const usernameResults = await fetchUsersByField('username');
+        const nameResults = await fetchUsersByField('name');
+        const combinedResults = [...usernameResults, ...nameResults];
+        results = Array.from(new Map(combinedResults.map((user) => [user.id, user])).values());
       }
 
-      // Query for usernames
-      const usernameQuerySnapshot = await firestore()
-        .collection('users')
-        .where('username', '>=', searchInput)
-        .where('username', '<=', searchInput + '\uf8ff')
-        .get();
-
-      // Query for names
-      const nameQuerySnapshot = await firestore()
-        .collection('users')
-        .where('name', '>=', searchInput)
-        .where('name', '<=', searchInput + '\uf8ff')
-        .get();
-
-      // Combine and map the results from both queries
-      const combinedResults = [...usernameQuerySnapshot.docs, ...nameQuerySnapshot.docs].map(
-        (doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })
-      );
-
-      // Remove duplicates (assuming 'id' is unique for each user)
-      const uniqueResults = Array.from(
-        new Map(combinedResults.map((user) => [user.id, user])).values()
-      );
-
-      setSearchResults(uniqueResults);
+      setSearchResults(results);
       setIsSearching(false);
     };
 
@@ -136,8 +113,6 @@ const SelectContactScreen = () => {
       setIsSearching(false);
     };
   }, [searchInput]);
-
-  const countryCodes = ['+52', '+1']; // Array of country codes
 
   const filteredContacts = phoneContacts?.filter((contact: any) =>
     contact.name.toLowerCase().includes(searchText.toLowerCase())
@@ -219,6 +194,19 @@ const SelectContactScreen = () => {
     return (item as ItemWithComponent).component !== undefined;
   }
 
+  function formatContactDisplay(item: Contact): string {
+    if (item.phoneNumber) {
+      return item.phoneNumber;
+    }
+    if (item.username) {
+      return item.username;
+    }
+    if (item.address) {
+      return `${item.address.slice(0, 4)}...${item.address.slice(-4)}`;
+    }
+    return '';
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
       <View style={{ flex: 1 }}>
@@ -231,23 +219,11 @@ const SelectContactScreen = () => {
               account.
             </Text>
           </View>
-          <View style={{ position: 'relative', justifyContent: 'center' }}>
-            <Input
-              placeholder="Username, ETH address, or ENS"
-              value={searchInput}
-              onChangeText={setSearchInput}
-              icon
-            />
-            <ActivityIndicator
-              style={{
-                position: 'absolute',
-                right: 16,
-                opacity: isSearching ? 1 : 0,
-              }}
-              size="small"
-              color={COLORS.light}
-            />
-          </View>
+          <SearchInput
+            searchInput={searchInput}
+            setSearchInput={setSearchInput}
+            isSearching={isSearching}
+          />
         </View>
       </View>
       <FlashList
@@ -264,49 +240,33 @@ const SelectContactScreen = () => {
           if (isItemWithComponent(item)) {
             return (
               <View
-                style={{
-                  paddingTop: index === 0 ? 24 : 16,
-                  paddingHorizontal: 8,
-                  backgroundColor: COLORS.gray[800],
-                  borderTopLeftRadius: index === 0 ? 24 : 0,
-                  borderTopRightRadius: index === 0 ? 24 : 0,
-                }}>
+                style={[
+                  styles.itemWrapper,
+                  {
+                    paddingTop: index === 0 ? 24 : 16,
+                    borderTopLeftRadius: index === 0 ? 24 : 0,
+                    borderTopRightRadius: index === 0 ? 24 : 0,
+                  },
+                ]}>
                 {item.component}
               </View>
             );
           } else {
             return (
               <View
-                style={{
-                  paddingHorizontal: 8,
-                  paddingBottom: index === currentDataLength ? 16 : 0,
-                  backgroundColor: COLORS.gray[800],
-                  borderBottomLeftRadius: index === currentDataLength ? 24 : 0,
-                  borderBottomRightRadius: index === currentDataLength ? 24 : 0,
-                }}>
+                style={[
+                  styles.itemWrapperNoTopPadding,
+                  {
+                    paddingBottom: index === currentDataLength ? 16 : 0,
+                    borderBottomLeftRadius: index === currentDataLength ? 24 : 0,
+                    borderBottomRightRadius: index === currentDataLength ? 24 : 0,
+                  },
+                ]}>
                 <ContactListItem
                   name={item.name ? item.name : 'Unknown'}
-                  phoneNumber={
-                    item.phoneNumber
-                      ? item.phoneNumber
-                      : item.username
-                        ? item.username
-                        : item.address
-                          ? item.address.slice(0, 4) + '...' + item.address.slice(-4)
-                          : ''
-                  }
+                  phoneNumber={formatContactDisplay(item)}
                 />
-                {index !== currentDataLength && (
-                  <View
-                    style={{
-                      height: 1,
-                      backgroundColor: COLORS.light,
-                      opacity: 0.05,
-                      width: '75%',
-                      alignSelf: 'center',
-                    }}
-                  />
-                )}
+                {index !== currentDataLength && <View style={styles.separator} />}
               </View>
             );
           }
@@ -417,5 +377,27 @@ const styles = StyleSheet.create({
     color: COLORS.light,
     marginTop: 16,
     marginBottom: 32,
+  },
+  // Added styles
+  itemWrapper: {
+    paddingTop: 24,
+    paddingHorizontal: 8,
+    backgroundColor: COLORS.gray[800],
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  itemWrapperNoTopPadding: {
+    paddingHorizontal: 8,
+    paddingBottom: 16,
+    backgroundColor: COLORS.gray[800],
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: COLORS.light,
+    opacity: 0.05,
+    width: '75%',
+    alignSelf: 'center',
   },
 });
