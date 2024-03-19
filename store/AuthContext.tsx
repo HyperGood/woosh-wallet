@@ -31,6 +31,7 @@ interface SessionProviderProps {
 function SessionProvider({ children }: SessionProviderProps) {
   const [authToken, setAuthToken] = useState<string | null>(null);
 
+  //this function generates a new private key and stores it in SecureStorage or retrieves an existing one
   async function authenticate(): Promise<string | boolean> {
     //check if there's an existing token in SecureStorage
     return new Promise((resolve, reject) => {

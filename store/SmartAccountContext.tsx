@@ -1,4 +1,4 @@
-import { ECDSAProvider } from '@zerodev/sdk';
+import { KernelSmartAccount, type KernelAccountClient } from '@zerodev/sdk';
 import {
   Dispatch,
   ReactNode,
@@ -10,18 +10,22 @@ import {
 } from 'react';
 
 interface SmartAccountContextType {
-  ecdsaProvider: ECDSAProvider | null;
-  setEcdsaProvider: Dispatch<SetStateAction<ECDSAProvider | null>>;
+  kernelClient: KernelAccountClient | null;
+  setKernelClient: Dispatch<SetStateAction<KernelAccountClient | null>>;
+  account: KernelSmartAccount | null;
+  setAccount: Dispatch<SetStateAction<KernelSmartAccount | null>>;
   address: `0x${string}` | null;
 }
 
 export const SmartAccountContext = createContext<SmartAccountContextType>({
-  ecdsaProvider: null,
-  setEcdsaProvider: () => {},
+  kernelClient: null,
+  setKernelClient: () => {},
+  account: null,
+  setAccount: () => {},
   address: null,
 });
 
-export function useAccount() {
+export function useSmartAccount() {
   const value = useContext(SmartAccountContext);
   return value;
 }
@@ -31,20 +35,23 @@ interface SmartAccountProviderProps {
 }
 
 function SmartAccountProvider({ children }: SmartAccountProviderProps) {
-  const [ecdsaProvider, setEcdsaProvider] = useState<ECDSAProvider | null>(null);
+  const [kernelClient, setKernelClient] = useState<KernelAccountClient | null>(null);
+  const [account, setAccount] = useState<KernelSmartAccount | null>(null);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
 
   useEffect(() => {
     (async () => {
-      if (!ecdsaProvider) return;
-      const address = await ecdsaProvider.getAddress();
-      setAddress(address);
+      if (!kernelClient) return;
+      const address = await kernelClient.account?.address;
+      setAddress(address || '0x no address found');
     })();
-  }, [ecdsaProvider]);
+  }, [kernelClient]);
 
   const value = {
-    ecdsaProvider,
-    setEcdsaProvider,
+    kernelClient,
+    setKernelClient,
+    account,
+    setAccount,
     address,
   };
 

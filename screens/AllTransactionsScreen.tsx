@@ -6,11 +6,11 @@ import { fetchTransactionsByEthAddress } from '../api/firestoreService';
 import TransactionCard from '../components/transactions/UI/CompactTransactionCard';
 import { COLORS } from '../constants/global-styles';
 import { Transaction } from '../models/Transaction';
-import { useAccount } from '../store/SmartAccountContext';
+import { useSmartAccount } from '../store/SmartAccountContext';
 
 const AllTransactionsScreen = () => {
   const [transactions, setTransactions] = useState<Partial<Transaction>[]>([]);
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
 
   useFocusEffect(
     useCallback(() => {
@@ -49,7 +49,7 @@ const AllTransactionsScreen = () => {
 
   return (
     <View style={styles.wrapper}>
-      <Link href="/(app)" asChild>
+      <Link href="/(tabs)/transactions" asChild>
         <Text style={{ color: COLORS.light, marginTop: 100, marginLeft: 20 }}>Go home</Text>
       </Link>
       <FlatList

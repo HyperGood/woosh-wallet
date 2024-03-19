@@ -9,13 +9,13 @@ import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import placeholderUser from '../../assets/images/profile.png';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import { useSession } from '../../store/AuthContext';
-import { useAccount } from '../../store/SmartAccountContext';
+import { useSmartAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
 import { scale } from '../../utils/scalingFunctions';
 
 const Header = () => {
   const { userData, isFetchingUserData } = useUserData();
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
   const { logout } = useSession();
   const [username, setUsername] = useState('');
 
@@ -28,13 +28,13 @@ const Header = () => {
   useEffect(() => {
     if (userData || address) {
       console.log('userData:', userData);
+      console.log('address:', address);
       const truncatedAddress = address?.slice(0, 4) + '...' + address?.slice(-4);
       setUsername(userData?.username || truncatedAddress);
     }
   }, [userData, address]);
 
-  const name = userData?.name;
-  const reference = storage().ref(`avatars/${name}.jpg`);
+  const reference = storage().ref(`avatars/${address}.jpg`);
   const [imageSrc, setImageSrc] = useState<any>(placeholderUser);
 
   useEffect(() => {
@@ -104,6 +104,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Satoshi-Bold',
     fontSize: 16,
     letterSpacing: -0.02,
-    color: COLORS.primary[400],
+    color: COLORS.dark,
   },
 });

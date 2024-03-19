@@ -38,8 +38,20 @@ const Button = forwardRef((props: ButtonProps, ref) => {
         type === 'secondary' && styles.secondaryButton,
         disabled && { backgroundColor: COLORS.gray[600] },
       ]}>
-      <Text style={styles.buttonText}>{title}</Text>
-      {icon && <Feather name={icon as any} size={20} color={COLORS.dark} />}
+      <Text
+        style={[
+          styles.buttonText,
+          type === 'primary' ? styles.primaryButtonText : styles.secondaryButtonText,
+        ]}>
+        {title}
+      </Text>
+      {icon && (
+        <Feather
+          name={icon as any}
+          size={20}
+          color={type === 'primary' ? COLORS.light : COLORS.dark}
+        />
+      )}
     </Pressable>
   );
 });
@@ -62,13 +74,18 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 24,
-    color: COLORS.dark,
-    fontFamily: 'Satoshi-Bold',
+    fontFamily: 'Satoshi-Medium',
     alignSelf: 'center',
     lineHeight: 24,
   },
+  primaryButtonText: {
+    color: COLORS.light,
+  },
+  secondaryButtonText: {
+    color: COLORS.dark,
+  },
   primaryButton: {
-    backgroundColor: COLORS.primary[400],
+    backgroundColor: COLORS.dark,
   },
   secondaryButton: {
     backgroundColor: COLORS.secondary[400],

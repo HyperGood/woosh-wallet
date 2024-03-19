@@ -1,23 +1,20 @@
 export const COLORS = {
   gray: {
-    200: '#EFF1F0',
-    400: '#D1D1D1',
+    400: '#EBEBEB',
     600: '#444447',
     800: '#2C2C2E',
   },
   primary: {
-    100: '#E5F7F1',
-    200: '#B4F9AE',
-    400: '#28EB17',
-    600: '#20BC12',
-    800: '#1C7D2F',
-    900: '#26362A',
+    200: '#DDF5E3',
+    400: '#1EE51E',
+    600: '#17CE4A',
   },
   secondary: {
-    400: '#68DBFF',
+    400: '#EBEBEB',
   },
-  dark: '#1C1C1E',
-  light: '#F8FAF9',
+  dark: '#0B100C',
+  light: '#F4F5F3',
+  white: '#FFFFFF',
 };
 
 export const SkeletonCommonProps = {

@@ -26,6 +26,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import ContactSelector from '../../components/ContactSelector';
 import Button from '../../components/UI/Button';
 import ContactForm from '../../components/UI/ContactForm';
 import Input from '../../components/UI/Input';
@@ -33,6 +34,8 @@ import BottomSheet, { BottomSheetRefProps } from '../../components/modals/Bottom
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
+import { useKeyboardBottomSheetAdjustment } from '../../hooks/BottomSheet/useKeyboardBottomSheetAdjustment';
+import { useToggleBottomSheet } from '../../hooks/BottomSheet/useToggleBottomSheet';
 import { usePhoneContacts } from '../../store/ContactsContext';
 import { useRequest } from '../../store/RequestContext';
 import { minMaxScale } from '../../utils/scalingFunctions';
@@ -99,7 +102,7 @@ const SelectContactScreen = () => {
 
   useEffect(() => {
     if (isNextClicked) {
-      router.push('/(app)/request/splits');
+      router.push('/request/splits');
       setIsNextClicked(false); // reset the flag
     }
   }, [requestData, isNextClicked]);
@@ -138,34 +141,9 @@ const SelectContactScreen = () => {
     }
   }, [name, phoneNumber]);
 
-  const toggleActionTray = useCallback(() => {
-    const isActive = addContactRef.current?.isActive() ?? false;
-    isActionTrayOpened.value = !isActive;
-    isActive ? close() : addContactRef.current?.open();
-  }, [close, isActionTrayOpened]);
+  const toggleBottomSheet = useToggleBottomSheet(addContactRef, isActionTrayOpened, close);
 
-  const handleOpenKeyboard = useCallback(() => {
-    //Check if the bottom sheet is open
-    const isActive = addContactRef.current?.isActive();
-    const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', (evt) => {
-      // Use a negative value to scroll up, positive to scroll down, 0 to scroll to default position
-      const MAX_VALUE = SCREEN_HEIGHT * 0.88;
-      const bottomSheetHeight = addContactRef.current?.getHeight()!;
-      const scrollValue = bottomSheetHeight === MAX_VALUE ? 0 : -(MAX_VALUE - bottomSheetHeight);
-
-      addContactRef.current?.scrollTo(scrollValue);
-    });
-    const keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', () => {
-      if (isActive) {
-        addContactRef.current?.scrollTo(0);
-      }
-    });
-    // Cleanup listeners on unmount
-    return () => {
-      keyboardWillShowListener.remove();
-      keyboardWillHideListener.remove();
-    };
-  }, []);
+  const { keyboardBottomSheetAdjustment } = useKeyboardBottomSheetAdjustment(addContactRef);
 
   const handleDeleteContact = useCallback((index: number) => {
     setContacts((prev) => {
@@ -202,7 +180,7 @@ const SelectContactScreen = () => {
           <View style={{ flex: 1, justifyContent: 'space-between', marginTop: 32 }}>
             <View>
               <Text style={styles.title}>{i18n.t('requestSelectContactTitle')}</Text>
-              <Pressable onPress={toggleActionTray} style={styles.addContactButton}>
+              <Pressable onPress={toggleBottomSheet} style={styles.addContactButton}>
                 <View
                   style={{
                     backgroundColor: COLORS.primary[400],
@@ -251,7 +229,7 @@ const SelectContactScreen = () => {
               <Button
                 title={i18n.t('next')}
                 icon="arrow-right"
-                type="primary"
+                type="secondary"
                 onPress={() => handleNext()}
                 disabled={!contacts || contacts.length === 0}
               />
@@ -274,7 +252,7 @@ const SelectContactScreen = () => {
                     setCountryCode={setCountryCode}
                     name={name}
                     setName={setName}
-                    handleOpenKeyboard={handleOpenKeyboard}
+                    handleOpenKeyboard={keyboardBottomSheetAdjustment}
                     selectContact={() => {
                       getPhoneContacts();
                       setStep(1);
@@ -331,48 +309,15 @@ const SelectContactScreen = () => {
                           />
                         )}
                         renderItem={({ item }) => (
-                          <Pressable
-                            onPress={() => {
-                              let selectedPhoneNumber = item.phoneNumbers[0].number;
-                              const selectedRecipient = item.name;
-
-                              // Remove spaces, dashes, and parentheses from the phone number
-                              selectedPhoneNumber = selectedPhoneNumber.replace(/[-\s()]/g, '');
-                              let phoneNumberWithoutCountryCode;
-
-                              let newCountryCode = '+52'; // Default country code
-                              if (selectedPhoneNumber.startsWith('+1')) {
-                                newCountryCode = '+1';
-                                phoneNumberWithoutCountryCode = selectedPhoneNumber.substring(
-                                  newCountryCode.length
-                                );
-                              } else if (selectedPhoneNumber.startsWith('+52')) {
-                                newCountryCode = '+52';
-                                phoneNumberWithoutCountryCode = selectedPhoneNumber.substring(
-                                  newCountryCode.length
-                                );
-                              } else {
-                                phoneNumberWithoutCountryCode = selectedPhoneNumber;
-                              }
-
-                              setCountryCode(newCountryCode);
-                              setPhoneNumber(phoneNumberWithoutCountryCode);
-                              setName(selectedRecipient);
-
-                              const selectedIndex = countryCodes.indexOf(newCountryCode);
-                              if (selectedIndex !== -1 && dropdownRef.current) {
-                                dropdownRef.current.select(selectedIndex);
-                              }
-                              setStep(0);
-                            }}
-                            style={styles.contact}>
-                            <View>
-                              <Text style={styles.contactName}>{item.name}</Text>
-                              <Text style={styles.contactNumber}>
-                                {item.phoneNumbers[0].number}
-                              </Text>
-                            </View>
-                          </Pressable>
+                          <ContactSelector
+                            item={item}
+                            setPhoneNumber={setPhoneNumber}
+                            setCountryCode={setCountryCode}
+                            setName={setName}
+                            setStep={setStep} // Only pass this prop where needed
+                            countryCodes={countryCodes}
+                            dropdownRef={dropdownRef}
+                          />
                         )}
                       />
                     </View>
@@ -440,24 +385,5 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingHorizontal: 10,
     marginHorizontal: 8,
-  },
-  contact: {
-    gap: 10,
-    paddingVertical: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 24,
-  },
-  contactName: {
-    color: COLORS.light,
-    fontSize: 16,
-    fontFamily: 'Satoshi-Bold',
-  },
-  contactNumber: {
-    color: COLORS.light,
-    fontSize: 14,
-    opacity: 0.4,
   },
 });

@@ -5,38 +5,39 @@ import { encodeFunctionData, isHex } from 'viem';
 
 import { chain } from '../../constants/viemPublicClient';
 import { depositVaultAbi, contractAddress, Addresses } from '../../references/depositVault-abi';
-import { useAccount } from '../../store/SmartAccountContext';
+import { useSmartAccount } from '../../store/SmartAccountContext';
 
 export const useWithdraw = () => {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [withdrawError, setWithdrawError] = useState<any>(null);
-  const { ecdsaProvider } = useAccount();
+  const { kernelClient, account } = useSmartAccount();
   const chainId = chain.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';
 
-  const withdraw = async (
-    depositIndex: number,
-    secret: `0x${string}`,
-    address: `0x${string}`
-  ): Promise<string | null> => {
+  const withdraw = async (depositIndex: number, secret: `0x${string}`, address: `0x${string}`) => {
     setIsWithdrawing(true);
-    let withdrawHash: string | null = null;
     try {
-      if (!ecdsaProvider) throw new Error('No ecdsaProvider');
+      if (!kernelClient) throw new Error('No ecdsaProvider');
+      if (!account) throw new Error('No Account');
       if (!isHex(secret)) throw new Error('Secret is not a hexadecimal string');
       console.log('Withdrawing');
-      const { hash, request } = await ecdsaProvider.sendUserOperation({
-        target: depositVaultAddress,
-        value: 0n,
-        data: encodeFunctionData({
-          abi: depositVaultAbi,
-          functionName: 'withdraw',
-          args: [BigInt(depositIndex), secret, address],
-        }),
+      const withdrawHash = await kernelClient.sendUserOperation({
+        userOperation: {
+          callData:
+            (await account?.encodeCallData({
+              to: depositVaultAddress,
+              value: BigInt(0),
+              data: encodeFunctionData({
+                abi: depositVaultAbi,
+                functionName: 'withdraw',
+                args: [BigInt(depositIndex), secret, address],
+              }),
+            })) ?? '0x',
+        },
+        account,
       });
-      console.log('Withdraw request: ', request);
-      withdrawHash = hash;
+      return withdrawHash;
     } catch (e) {
       setWithdrawError(e);
       Sentry.captureException(e);
@@ -44,7 +45,6 @@ export const useWithdraw = () => {
     } finally {
       setIsWithdrawing(false);
     }
-    return withdrawHash;
   };
 
   return { withdraw, isWithdrawing, withdrawError };

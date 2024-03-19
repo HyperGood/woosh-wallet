@@ -39,7 +39,7 @@ const ContactListItem: React.FC<ContactListItemProps> = ({
           source={require('../../assets/images/profile.png')}
           style={{ width: 32, height: 32, borderRadius: 100 }}
         />
-        <View>
+        <View style={{ width: '100%' }}>
           <Text style={styles.contactName}>{name}</Text>
           <Text style={styles.contactNumber}>{phoneNumber}</Text>
         </View>

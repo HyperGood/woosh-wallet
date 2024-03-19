@@ -26,6 +26,7 @@ const Input = ({
 }: InputProps) => {
   const [isActive, setIsActive] = useState(false);
   const inputStyle = [
+    icon ? { paddingLeft: 48 } : { paddingLeft: 16 },
     theme === 'light' ? styles.lightInput : styles.darkInput,
     isActive ? styles.active : {},
   ];
@@ -37,7 +38,7 @@ const Input = ({
         placeholder={placeholder}
         onChangeText={onChangeText}
         value={value}
-        placeholderTextColor={COLORS.gray[400]}
+        placeholderTextColor="#A9ABAC"
         onFocus={() => {
           setIsActive(true);
           handleOpenKeyboard && handleOpenKeyboard();
@@ -60,16 +61,16 @@ const styles = StyleSheet.create({
   lightInput: {
     backgroundColor: COLORS.light,
     borderRadius: 16,
-    fontSize: 18,
-    paddingHorizontal: 16,
+    fontSize: 17,
+    paddingRight: 16,
     paddingVertical: 24,
     color: COLORS.dark,
   },
   darkInput: {
     backgroundColor: COLORS.gray[600],
     borderRadius: 16,
-    fontSize: 18,
-    paddingHorizontal: 16,
+    fontSize: 17,
+    paddingRight: 16,
     paddingVertical: 24,
     color: COLORS.light,
     borderWidth: 2,
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: 'absolute',
-    right: 40,
+    left: 16,
     opacity: 0.6,
   },
   active: {

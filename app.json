@@ -65,7 +65,8 @@
         "NSFaceIDUsageDescription": "Allow Woosh to use Face ID to keep your account safe",
         "NSContactsUsageDescription": "Allow Woosh to access your contacts so you can send funds to anyone in your contacts list, even if they don't have an account."
       },
-      "runtimeVersion": "1.0.0"
+      "runtimeVersion": "1.0.0",
+      "associatedDomains": ["applinks:wooshapp.com"]
     },
     "android": {
       "adaptiveIcon": {
@@ -83,7 +84,20 @@
       "package": "com.hypergood.wooshmvp",
       "runtimeVersion": {
         "policy": "appVersion"
-      }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "wooshapp.com",
+              "pathPrefix": "/claim"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "extra": {
       "router": {

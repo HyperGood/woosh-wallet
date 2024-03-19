@@ -1,14 +1,14 @@
 import { SafeAreaView, StyleSheet } from 'react-native';
 
-import PageHeader from '../../../components/UI/PageHeader';
-import { COLORS } from '../../../constants/global-styles';
-import SelectContactScreen from '../../../screens/send/SelectContactScreen';
+import PageHeader from '../../../../components/UI/PageHeader';
+import { COLORS } from '../../../../constants/global-styles';
+import EnterAmountScreen from '../../../../screens/send/EnterAmountScreen';
 
 const enterAmount = () => {
   return (
     <SafeAreaView style={styles.wrapper}>
       <PageHeader pageTitle="Send Funds" />
-      <SelectContactScreen />
+      <EnterAmountScreen />
     </SafeAreaView>
   );
 };

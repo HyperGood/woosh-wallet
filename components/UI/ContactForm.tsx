@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   selectContactButtonText: {
-    color: COLORS.primary[600],
+    color: COLORS.gray[600],
     fontFamily: 'Satoshi-Bold',
     fontSize: 18,
   },

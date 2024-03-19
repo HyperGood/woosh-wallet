@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
-import { useAccount } from '../../../store/SmartAccountContext';
+import { useSmartAccount } from '../../../store/SmartAccountContext';
 
 interface TranscationCardProps {
   amount: number;
@@ -19,7 +19,7 @@ const TransactionCard: React.FC<TranscationCardProps> = ({
   sender,
   date,
 }) => {
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
 
   console.log(date.toLocaleDateString());
   const formattedTime = new Intl.DateTimeFormat('en-US', {
@@ -53,7 +53,7 @@ const TransactionCard: React.FC<TranscationCardProps> = ({
 export default TransactionCard;
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.gray[200],
+    backgroundColor: COLORS.gray[400],
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,

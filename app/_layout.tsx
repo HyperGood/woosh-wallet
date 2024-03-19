@@ -1,9 +1,8 @@
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
-import { Slot, useNavigationContainerRef } from 'expo-router';
+import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { StatusBar } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 
 import SessionProvider from '../store/AuthContext';
@@ -24,6 +23,7 @@ Sentry.init({
       routingInstrumentation,
     }),
   ],
+  enabled: !__DEV__,
 });
 
 function Layout() {
@@ -31,6 +31,7 @@ function Layout() {
   const [fontsLoaded, fontError] = useFonts({
     Satoshi: require('../assets/fonts/Satoshi-Regular.ttf'),
     'Satoshi-Bold': require('../assets/fonts/Satoshi-Bold.ttf'),
+    'Satoshi-Medium': require('../assets/fonts/Satoshi-Medium.ttf'),
     FHOscar: require('../assets/fonts/FHOscar-Medium.otf'),
   });
 
@@ -58,8 +59,10 @@ function Layout() {
     <SessionProvider>
       <SmartAccountProvider>
         <UserDataProvider>
-          <StatusBar barStyle="light-content" />
-          <Slot />
+          <Stack>
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
         </UserDataProvider>
       </SmartAccountProvider>
     </SessionProvider>

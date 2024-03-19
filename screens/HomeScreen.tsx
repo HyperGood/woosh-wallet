@@ -15,12 +15,15 @@ import PreviousTransactions from '../components/transactions/UI/PreviousTransact
 import TransactionInformation from '../components/transactions/UI/TransactionInformation';
 import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
+import { useSmartAccount } from '../store/SmartAccountContext';
 import { Transaction } from '../models/Transaction';
 import { useAccount } from '../store/SmartAccountContext';
 import { scale } from '../utils/scalingFunctions';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
+  const [transactions, setTransactions] = useState<any>();
+  const { address } = useSmartAccount();
   const [transactions, setTransactions] = useState<Transaction[]>();
   const [transactionInfo, setTransactionInfo] = useState<Transaction>();
   const { address } = useAccount();
@@ -63,7 +66,7 @@ const HomeScreen = () => {
             <Balance />
             <Skeleton show={!transactions} height={120} width="100%">
               <View style={styles.buttonsContainer}>
-                <Link href="/(app)/request/enterAmount" asChild>
+                <Link href="/request/enterAmount" asChild>
                   <Button
                     title={i18n.t('request')}
                     icon="arrow-down-left"
@@ -72,7 +75,7 @@ const HomeScreen = () => {
                     onPress={() => {}}
                   />
                 </Link>
-                <Link href="/(app)/send/selectContact" asChild>
+                <Link href="/send/selectContact" asChild>
                   <Button title={i18n.t('send')} icon="send" type="primary" onPress={() => {}} />
                 </Link>
               </View>
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: COLORS.dark,
+    backgroundColor: COLORS.primary[400],
   },
   buttonsContainer: {
     flexDirection: 'row',

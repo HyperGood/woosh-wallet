@@ -28,11 +28,15 @@ const EnterAmountScreen = () => {
         refetchBalance();
         const updatedTransactionData = await signDeposit();
         if (typeof updatedTransactionData === 'object' && updatedTransactionData !== null) {
-          setTransactionData({ ...updatedTransactionData, transactionHash: depositHash });
+          setTransactionData({
+            ...updatedTransactionData,
+            transactionHash: depositHash,
+            type: transactionData?.type,
+          });
         } else {
           console.log('Updated transaction is not an object: ', updatedTransactionData);
         }
-        router.push('/(app)/send/success');
+        router.push('/send/success');
       }
     })();
   }, [depositHash]);
@@ -41,7 +45,14 @@ const EnterAmountScreen = () => {
     setTransactionData(
       transactionData
         ? { ...transactionData, amount, description }
-        : { recipientName: '', token: 'USDc', amount, description }
+        : {
+            recipientName: '',
+            token: 'USDc',
+            amount,
+            description,
+            type: 'depositVault',
+            recipientInfo: '',
+          }
     );
   }, [amount]);
 
@@ -72,12 +83,16 @@ const EnterAmountScreen = () => {
               <View style={styles.buttonWrapper}>
                 <Button
                   title={i18n.t('send')}
-                  type="primary"
+                  type="secondary"
                   onPress={() => {
-                    deposit(amount);
+                    if (transactionData?.type === 'depositVault') {
+                      deposit(amount);
+                    } else {
+                      console.log('Send a normal usdc transaction');
+                    }
                     setDescription('');
                   }}
-                  disabled={amount === '0'}
+                  disabled={parseFloat(amount) <= 0}
                 />
               </View>
             </>

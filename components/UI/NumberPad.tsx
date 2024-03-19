@@ -27,15 +27,18 @@ const NumberPad = ({
   handleTabPress,
 }: NumberPadProps) => {
   const [amount, setAmount] = useState('0');
-  const [cents, setCents] = useState('00');
+  const [cents, setCents] = useState('');
 
   const [isDecimal, setIsDecimal] = useState(false);
   const currency = '🇺🇸 USD';
-  const { tokenBalance } = useUserBalance();
+  const { tokenBalances } = useUserBalance();
 
   const onNumberPress = (number: string) => {
     if (number === '.') {
       setIsDecimal(true);
+      if (amount === '0' && cents === '') {
+        onChange('0.');
+      }
     } else if (isDecimal) {
       setCents((prevCents) => {
         const newCents = prevCents === '00' && number !== '0' ? number : prevCents + number;
@@ -50,7 +53,10 @@ const NumberPad = ({
         if (type === 'request') {
           finalAmount = newAmount; // allow any number if type is "request"
         } else {
-          finalAmount = parseFloat(newAmount) <= tokenBalance ? newAmount : prevAmount;
+          finalAmount =
+            parseFloat(newAmount) <= tokenBalances.ausdc
+              ? newAmount
+              : prevAmount;
         }
         onChange(finalAmount); // call the passed callback function
         return finalAmount;
@@ -63,16 +69,16 @@ const NumberPad = ({
       setCents((prevCents) => {
         const newCents = prevCents.slice(0, -1);
         const finalAmount = amount + (newCents ? '.' + newCents : '');
-        onChange(finalAmount); // call the passed callback function
-        return newCents || '00';
+        onChange(finalAmount);
+        return newCents;
       });
-      if (cents === '0') {
+      if (cents === '') {
         setIsDecimal(false);
       }
     } else {
       setAmount((prevAmount) => {
         const newAmount = prevAmount.slice(0, -1) || '0';
-        onChange(newAmount); // call the passed callback function
+        onChange(newAmount);
         return newAmount;
       });
     }
@@ -85,11 +91,11 @@ const NumberPad = ({
   };
 
   const setAmountToMax = () => {
-    const [wholePart, decimalPart] = tokenBalance.toString().split('.');
+    const [wholePart, decimalPart] = tokenBalances.ausdc.toString().split('.');
     setAmount(wholePart);
     setCents(decimalPart || '00');
     setIsDecimal(!!decimalPart);
-    onChange(tokenBalance.toString());
+    onChange(tokenBalances.ausdc.toString());
   };
 
   return (
@@ -98,13 +104,14 @@ const NumberPad = ({
         {type === 'send' && (
           <Pressable onPress={setAmountToMax}>
             <Text style={styles.balance}>
-              {i18n.t('youHave')} ${tokenBalance}
+              {i18n.t('youHave')} ${tokenBalances.ausdc}
             </Text>
           </Pressable>
         )}
+
         <Text style={styles.amount}>
-          ${formatAmount(amount)}.
-          <Text style={styles.cents}>{cents.length < 2 ? cents.padEnd(2, '0') : cents}</Text>
+          ${formatAmount(amount)}
+          {isDecimal || cents ? <Text style={styles.cents}>.{cents}</Text> : null}
         </Text>
 
         <View style={styles.currencyWrapper}>
@@ -176,7 +183,7 @@ const styles = StyleSheet.create({
     color: COLORS.light,
   },
   currencyWrapper: {
-    backgroundColor: COLORS.gray[200],
+    backgroundColor: COLORS.gray[400],
     borderRadius: 8,
     paddingHorizontal: 4,
   },

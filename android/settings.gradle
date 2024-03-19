@@ -1,4 +1,4 @@
-rootProject.name = 'Woosh MVP'
+rootProject.name = 'Woosh'
 
 dependencyResolutionManagement {
   versionCatalogs {
