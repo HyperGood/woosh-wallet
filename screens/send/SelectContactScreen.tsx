@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
 import { FlashList } from '@shopify/flash-list';
-import { Link, router } from 'expo-router';
+import * as Contacts from 'expo-contacts';
+import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import ModalDropdown from 'react-native-modal-dropdown';
 import Animated, {
   Easing,
   FadeOut,
@@ -16,8 +16,6 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { normalize } from 'viem/ens';
 
-import ContactSelector from '../../components/ContactSelector';
-import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import PageHeader from '../../components/UI/PageHeader';
 import SearchInput from '../../components/UI/SearchInput';
@@ -38,7 +36,7 @@ type Contact = {
   name?: string;
   username?: string;
   phoneNumber?: string;
-  address?: string;
+  ethAddress?: string;
 };
 
 type ItemWithComponent = {
@@ -53,15 +51,11 @@ const SelectContactScreen = () => {
   const addContactRef = useRef<BottomSheetRefProps>(null);
   const { setTransactionData } = useTransaction();
   const { phoneContacts, getPhoneContacts } = usePhoneContacts();
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [countryCode, setCountryCode] = useState('+52'); // default to US
-  const [recipient, setRecipient] = useState('');
   const [searchText, setSearchText] = useState('');
   const isActionTrayOpened = useSharedValue(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState<Contact[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const countryCodes = ['+52', '+1'];
 
   useEffect(() => {
     const fetchAddressFromENS = async (input: string) => {
@@ -69,7 +63,7 @@ const SelectContactScreen = () => {
         name: normalize(searchInput),
       });
       return addressFromENS
-        ? [{ id: addressFromENS, address: addressFromENS, name: searchInput }]
+        ? [{ id: addressFromENS, ethAddress: addressFromENS, name: searchInput }]
         : [];
     };
 
@@ -93,6 +87,8 @@ const SelectContactScreen = () => {
       let results = [];
       if (searchInput.endsWith('.eth')) {
         results = await fetchAddressFromENS(searchInput);
+      } else if (searchInput.startsWith('0x') && searchInput.length === 42) {
+        results = [{ id: searchInput, ethAddress: searchInput }];
       } else {
         const usernameResults = await fetchUsersByField('username');
         const nameResults = await fetchUsersByField('name');
@@ -118,24 +114,16 @@ const SelectContactScreen = () => {
     contact.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const handleNext = (phoneNumber: string, recipient: string, countryCode: string) => {
-    setTransactionData({
-      recipientPhone: (countryCode + phoneNumber).replace(/[\s()-]/g, ''),
-      recipientName: recipient,
-      amount: '0',
-      token: 'USDc',
-    });
-    router.push('/send/enterAmount');
-  };
-
-  const dropdownRef = useRef<ModalDropdown | null>(null);
-
-  const close = useCallback(() => {
+  const closeBottomSheet = useCallback(() => {
     addContactRef.current?.close();
     isActionTrayOpened.value = false;
   }, []);
 
-  const toggleBottomSheet = useToggleBottomSheet(addContactRef, isActionTrayOpened, close);
+  const toggleBottomSheet = useToggleBottomSheet(
+    addContactRef,
+    isActionTrayOpened,
+    closeBottomSheet
+  );
 
   const rContentStyle = useAnimatedStyle(() => {
     return {
@@ -144,18 +132,6 @@ const SelectContactScreen = () => {
       }),
     };
   }, []);
-
-  const renderFooter = () => (
-    <View style={styles.buttonWrapper}>
-      <Link href="/send/enterAmount" asChild>
-        <Button
-          title={i18n.t('next')}
-          type="secondary"
-          onPress={() => handleNext(phoneNumber, recipient, countryCode)}
-        />
-      </Link>
-    </View>
-  );
 
   const renderTitle = (title: string) => (
     <Text style={{ fontSize: 14, fontFamily: 'Satoshi-Bold', color: COLORS.light, opacity: 0.6 }}>
@@ -201,17 +177,44 @@ const SelectContactScreen = () => {
     if (item.username) {
       return item.username;
     }
-    if (item.address) {
-      return `${item.address.slice(0, 4)}...${item.address.slice(-4)}`;
+    if (item.name && item.ethAddress) {
+      return `${item.ethAddress.slice(0, 4)}...${item.ethAddress.slice(-4)}`;
     }
-    return '';
+    return item.ethAddress ? item.ethAddress : '';
   }
+
+  function isExpoContact(item: Contact | Contacts.Contact): item is Contacts.Contact {
+    return 'phoneNumbers' in item;
+  }
+
+  const handleItemPress = (item: Contact | Contacts.Contact) => {
+    if ('ethAddress' in item) {
+      setTransactionData({
+        recipientName: item.name || '',
+        recipientInfo: item.ethAddress || '',
+        type: 'ethAddress',
+      });
+    } else {
+      let phoneNumber = '';
+      if (isExpoContact(item)) {
+        phoneNumber = item.phoneNumbers?.[0]?.number || '';
+      } else {
+        phoneNumber = item.phoneNumber || '';
+      }
+      setTransactionData({
+        recipientName: item.name || '',
+        recipientInfo: phoneNumber,
+        type: 'depositVault',
+      });
+    }
+    router.push('/(tabs)/(home)/send/enterAmount');
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
-      <View style={{ flex: 1 }}>
+      <View style={{ paddingTop: insets.top, flex: 1, paddingHorizontal: minMaxScale(12, 16) }}>
         <PageHeader pageTitle="Send Funds" />
-        <View style={{ flex: 1, justifyContent: 'space-between', gap: 24 }}>
+        <View style={{ gap: 24 }}>
           <View style={{ gap: 8 }}>
             <Text style={styles.title}>{i18n.t('sendSelectContactTitle')}</Text>
             <Text style={{ color: COLORS.gray[400], fontFamily: 'Satoshi-Regular', fontSize: 17 }}>
@@ -227,15 +230,13 @@ const SelectContactScreen = () => {
         </View>
       </View>
       <FlashList
-        ListFooterComponent={renderFooter}
-        ListFooterComponentStyle={{ marginTop: 24 }}
         data={
           searchInput !== '' && searchResults
             ? [{ id: 'resultsTitle', component: renderTitle('Search Results') }, ...searchResults]
             : data
         }
         keyExtractor={(item, index) => index.toString()}
-        estimatedItemSize={100}
+        estimatedItemSize={20}
         renderItem={({ item, index }) => {
           if (isItemWithComponent(item)) {
             return (
@@ -253,7 +254,7 @@ const SelectContactScreen = () => {
             );
           } else {
             return (
-              <View
+              <Pressable
                 style={[
                   styles.itemWrapperNoTopPadding,
                   {
@@ -261,19 +262,18 @@ const SelectContactScreen = () => {
                     borderBottomLeftRadius: index === currentDataLength ? 24 : 0,
                     borderBottomRightRadius: index === currentDataLength ? 24 : 0,
                   },
-                ]}>
+                ]}
+                onPress={() => handleItemPress(item)}>
                 <ContactListItem
-                  name={item.name ? item.name : 'Unknown'}
+                  name={item.name ? item.name : 'No name'}
                   phoneNumber={formatContactDisplay(item)}
                 />
                 {index !== currentDataLength && <View style={styles.separator} />}
-              </View>
+              </Pressable>
             );
           }
         }}
         contentContainerStyle={{
-          paddingTop: insets.top,
-          paddingBottom: 24,
           paddingHorizontal: minMaxScale(12, 16),
         }}
       />
@@ -293,33 +293,20 @@ const SelectContactScreen = () => {
                   value={searchText}
                   icon
                 />
-                <FlatList
+                <FlashList
                   data={filteredContacts}
-                  style={styles.container}
-                  keyExtractor={(item) => item.id}
-                  contentContainerStyle={{ paddingBottom: 40 }}
+                  keyExtractor={(item, index) => (item.id ? item.id : index.toString())}
+                  contentContainerStyle={styles.phoneContactsContainer}
+                  estimatedItemSize={100}
                   ListEmptyComponent={<Text>No contacts found on your phone</Text>}
-                  ItemSeparatorComponent={() => (
-                    <View
-                      style={{
-                        height: 1,
-                        backgroundColor: COLORS.light,
-                        opacity: 0.05,
-                        width: '75%',
-                        alignSelf: 'center',
-                      }}
-                    />
-                  )}
+                  ItemSeparatorComponent={() => <View style={styles.separator} />}
                   renderItem={({ item }) => (
-                    <ContactSelector
-                      item={item}
-                      setPhoneNumber={setPhoneNumber}
-                      setCountryCode={setCountryCode}
-                      setName={setRecipient}
-                      countryCodes={countryCodes}
-                      dropdownRef={dropdownRef}
-                      close={close}
-                    />
+                    <Pressable onPress={() => handleItemPress(item)}>
+                      <ContactListItem
+                        name={item.name}
+                        phoneNumber={item.phoneNumbers![0].number || ''}
+                      />
+                    </Pressable>
                   )}
                 />
               </View>
@@ -337,28 +324,23 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   selectContactButton: {
-    backgroundColor: COLORS.light,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 24,
+    backgroundColor: '#535355',
+    padding: 16,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
   selectContactButtonText: {
-    color: COLORS.gray[600],
+    color: COLORS.light,
     fontFamily: 'Satoshi-Bold',
-    fontSize: 18,
+    fontSize: 20,
   },
-  container: {
+  phoneContactsContainer: {
     backgroundColor: COLORS.gray[600],
-    flex: 1,
-    height: '100%',
-    marginTop: 16,
-    borderRadius: 16,
     paddingTop: 16,
     paddingHorizontal: 10,
-    marginHorizontal: 8,
+    paddingBottom: 40,
   },
   title: {
     fontSize: minMaxScale(40, 48),
@@ -378,7 +360,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 32,
   },
-  // Added styles
   itemWrapper: {
     paddingTop: 24,
     paddingHorizontal: 8,

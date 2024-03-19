@@ -4,7 +4,8 @@ import { Transaction } from '../models/Transaction';
 
 interface TransactionData extends Partial<Transaction> {
   recipientName?: string;
-  recipientPhone?: string;
+  recipientInfo: string;
+  type: 'ethAddress' | 'depositVault';
   amount?: string;
   token?: string;
   depositIndex?: number;
