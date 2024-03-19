@@ -1,7 +1,7 @@
 import { Link, useFocusEffect } from 'expo-router';
 import { Skeleton } from 'moti/skeleton';
 import { useCallback, useRef, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +15,7 @@ import PreviousTransactions from '../components/transactions/UI/PreviousTransact
 import TransactionInformation from '../components/transactions/UI/TransactionInformation';
 import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
+import { useToggleBottomSheet } from '../hooks/BottomSheet/useToggleBottomSheet';
 import { Transaction } from '../models/Transaction';
 import { useSmartAccount } from '../store/SmartAccountContext';
 import { scale } from '../utils/scalingFunctions';
@@ -32,11 +33,7 @@ const HomeScreen = () => {
     isActionTrayOpened.value = false;
   }, []);
 
-  const toggleActionTray = useCallback(() => {
-    const isActive = transactionDetailsRefs.current?.isActive() ?? false;
-    isActionTrayOpened.value = !isActive;
-    isActive ? close() : transactionDetailsRefs.current?.open();
-  }, [close, isActionTrayOpened]);
+  const toggleBottomSheet = useToggleBottomSheet(transactionDetailsRefs, isActionTrayOpened, close);
 
   useFocusEffect(
     useCallback(() => {
@@ -79,7 +76,7 @@ const HomeScreen = () => {
           <Skeleton show={!transactions} height={600} width="100%">
             <PreviousTransactions
               transactions={transactions}
-              toggleActionTray={toggleActionTray}
+              toggleActionTray={toggleBottomSheet}
               setTransactionInfo={setTransactionInfo}
             />
           </Skeleton>

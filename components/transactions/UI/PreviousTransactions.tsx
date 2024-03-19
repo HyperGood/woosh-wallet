@@ -1,5 +1,3 @@
-import { Feather } from '@expo/vector-icons';
-import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import TransactionCardHome from './HomeTransactionCard';
@@ -8,13 +6,16 @@ import i18n from '../../../constants/i18n';
 import { Transaction } from '../../../models/Transaction';
 
 interface PreviousTransactionsProps {
-  transactions: Transaction[] | undefined,
-  toggleActionTray: () => void,
-  setTransactionInfo: React.Dispatch<React.SetStateAction<Transaction | undefined>>
+  transactions: Transaction[] | undefined;
+  toggleActionTray: () => void;
+  setTransactionInfo: React.Dispatch<React.SetStateAction<Transaction | undefined>>;
 }
 
-const PreviousTransactions = ({ transactions, toggleActionTray, setTransactionInfo }: PreviousTransactionsProps) => {
-
+const PreviousTransactions = ({
+  transactions,
+  toggleActionTray,
+  setTransactionInfo,
+}: PreviousTransactionsProps) => {
   if (!transactions || transactions.length === 0) {
     return (
       <View style={styles.emptyStateContainer}>
@@ -25,7 +26,7 @@ const PreviousTransactions = ({ transactions, toggleActionTray, setTransactionIn
   const slicedTransactions = transactions.slice(0, 4);
   const leftTransactions = slicedTransactions.filter((_: any, index: number) => index % 2 === 0);
   const rightTransactions = slicedTransactions.filter((_: any, index: number) => index % 2 !== 0);
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
@@ -76,12 +77,6 @@ const PreviousTransactions = ({ transactions, toggleActionTray, setTransactionIn
           ))}
         </View>
       </View>
-      <Link href="/(app)/transactions" asChild>
-        <Pressable style={styles.viewAllButton}>
-          <Text style={styles.viewAllText}>{i18n.t('viewAllTransactions')}</Text>
-          <Feather name="arrow-up-right" size={16} color={COLORS.dark} />
-        </Pressable>
-      </Link>
     </View>
   );
 };
@@ -92,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.light,
     borderRadius: 16,
-    paddingTop: 40,
+    padding: 40,
   },
   emptyStateText: {
     fontSize: 24,
@@ -100,17 +95,18 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
     textAlign: 'center',
   },
-
   container: {
     backgroundColor: COLORS.light,
     width: '100%',
     flex: 1,
     borderRadius: 36,
-    paddingVertical: 40,
+    paddingTop: 40,
+    paddingHorizontal: 10,
+    paddingBottom: 120,
   },
   titleWrapper: {
-    marginHorizontal: 20,
-    marginBottom: 32,
+    marginHorizontal: 10,
+    marginBottom: 24,
   },
   title: {
     fontSize: 40,
@@ -118,47 +114,23 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
   },
   cards: {
-    paddingHorizontal: 10,
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    gap: 16,
   },
   cardsLeft: {
     gap: 32,
-    width: '50%',
-    marginTop: 16,
+    width: '48%',
+    marginTop: 20,
   },
   cardsRight: {
     gap: 32,
-    width: '50%',
+    width: '48%',
   },
   rotateLeft: {
-    transform: [{ rotate: '-1deg' }],
+    transform: [{ rotate: '-1.5deg' }],
   },
   rotateRight: {
-    transform: [{ rotate: '1deg' }],
-  },
-  viewAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 32,
-    opacity: 0.6,
-    gap: 4,
-  },
-  viewAllText: {
-    fontFamily: 'Satoshi',
-    textDecorationLine: 'underline',
-    fontSize: 16,
-    color: COLORS.dark,
-  },
-  // Nuevos
-  bottomSheetContainer: {
-    position: 'absolute',
-    width: "100%",
-    left: 0,
-    bottom: 0,
-    zIndex: 9999,
+    transform: [{ rotate: '1.5deg' }],
   },
 });

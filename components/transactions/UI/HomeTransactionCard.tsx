@@ -1,7 +1,6 @@
-import { Skeleton } from 'moti/skeleton';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
+import { COLORS } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
 import { useSmartAccount } from '../../../store/SmartAccountContext';
 
@@ -35,33 +34,31 @@ const HomeTransactionCard: React.FC<TranscationCardProps> = ({
   }).format(date);
 
   return (
-    <Skeleton height={200} width={200} {...SkeletonCommonProps}>
-      <View style={styles.container}>
-        <Text style={[styles.amount, sender !== address && styles.positive]}>
-          {sender !== address ? '+' : '-'}$
-          {Number(amount).toLocaleString('us', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 5,
-          })}
-        </Text>
-        {recipientImage && <Image source={recipientImage} style={styles.userImage} />}
-        <Text style={styles.recipientName}>
-          {sender !== address
-            ? `${i18n.t('from')}: ${senderName}`
-            : `${i18n.t('to')}: ${recipientName}`}
-        </Text>
-        <Text style={styles.description}>{description}</Text>
-        <View>
-          <Text style={styles.date}>{date.toDateString()}</Text>
-          <Text style={styles.date}>{formattedTime}</Text>
-        </View>
-        {sender === address && (
-          <Text style={[styles.claimedText, claimedTextStyles]}>
-            {claimed ? i18n.t('claimed') : i18n.t('unclaimed')}
-          </Text>
-        )}
+    <View style={styles.container}>
+      <Text style={[styles.amount, sender !== address && styles.positive]}>
+        {sender !== address ? '+' : '-'}$
+        {Number(amount).toLocaleString('us', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 5,
+        })}
+      </Text>
+      {recipientImage && <Image source={recipientImage} style={styles.userImage} />}
+      <Text style={styles.recipientName}>
+        {sender !== address
+          ? `${i18n.t('from')}: ${senderName}`
+          : `${i18n.t('to')}: ${recipientName}`}
+      </Text>
+      <Text style={styles.description}>{description}</Text>
+      <View>
+        <Text style={styles.date}>{date.toDateString()}</Text>
+        <Text style={styles.date}>{formattedTime}</Text>
       </View>
-    </Skeleton>
+      {sender === address && (
+        <Text style={[styles.claimedText, claimedTextStyles]}>
+          {claimed ? i18n.t('claimed') : i18n.t('unclaimed')}
+        </Text>
+      )}
+    </View>
   );
 };
 export default HomeTransactionCard;
@@ -71,7 +68,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: COLORS.gray[400],
     paddingVertical: 20,
-    width: '100%',
   },
   amount: {
     fontFamily: 'Satoshi-Bold',
