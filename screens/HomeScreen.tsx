@@ -85,13 +85,13 @@ const HomeScreen = () => {
               />
             </Skeleton>
           </ScrollView>
-          <View style={styles.bottomSheetContainer}>
-            <BottomSheet ref={transactionDetailsRefs} colorMode="light">
-              <TransactionInformation transaction={transactionInfo} />
-            </BottomSheet>
-          </View>
         </View>
       </SafeAreaView>
+      <View style={styles.bottomSheetContainer}>
+        <BottomSheet ref={transactionDetailsRefs} colorMode="light">
+          <TransactionInformation transaction={transactionInfo} />
+        </BottomSheet>
+      </View>
     </GestureHandlerRootView>
   );
 };
@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
   bottomSheetContainer: {
     position: 'absolute',
     width: '100%',
-    left: -10,
     bottom: 0,
     zIndex: 9999,
   },
