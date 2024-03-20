@@ -39,6 +39,8 @@ import { useToggleBottomSheet } from '../../hooks/BottomSheet/useToggleBottomShe
 import { usePhoneContacts } from '../../store/ContactsContext';
 import { useRequest } from '../../store/RequestContext';
 import { minMaxScale } from '../../utils/scalingFunctions';
+import { FlashList } from '@shopify/flash-list';
+import PhoneContactsList from '../../components/modals/BottomSheetContent/PhoneContactsList';
 
 type Contact = {
   name: string;
@@ -271,59 +273,12 @@ const SelectContactScreen = () => {
               </Animated.View>
             )}
             {step === 1 && (
-              <Animated.View
-                layout={Layout.easing(Easing.linear).duration(250)}
-                entering={FadeIn.delay(0)}
-                exiting={FadeOut.delay(100)}
-                style={{ flex: 1, backgroundColor: COLORS.gray[800] }}>
-                <>
-                  <Pressable
-                    style={{ marginLeft: 16, position: 'absolute', padding: 8 }}
-                    onPress={() => setStep(0)}>
-                    <Feather name="arrow-left" size={24} color={COLORS.light} />
-                  </Pressable>
-                  <Text style={styles.modalText}>{i18n.t('addContact')}</Text>
-                  <View style={{ gap: 24, paddingHorizontal: 16, flex: 1 }}>
-                    <View style={{ flex: 1 }}>
-                      <Input
-                        placeholder={i18n.t('searchContacts')}
-                        onChangeText={setSearchText}
-                        value={searchText}
-                        icon
-                      />
-                      <FlatList
-                        data={filteredContacts}
-                        style={styles.container}
-                        keyExtractor={(item) => item.id}
-                        contentContainerStyle={{ paddingBottom: 40 }}
-                        ListEmptyComponent={<Text>No contacts found on your phone</Text>}
-                        ItemSeparatorComponent={() => (
-                          <View
-                            style={{
-                              height: 1,
-                              backgroundColor: COLORS.light,
-                              opacity: 0.05,
-                              width: '75%',
-                              alignSelf: 'center',
-                            }}
-                          />
-                        )}
-                        renderItem={({ item }) => (
-                          <ContactSelector
-                            item={item}
-                            setPhoneNumber={setPhoneNumber}
-                            setCountryCode={setCountryCode}
-                            setName={setName}
-                            setStep={setStep} // Only pass this prop where needed
-                            countryCodes={countryCodes}
-                            dropdownRef={dropdownRef}
-                          />
-                        )}
-                      />
-                    </View>
-                  </View>
-                </>
-              </Animated.View>
+              <PhoneContactsList
+                filteredContacts={filteredContacts}
+                setSearchText={setSearchText}
+                searchText={searchText}
+                handleItemPress={handleItemPress}
+              />
             )}
           </Animated.View>
         </BottomSheet>

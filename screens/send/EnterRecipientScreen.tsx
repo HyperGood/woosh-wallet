@@ -1,33 +1,25 @@
-import firestore from '@react-native-firebase/firestore';
 import { FlashList } from '@shopify/flash-list';
 import * as Contacts from 'expo-contacts';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, {
-  Easing,
-  FadeOut,
-  Layout,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { normalize } from 'viem/ens';
 
-import Input from '../../components/UI/Input';
 import PageHeader from '../../components/UI/PageHeader';
 import SearchInput from '../../components/UI/SearchInput';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import publicClient from '../../constants/viemPublicClient';
 import { useToggleBottomSheet } from '../../hooks/BottomSheet/useToggleBottomSheet';
 import { usePhoneContacts } from '../../store/ContactsContext';
 import { useTransaction } from '../../store/TransactionContext';
 import { minMaxScale } from '../../utils/scalingFunctions';
+import { fetchAddressFromENS } from '../../utils/ethereumUtils';
+import { fetchUsersByField } from '../../api/firestoreService';
+import PhoneContactsList from '../../components/modals/BottomSheetContent/PhoneContactsList';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -46,7 +38,7 @@ type ItemWithComponent = {
 
 type Item = Contact | ItemWithComponent;
 
-const SelectContactScreen = () => {
+const EnterRecipientScreen = () => {
   const insets = useSafeAreaInsets();
   const addContactRef = useRef<BottomSheetRefProps>(null);
   const { setTransactionData } = useTransaction();
@@ -58,24 +50,6 @@ const SelectContactScreen = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    const fetchAddressFromENS = async (input: string) => {
-      const addressFromENS = await publicClient.getEnsAddress({
-        name: normalize(searchInput),
-      });
-      return addressFromENS
-        ? [{ id: addressFromENS, ethAddress: addressFromENS, name: searchInput }]
-        : [];
-    };
-
-    const fetchUsersByField = async (field: string) => {
-      const querySnapshot = await firestore()
-        .collection('users')
-        .where(field, '>=', searchInput)
-        .where(field, '<=', searchInput + '\uf8ff')
-        .get();
-      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    };
-
     const fetchUsers = async () => {
       setIsSearching(true);
       if (searchInput.trim() === '') {
@@ -90,8 +64,8 @@ const SelectContactScreen = () => {
       } else if (searchInput.startsWith('0x') && searchInput.length === 42) {
         results = [{ id: searchInput, ethAddress: searchInput }];
       } else {
-        const usernameResults = await fetchUsersByField('username');
-        const nameResults = await fetchUsersByField('name');
+        const usernameResults = await fetchUsersByField('username', searchInput);
+        const nameResults = await fetchUsersByField('name', searchInput);
         const combinedResults = [...usernameResults, ...nameResults];
         results = Array.from(new Map(combinedResults.map((user) => [user.id, user])).values());
       }
@@ -157,10 +131,6 @@ const SelectContactScreen = () => {
         </Pressable>
       ),
     },
-    { id: 'recentTitle', component: renderTitle('Recents') },
-    { id: '123456789', name: 'Alice', phoneNumber: '+123456789' },
-    { id: '987654321', name: 'Bob', phoneNumber: '+987654321' },
-    { id: '192837465', name: 'Charlie', phoneNumber: '+192837465' },
   ];
 
   const currentDataLength =
@@ -212,7 +182,12 @@ const SelectContactScreen = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
-      <View style={{ paddingTop: insets.top, flex: 1, paddingHorizontal: minMaxScale(12, 16) }}>
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingBottom: 16,
+          paddingHorizontal: minMaxScale(12, 16),
+        }}>
         <PageHeader pageTitle="Send Funds" />
         <View style={{ gap: 24 }}>
           <View style={{ gap: 8 }}>
@@ -247,6 +222,9 @@ const SelectContactScreen = () => {
                     paddingTop: index === 0 ? 24 : 16,
                     borderTopLeftRadius: index === 0 ? 24 : 0,
                     borderTopRightRadius: index === 0 ? 24 : 0,
+                    paddingBottom: index === currentDataLength - 1 ? 24 : 0,
+                    borderBottomLeftRadius: index === currentDataLength - 1 ? 24 : 0,
+                    borderBottomRightRadius: index === currentDataLength - 1 ? 24 : 0,
                   },
                 ]}>
                 {item.component}
@@ -280,44 +258,18 @@ const SelectContactScreen = () => {
 
       <BottomSheet ref={addContactRef}>
         <Animated.View style={rContentStyle}>
-          <Animated.View
-            layout={Layout.easing(Easing.linear).duration(250)}
-            exiting={FadeOut.delay(100)}
-            style={{ flex: 1, backgroundColor: COLORS.gray[800] }}>
-            <Text style={styles.modalText}>{i18n.t('addContact')}</Text>
-            <View style={{ gap: 24, paddingHorizontal: 16, flex: 1 }}>
-              <View style={{ flex: 1 }}>
-                <Input
-                  placeholder={i18n.t('searchContacts')}
-                  onChangeText={setSearchText}
-                  value={searchText}
-                  icon
-                />
-                <FlashList
-                  data={filteredContacts}
-                  keyExtractor={(item, index) => (item.id ? item.id : index.toString())}
-                  contentContainerStyle={styles.phoneContactsContainer}
-                  estimatedItemSize={100}
-                  ListEmptyComponent={<Text>No contacts found on your phone</Text>}
-                  ItemSeparatorComponent={() => <View style={styles.separator} />}
-                  renderItem={({ item }) => (
-                    <Pressable onPress={() => handleItemPress(item)}>
-                      <ContactListItem
-                        name={item.name}
-                        phoneNumber={item.phoneNumbers![0].number || ''}
-                      />
-                    </Pressable>
-                  )}
-                />
-              </View>
-            </View>
-          </Animated.View>
+          <PhoneContactsList
+            filteredContacts={filteredContacts}
+            setSearchText={setSearchText}
+            searchText={searchText}
+            handleItemPress={handleItemPress}
+          />
         </Animated.View>
       </BottomSheet>
     </GestureHandlerRootView>
   );
 };
-export default SelectContactScreen;
+export default EnterRecipientScreen;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -336,12 +288,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Satoshi-Bold',
     fontSize: 20,
   },
-  phoneContactsContainer: {
-    backgroundColor: COLORS.gray[600],
-    paddingTop: 16,
-    paddingHorizontal: 10,
-    paddingBottom: 40,
-  },
   title: {
     fontSize: minMaxScale(40, 48),
     color: COLORS.light,
@@ -352,14 +298,7 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     flexDirection: 'row',
   },
-  modalText: {
-    fontSize: 32,
-    textAlign: 'center',
-    fontFamily: 'Satoshi-Bold',
-    color: COLORS.light,
-    marginTop: 16,
-    marginBottom: 32,
-  },
+
   itemWrapper: {
     paddingTop: 24,
     paddingHorizontal: 8,

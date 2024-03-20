@@ -1,17 +1,17 @@
 import { StyleSheet, View } from 'react-native';
 
 import { COLORS } from '../../../../constants/global-styles';
-import SelectContactScreen from '../../../../screens/send/SelectContactScreen';
+import EnterRecipientScreen from '../../../../screens/send/EnterRecipientScreen';
 
-const enterAmount = () => {
+const recipient = () => {
   return (
     <View style={styles.wrapper}>
-      <SelectContactScreen />
+      <EnterRecipientScreen />
     </View>
   );
 };
 
-export default enterAmount;
+export default recipient;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,

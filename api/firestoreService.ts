@@ -74,3 +74,12 @@ export const fetchUserByEthAddress = async (ethAddress: string): Promise<Partial
     return null;
   }
 };
+
+export const fetchUsersByField = async (field: string, input: string) => {
+  const querySnapshot = await firestore()
+    .collection('users')
+    .where(field, '>=', input)
+    .where(field, '<=', input + '\uf8ff')
+    .get();
+  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+};
