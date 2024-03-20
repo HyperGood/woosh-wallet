@@ -14,13 +14,13 @@ import SettingsOption from '../../components/settings/SettingsOption';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useSession } from '../../store/AuthContext';
-import { useAccount } from '../../store/SmartAccountContext';
+import { useSmartAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
 
 const SettingsScreen = () => {
   const { logout } = useSession();
   const { userData, isFetchingUserData } = useUserData();
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
   const [username, setUsername] = useState('');
   const [joinedOn, setJoinedOn] = useState('');
   const name = userData?.name;
@@ -83,7 +83,6 @@ const SettingsScreen = () => {
       quality: 1,
     });
 
-
     if (!result.canceled) {
       Alert.alert('Updating image...');
       try {
@@ -95,7 +94,7 @@ const SettingsScreen = () => {
         firestore().collection('users').doc(userData.id).update({
           profilePicture: url,
         });
-        setImage(result.assets[0].uri)
+        setImage(result.assets[0].uri);
       } catch (error) {
         console.error('Error saving profile picture', error);
         //Sentry.captureException(error);
@@ -109,11 +108,10 @@ const SettingsScreen = () => {
       return;
     }
     try {
-    firestore().collection('users').doc(userData.id).update({
-      name: newName,
-    });
-    } 
-    catch (error) {
+      firestore().collection('users').doc(userData.id).update({
+        name: newName,
+      });
+    } catch (error) {
       console.error('Error updating name', error);
       Sentry.captureException(error);
     }
@@ -126,112 +124,95 @@ const SettingsScreen = () => {
   };
 
   return (
-    <>
-      <View style={styles.container}>
-        <Pressable style={styles.exit} onPress={() => router.navigate('/')}>
-          <Feather name="x" size={24} color={'#444447'} />
+    <View style={styles.container}>
+      <Pressable style={styles.exit} onPress={() => router.navigate('/')}>
+        <Feather name="x" size={24} color="#444447" />
+      </Pressable>
+      <View style={{ flexDirection: 'row', marginTop: 56 }}>
+        <Pressable style={{ justifyContent: 'center' }} onPress={pickImage}>
+          <Image
+            source={typeof image === 'string' ? { uri: image } : image}
+            style={styles.userImage}
+          />
         </Pressable>
-        <View style={{ flexDirection: 'row', marginTop: 56 }}>
-          <Pressable style={{ justifyContent: 'center' }} onPress={pickImage}>
-            <Image
-              source={typeof image === 'string' ? { uri: image } : image}
-              style={styles.userImage}
-            />
-          </Pressable>
 
-          <View style={{ justifyContent: 'center', paddingLeft: 18 }}>
-            <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
-              <Text style={styles.account}>{userData.username ? `${userData.username}` : userData.ethAddress}</Text>
-            </Skeleton>
-            <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
-              <Text style={styles.joinedOn}>
-                {i18n.t('joinedOn')}: {joinedOn}
-              </Text>
-            </Skeleton>
-          </View>
-        </View>
-        <View style={{ marginTop: 30, marginBottom: 16 }}>
-          <View>
-            <Text style={styles.upperInputText}>{i18n.t('name')}</Text>
-            <View style={styles.inputContainer}>
-              <Skeleton
-                show={isFetchingUserData}
-                width={160}
-                radius="round"
-                {...SkeletonCommonProps}>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder={userData.name}
-                  onSubmitEditing={(event) => {
-                    updateNameFunction(event.nativeEvent.text);
-                  }}
-                  placeholderTextColor={COLORS.dark}
-                />
-              </Skeleton>
-              <View style={styles.iconContainer}>
-                <Feather name="edit-2" size={16} color="black" />
-              </View>
-            </View>
-          </View>
-          <View style={{ marginTop: 12 }}>
-            <Text style={styles.upperInputText}>{i18n.t('ethAddress')}</Text>
-            <Pressable style={styles.inputContainer} onPress={copyAddressToClipboard}>
-              <Skeleton
-                show={isFetchingUserData}
-                width={160}
-                radius="round"
-                {...SkeletonCommonProps}>
-                <Text style={styles.textInput}>
-                  {address?.slice(0, 4) + '...' + address?.slice(-4)}
-                </Text>
-              </Skeleton>
-              <View style={styles.iconContainer}>
-                <Feather name="link" size={16} color="black" />
-              </View>
-            </Pressable>
-          </View>
-        </View>
-        <SettingsOption
-          icon={'help-circle'}
-          label={i18n.t('help')}
-          onPress={() => router.push('/settingshelp/help')}
-          color={'#00A3FF'}
-        />
-        <SettingsOption
-          icon={'bell'}
-          label={i18n.t('notifications')}
-          onPress={() => true}
-          color={'#FFDE68'}
-        />
-        <SettingsOption
-          icon={'eye'}
-          label={i18n.t('theme')}
-          onPress={() => true}
-          color={'#1EE51E'}
-        />
-        <SettingsOption
-          icon={'eye-off'}
-          label={i18n.t('logOut')}
-          onPress={() => logout()}
-          color={'#FF1568'}
-        />
-        <View
-          style={{
-            alignItems: 'center',
-            opacity: 0.4,
-            width: '100%',
-            flexGrow: 1,
-            justifyContent: 'flex-end',
-          }}>
-          <Text style={styles.testText}>Tesnet Mode</Text>
-          <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-between' }}>
-            <Text style={styles.testText}>Network: Base Sepolia</Text>
-            <Text style={styles.testText}>Build 01 - (03/25/2024)</Text>
-          </View>
-          <Text style={styles.testText}>{'Made with <3 in Mexico by HyperGood'}</Text>
+        <View style={{ justifyContent: 'center', paddingLeft: 18 }}>
+          <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
+            <Text style={styles.account}>
+              {userData.username ? `${userData.username}` : userData.ethAddress}
+            </Text>
+          </Skeleton>
+          <Skeleton show={isFetchingUserData} radius="round" {...SkeletonCommonProps}>
+            <Text style={styles.joinedOn}>
+              {i18n.t('joinedOn')}: {joinedOn}
+            </Text>
+          </Skeleton>
         </View>
       </View>
-    </>
+      <View style={{ marginTop: 30, marginBottom: 16 }}>
+        <View>
+          <Text style={styles.upperInputText}>{i18n.t('name')}</Text>
+          <View style={styles.inputContainer}>
+            <Skeleton show={isFetchingUserData} width={160} radius="round" {...SkeletonCommonProps}>
+              <TextInput
+                style={styles.textInput}
+                placeholder={userData.name}
+                onSubmitEditing={(event) => {
+                  updateNameFunction(event.nativeEvent.text);
+                }}
+                placeholderTextColor={COLORS.dark}
+              />
+            </Skeleton>
+            <View style={styles.iconContainer}>
+              <Feather name="edit-2" size={16} color="black" />
+            </View>
+          </View>
+        </View>
+        <View style={{ marginTop: 12 }}>
+          <Text style={styles.upperInputText}>{i18n.t('ethAddress')}</Text>
+          <Pressable style={styles.inputContainer} onPress={copyAddressToClipboard}>
+            <Text style={styles.textInput}>{address}</Text>
+            <View style={styles.iconContainer}>
+              <Feather name="link" size={16} color="black" />
+            </View>
+          </Pressable>
+        </View>
+      </View>
+      <SettingsOption
+        icon="help-circle"
+        label={i18n.t('help')}
+        onPress={() => router.push('/settingshelp/help')}
+        color="#00A3FF"
+      />
+      <SettingsOption
+        icon="bell"
+        label={i18n.t('notifications')}
+        onPress={() => true}
+        color="#FFDE68"
+      />
+      <SettingsOption icon="eye" label={i18n.t('theme')} onPress={() => true} color="#1EE51E" />
+      <SettingsOption
+        icon="eye-off"
+        label={i18n.t('logOut')}
+        onPress={() => logout()}
+        color="#FF1568"
+      />
+      <View
+        style={{
+          alignItems: 'center',
+          opacity: 0.4,
+          width: '100%',
+          flexGrow: 1,
+          justifyContent: 'flex-end',
+        }}>
+        <Text style={styles.testText}>Tesnet Mode</Text>
+        <View style={{ flexDirection: 'row', width: '70%', justifyContent: 'space-between' }}>
+          <Text style={styles.testText}>Network: Base Sepolia</Text>
+          <Text style={styles.testText}>Build 01 - (03/25/2024)</Text>
+        </View>
+        <Text style={styles.testText}>{'Made with <3 in Mexico by HyperGood'}</Text>
+      </View>
+    </View>
   );
 };
 
@@ -272,7 +253,6 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 17,
     fontFamily: 'Satoshi',
-    height: '100%',
     width: '100%',
     textAlignVertical: 'center',
     zIndex: 2,
@@ -285,6 +265,7 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     borderRadius: 16,
     opacity: 1,
+    paddingRight: 48,
   },
   iconContainer: {
     width: 32,

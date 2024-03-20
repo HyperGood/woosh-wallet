@@ -1,15 +1,15 @@
-import { SafeAreaView, StyleSheet } from 'react-native';
-import { COLORS } from '../../../../constants/global-styles';
-
-import SettingsScreen from '../../../../screens/settingshelp/SettingsScreen';
+import { StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { COLORS } from '../../../../constants/global-styles';
+import SettingsScreen from '../../../../screens/settingshelp/SettingsScreen';
 
 export default function Page() {
   const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={[{ paddingTop: insets.top + 24 }, styles.wrapper]}>
+    <ScrollView style={[{ paddingTop: insets.top + 24 }, styles.wrapper]}>
       <SettingsScreen />
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 

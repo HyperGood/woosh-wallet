@@ -1,19 +1,20 @@
-import { SafeAreaView, StyleSheet } from 'react-native';
-import { COLORS } from '../../../../constants/global-styles';
-
-import HelpScreen from '../../../../screens/settingshelp/HelpScreen';
+import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const help = () => {
+import { COLORS } from '../../../../constants/global-styles';
+import HelpScreen from '../../../../screens/settingshelp/HelpScreen';
+
+const Help = () => {
   const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={[{ paddingTop: insets.top + 24 }, styles.wrapper]}>
+    <View style={[{ paddingTop: insets.top + 24 }, styles.wrapper]}>
       <HelpScreen />
-    </SafeAreaView>
+    </View>
   );
 };
 
-export default help;
+export default Help;
+
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
