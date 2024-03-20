@@ -9,10 +9,11 @@ export interface Transaction {
   recipientName?: string;
   recipientPhone?: string;
   amountInUSD: number;
+  transactionHash: string;
   claimed: boolean;
   claimedBy?: string;
-  createdAt: any;
-  claimedAt?: any;
+  createdAt: Date;
+  claimedAt?: Date | null;
   txId: string;
   description?: string;
 }

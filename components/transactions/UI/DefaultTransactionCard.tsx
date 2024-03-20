@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
-import { useAccount } from '../../../store/SmartAccountContext';
+import { useSmartAccount } from '../../../store/SmartAccountContext';
 import { scale } from '../../../utils/scalingFunctions';
 
 interface TranscationCardProps {
@@ -23,7 +23,7 @@ const DefaultTransactionCard: React.FC<TranscationCardProps> = ({
   date,
   sender,
 }) => {
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
 
   return (
     <Skeleton height={200} width={200} {...SkeletonCommonProps}>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   tag: {
     borderRadius: 100,
-    backgroundColor: COLORS.gray[200],
+    backgroundColor: COLORS.gray[400],
     paddingHorizontal: 8,
     paddingVertical: 4,
     justifyContent: 'center',

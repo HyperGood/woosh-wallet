@@ -1,5 +1,6 @@
 import { BlurView } from 'expo-blur';
 import { Tabs, useSegments } from 'expo-router';
+import { useEffect, useState } from 'react';
 
 import HomeIcon from '../../assets/images/icons/HomeIcon';
 import QRIcon from '../../assets/images/icons/QRIcon';
@@ -8,7 +9,20 @@ import { COLORS } from '../../constants/global-styles';
 
 export default function TabLayout() {
   const segments: string[] = useSegments();
-  const hide: boolean = segments.includes("qr");
+  const [hide, setHide] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (
+      segments.includes('qr') ||
+      segments.includes('send') ||
+      segments.includes('request') ||
+      segments.includes('settingshelp')
+    ) {
+      setHide(true);
+    } else {
+      setHide(false);
+    }
+  }, [segments]);
 
   return (
     <Tabs
@@ -26,7 +40,7 @@ export default function TabLayout() {
           paddingBottom: 0,
           position: 'absolute',
           backgroundColor: 'white',
-          display: hide ? "none" : "flex",
+          display: hide ? 'none' : 'flex',
         },
         tabBarItemStyle: {
           borderRadius: 100,

@@ -1,18 +1,34 @@
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
 import YieldIcon from '../assets/images/icons/YieldIcon';
 import { COLORS } from '../constants/global-styles';
+import { useAaveData } from '../hooks/AAVE/useAaveData';
 import { useUserBalance } from '../hooks/useUserBalance';
 import { scale } from '../utils/scalingFunctions';
+
+const DEVICE_WIDTH = Dimensions.get('window').width;
 
 const Balance = () => {
   const token = 'USD';
   const mainCurrency = 'MXN';
-  const yieldPerBlock = 0.000001;
-  const { fiatBalance, tokenBalance, isFetchingBalance, refetchBalance } = useUserBalance();
+  const { fiatBalances, tokenBalances, refetchBalance } = useUserBalance();
+  const [totalFiatBalance, setTotalFiatBalance] = useState<number>(0);
+  const [totalTokenBalance, setTotalTokenBalance] = useState<number>(0);
+  const [interestPerBlock, setInterestPerBlock] = useState<number>(0);
+  const usdcApy = useAaveData();
+
+  function calculateInterest(principal: number, apy: number): number {
+    const apyDecimal = apy / 100;
+    console.log('apyDecimal', apyDecimal);
+    const annualInterest = principal * apyDecimal;
+    console.log('annualInterest', annualInterest);
+    const interestPerSecond = annualInterest / 31536000;
+    console.log('interestPerSecond', interestPerSecond);
+    return interestPerSecond;
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -20,23 +36,34 @@ const Balance = () => {
     }, [])
   );
 
+  useEffect(() => {
+    if (fiatBalances) {
+      setTotalFiatBalance(fiatBalances.ausdc + fiatBalances.usdc);
+    }
+    if (tokenBalances) {
+      console.log('tokenBalances', tokenBalances);
+      setTotalTokenBalance(tokenBalances.ausdc + tokenBalances.usdc);
+      setInterestPerBlock(calculateInterest(tokenBalances.ausdc, usdcApy));
+    }
+  }, [fiatBalances]);
+
   return (
     <View style={styles.wrapper}>
       <Animated.View layout={Layout} entering={FadeIn.duration(1500)} style={styles.container}>
         <Text style={styles.number}>
-          ${fiatBalance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.
-          <Text style={styles.decimal}>{(fiatBalance % 1).toFixed(2).slice(2)}</Text>
+          ${totalFiatBalance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.
+          <Text style={styles.decimal}>{(totalFiatBalance % 1).toFixed(2).slice(2)}</Text>
         </Text>
         <Text style={styles.mainCurrency}>{mainCurrency}</Text>
       </Animated.View>
 
       <View style={styles.bottomWrapper}>
         <Text style={styles.tokenBalance}>
-          {tokenBalance} {token}
+          {totalTokenBalance} {token}
         </Text>
         <View style={styles.yieldWrapper}>
           <YieldIcon />
-          <Text style={styles.yieldText}>+{yieldPerBlock} USD/s</Text>
+          <Text style={styles.yieldText}>+{interestPerBlock.toFixed(7)} USD/s</Text>
         </View>
       </View>
     </View>
@@ -75,10 +102,10 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   bottomWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginTop: 16,
-    gap: 8,
+    gap: 16,
+    width: DEVICE_WIDTH - scale(32),
   },
   yieldWrapper: {
     backgroundColor: COLORS.dark,
