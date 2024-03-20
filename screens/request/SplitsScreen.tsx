@@ -143,7 +143,7 @@ const SplitsScreen = () => {
           <Button
             title={i18n.t('sendRequest')}
             icon="send"
-            type="primary"
+            type="secondary"
             onPress={handleSendRequest}
           />
         </View>

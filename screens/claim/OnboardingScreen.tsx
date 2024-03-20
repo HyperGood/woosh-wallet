@@ -1,12 +1,14 @@
-import { LocalAccountSigner } from '@alchemy/aa-core';
 import { Feather } from '@expo/vector-icons';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import * as Sentry from '@sentry/react-native';
-import { ECDSAProvider } from '@zerodev/sdk';
+import { signerToEcdsaValidator } from '@zerodev/ecdsa-validator';
+import { KernelAccountClient, createKernelAccount, createKernelAccountClient } from '@zerodev/sdk';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
+import { type UserOperation } from 'permissionless';
+import { createPimlicoPaymasterClient } from 'permissionless/clients/pimlico';
 import { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, Pressable, Image, ScrollView } from 'react-native';
 import Animated, {
@@ -16,14 +18,18 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Hex, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { sepolia } from 'viem/chains';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
+import publicClient from '../../constants/viemPublicClient';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useSession } from '../../store/AuthContext';
-import { useAccount } from '../../store/SmartAccountContext';
+import { useSmartAccount } from '../../store/SmartAccountContext';
 import { minMaxScale, scale } from '../../utils/scalingFunctions';
 
 interface OnboardingScreenProps {
@@ -40,9 +46,9 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   const [loadingState, setLoadingState] = useState(`${i18n.t('settingUpAccountLabel')}`);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const { authenticate } = useSession();
-  const { setEcdsaProvider, ecdsaProvider } = useAccount();
+  const { setKernelClient, kernelClient } = useSmartAccount();
   const { withdraw } = useWithdraw();
-  const reference = storage().ref(`avatars/${name}.jpg`);
+  const reference = storage().ref(`avatars/${address}.jpg`);
 
   const fadeOutAnim = useSharedValue(1);
   const fadeInAnim = useSharedValue(0);
@@ -75,12 +81,34 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         return;
       }
       console.log('Token: ', token);
-      const ecdsaProvider = await ECDSAProvider.init({
-        projectId: process.env.EXPO_PUBLIC_ZERODEV_ID || '',
-        owner: LocalAccountSigner.privateKeyToAccountSigner(token as `0x${string}`),
+      const signer = privateKeyToAccount(token as Hex);
+      const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+        signer,
       });
-      setEcdsaProvider(ecdsaProvider);
-      const address = await ecdsaProvider.getAddress();
+      const account = await createKernelAccount(publicClient, {
+        plugins: {
+          sudo: ecdsaValidator,
+        },
+      });
+
+      const kernelClient = createKernelAccountClient({
+        account,
+        chain: sepolia,
+        transport: http(process.env.EXPO_PUBLIC_BUNDLER_URL),
+        sponsorUserOperation: async ({ userOperation }): Promise<UserOperation> => {
+          const paymasterClient = createPimlicoPaymasterClient({
+            chain: sepolia,
+            transport: http(process.env.EXPO_PUBLIC_PAYMASTER_URL),
+          });
+          return paymasterClient.sponsorUserOperation({
+            userOperation,
+            entryPoint: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
+          });
+        },
+      });
+
+      setKernelClient(kernelClient as KernelAccountClient);
+      const address = await kernelClient.account.address;
       console.log('Zerodev Provider set');
       console.log('Address: ', address);
 
@@ -136,7 +164,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         transactionData.signature as `0x${string}`,
         address
       );
-      await ecdsaProvider?.waitForUserOperationTransaction(withdrawHash as `0x${string}`);
+      //wait for transaction
       firestore()
         .collection('transactions')
         //transaction data doesn't have the id.

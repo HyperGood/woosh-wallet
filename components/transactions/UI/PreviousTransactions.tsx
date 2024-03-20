@@ -1,17 +1,21 @@
-import { Feather } from '@expo/vector-icons';
-import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import TransactionCardHome from './HomeTransactionCard';
 import { COLORS } from '../../../constants/global-styles';
-import { Transaction } from '../../../models/Transaction';
 import i18n from '../../../constants/i18n';
+import { Transaction } from '../../../models/Transaction';
 
 interface PreviousTransactionsProps {
-  transactions: any;
+  transactions: Transaction[] | undefined;
+  toggleActionTray: () => void;
+  setTransactionInfo: React.Dispatch<React.SetStateAction<Transaction | undefined>>;
 }
 
-const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
+const PreviousTransactions = ({
+  transactions,
+  toggleActionTray,
+  setTransactionInfo,
+}: PreviousTransactionsProps) => {
   if (!transactions || transactions.length === 0) {
     return (
       <View style={styles.emptyStateContainer}>
@@ -22,60 +26,57 @@ const PreviousTransactions = ({ transactions }: PreviousTransactionsProps) => {
   const slicedTransactions = transactions.slice(0, 4);
   const leftTransactions = slicedTransactions.filter((_: any, index: number) => index % 2 === 0);
   const rightTransactions = slicedTransactions.filter((_: any, index: number) => index % 2 !== 0);
+
   return (
     <View style={styles.container}>
       <View style={styles.titleWrapper}>
         <Text style={styles.title}>{i18n.t('previousTransactionTitle1')}</Text>
         <Text style={styles.title}>{i18n.t('previousTransactionTitle2')}</Text>
       </View>
-
       <View style={styles.cards}>
         <View style={styles.cardsLeft}>
-          {leftTransactions.map((transaction: Partial<Transaction>, index: number) => (
-            <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
-              {transaction.id ? (
-                <Link href={`/claim/${transaction.id}`}>
+          {leftTransactions.map((transaction: Transaction, index: number) => (
+            <Pressable
+              onPress={() => (toggleActionTray(), setTransactionInfo(transaction))}
+              key={transaction.id}>
+              <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
+                {transaction.id ? (
                   <TransactionCardHome
                     amount={transaction.amount || '0'}
                     recipientName={transaction.recipientName}
                     description={transaction.description}
-                    date={transaction.createdAt.toDate()}
+                    date={transaction.createdAt?.toDate()}
                     claimed={Boolean(transaction.claimedAt)}
                     sender={transaction.senderAddress}
                     senderName={transaction.sender}
                   />
-                </Link>
-              ) : (
-                <div>No transaction ID found</div>
-              )}
-            </View>
+                ) : (
+                  <div>No transaction ID found</div>
+                )}
+              </View>
+            </Pressable>
           ))}
         </View>
         <View style={styles.cardsRight}>
-          {rightTransactions.map((transaction: Partial<Transaction>, index: number) => (
-            <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
-              <Link href={`/claim/${transaction.id}`}>
+          {rightTransactions.map((transaction: Transaction, index: number) => (
+            <Pressable
+              onPress={() => (toggleActionTray(), setTransactionInfo(transaction))}
+              key={transaction.id}>
+              <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
                 <TransactionCardHome
                   amount={transaction.amount || '0'}
                   recipientName={transaction.recipientName}
                   description={transaction.description}
-                  date={transaction.createdAt.toDate()}
+                  date={transaction.createdAt?.toDate()}
                   claimed={Boolean(transaction.claimedAt)}
                   sender={transaction.senderAddress}
                   senderName={transaction.sender}
                 />
-              </Link>
-            </View>
+              </View>
+            </Pressable>
           ))}
         </View>
       </View>
-
-      <Link href="/(app)/transactions" asChild>
-        <Pressable style={styles.viewAllButton}>
-          <Text style={styles.viewAllText}>{i18n.t('viewAllTransactions')}</Text>
-          <Feather name="arrow-up-right" size={16} color={COLORS.dark} />
-        </Pressable>
-      </Link>
     </View>
   );
 };
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.light,
     borderRadius: 16,
-    paddingTop: 40,
+    padding: 40,
   },
   emptyStateText: {
     fontSize: 24,
@@ -94,17 +95,18 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
     textAlign: 'center',
   },
-
   container: {
     backgroundColor: COLORS.light,
     width: '100%',
     flex: 1,
     borderRadius: 36,
-    paddingVertical: 40,
+    paddingTop: 40,
+    paddingHorizontal: 10,
+    paddingBottom: 120,
   },
   titleWrapper: {
-    marginHorizontal: 20,
-    marginBottom: 32,
+    marginHorizontal: 10,
+    marginBottom: 24,
   },
   title: {
     fontSize: 40,
@@ -112,39 +114,23 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
   },
   cards: {
-    paddingHorizontal: 10,
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    gap: 16,
   },
   cardsLeft: {
     gap: 32,
-    width: '50%',
-    marginTop: 16,
+    width: '48%',
+    marginTop: 20,
   },
   cardsRight: {
     gap: 32,
-    width: '50%',
+    width: '48%',
   },
   rotateLeft: {
-    transform: [{ rotate: '-1deg' }],
+    transform: [{ rotate: '-1.5deg' }],
   },
   rotateRight: {
-    transform: [{ rotate: '1deg' }],
-  },
-  viewAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 32,
-    opacity: 0.6,
-    gap: 4,
-  },
-  viewAllText: {
-    fontFamily: 'Satoshi',
-    textDecorationLine: 'underline',
-    fontSize: 16,
-    color: COLORS.dark,
+    transform: [{ rotate: '1.5deg' }],
   },
 });

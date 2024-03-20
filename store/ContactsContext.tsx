@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from 'react';
 import { storage } from '../app/_layout';
 
 interface ContactContextType {
-  phoneContacts: any;
+  phoneContacts: Contacts.Contact[] | null;
   getPhoneContacts: () => void;
   hasRequestedContacts: string | undefined;
 }

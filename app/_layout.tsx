@@ -3,7 +3,6 @@ import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { StatusBar } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 
 import SessionProvider from '../store/AuthContext';
@@ -61,7 +60,7 @@ function Layout() {
       <SmartAccountProvider>
         <UserDataProvider>
           <Stack>
-            <StatusBar barStyle="light-content" />
+            <Stack.Screen name="login" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           </Stack>
         </UserDataProvider>

@@ -23,7 +23,7 @@ export const fetchTransactions = async (): Promise<Partial<Transaction>[]> => {
 
 export const fetchTransactionsByEthAddress = async (
   userAddress: string
-): Promise<Partial<Transaction>[]> => {
+): Promise<Transaction[]> => {
   try {
     const transactionsRef = firestore().collection('transactions');
     const recipientTransactions = await transactionsRef
@@ -48,7 +48,7 @@ export const fetchTransactionsByEthAddress = async (
     return allTransactions.map((doc) => ({
       ...doc.data(),
       id: doc.id,
-    })) as Partial<Transaction>[];
+    })) as Transaction[];
   } catch (error) {
     console.error('Error fetching transactions: ', error);
     Sentry.captureException(error);
@@ -73,4 +73,13 @@ export const fetchUserByEthAddress = async (ethAddress: string): Promise<Partial
     Sentry.captureException(error);
     return null;
   }
+};
+
+export const fetchUsersByField = async (field: string, input: string) => {
+  const querySnapshot = await firestore()
+    .collection('users')
+    .where(field, '>=', input)
+    .where(field, '<=', input + '\uf8ff')
+    .get();
+  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 };
