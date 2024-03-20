@@ -1,5 +1,5 @@
-import HomeScreen from '../../screens/HomeScreen';
+import QRScreen from '../../screens/QRScreen';
 
 export default function Page() {
-  return <HomeScreen />;
+  return <QRScreen />;
 }
