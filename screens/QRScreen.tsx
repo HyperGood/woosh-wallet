@@ -13,6 +13,7 @@ import QRScan from '../assets/images/icons/QRScan';
 const QRScreen = () => {
   const [showScanQR, setShowScanQR] = useState(true);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [scanQRStep, setScanQRStep] = useState(0);
 
   const showScanQRScreen = () => {
     setShowScanQR(true);
@@ -20,6 +21,12 @@ const QRScreen = () => {
 
   const showShowQRScreen = () => {
     setShowScanQR(false);
+  };
+
+  const backButtonPressed = () => {
+    router.push('/');
+    setScanQRStep(0);
+    setIsBottomSheetOpen(false);
   };
 
   return (
@@ -30,12 +37,13 @@ const QRScreen = () => {
           zIndex: 9999,
           top: 45,
           left: 16,
+          display: scanQRStep === 1 ? 'none' : 'flex',
         }}>
-        <Pressable style={styles.backButton} onPress={() => router.push('/')}>
+        <Pressable style={styles.backButton} onPress={backButtonPressed}>
           <Feather name="arrow-left" size={24} color={COLORS.dark} style={{ opacity: 0.5 }} />
         </Pressable>
       </View>
-      <View style={[{display: isBottomSheetOpen ? "none" : "flex"}, styles.navigation]}>
+      <View style={[{ display: isBottomSheetOpen ? 'none' : 'flex' }, styles.navigation]}>
         <Pressable
           style={[
             styles.navigationButton,
@@ -59,7 +67,11 @@ const QRScreen = () => {
           </Text>
         </Pressable>
       </View>
-      {showScanQR ? <ScanQR /> : <ShowQR isBottomSheetOpen={isBottomSheetOpen} setIsBottomSheetOpen={setIsBottomSheetOpen}/>}
+      {showScanQR ? (
+        <ScanQR disableNav={setIsBottomSheetOpen} step={scanQRStep} setStep={setScanQRStep} />
+      ) : (
+        <ShowQR isBottomSheetOpen={isBottomSheetOpen} setIsBottomSheetOpen={setIsBottomSheetOpen} />
+      )}
     </View>
   );
 };

@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import QRCode from 'react-qr-code';
 import { BlurView } from 'expo-blur';
 import { Skeleton } from 'moti/skeleton';
 
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import QRIcon from '../../assets/images/icons/QRIcon';
 import { useTokenPrices } from '../../hooks/useTokenPrices';
 import { useAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
@@ -106,7 +106,7 @@ const ShowQR = ({isBottomSheetOpen, setIsBottomSheetOpen}: IProps ) => {
           )}
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <View style={styles.qRPlaceHolder}>
-              <QRIcon color={COLORS.dark} />
+              <QRCode value={JSON.stringify({address: address, amountInMXN: new Number(amountMXN), amountInUSDc: new Number(amountUSDc)})} />
             </View>
             {isLoading ? (
               <Skeleton

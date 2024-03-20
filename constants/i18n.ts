@@ -65,6 +65,7 @@ const translations = {
     enterAmount: 'Enter Amount',
     qRCopied: 'QR Detected & Copied!',
     save: 'Save',
+    purchaseIn: 'Purchase in',
   },
   es: {
     loginTitle: 'La manera más fácil de recibir dinero de tus amigos',
@@ -130,6 +131,7 @@ const translations = {
     enterAmount: 'Ingresa Cantidad',
     qRCopied: 'QR Detectado y Copiado!',
     save: 'Guardar',
+    purchaseIn: 'Comprado en',
   },
 };
 

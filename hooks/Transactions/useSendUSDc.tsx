@@ -9,7 +9,7 @@ import { usdcAddress, TokenAddresses } from '../../references/tokenAddresses';
 import { useAccount } from '../../store/SmartAccountContext';
 
 export const useSendUSDc = () => {
-  const [tranactionHash, setTransactionHash] = useState<string | null>(null);
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [transactionError, setTransactionError] = useState<any>(null);
   const { ecdsaProvider } = useAccount();
@@ -70,5 +70,5 @@ export const useSendUSDc = () => {
     }
   };
 
-  return { sendUSDc, tranactionHash, isSending, transactionError };
+  return { sendUSDc, transactionHash, isSending, transactionError };
 };
