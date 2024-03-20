@@ -1,14 +1,14 @@
 /**
  * useDeposit Hook
- * 
+ *
  * A custom hook for handling deposit functionality to the DepositVault in the project.
  * It provides methods for depositing funds with signatures with "SmartAccountContext",
  * using phone authentication, for authorization and managing related
  * deposit states.
  * This handles USDc approval and transaction execution.
- * 
+ *
  * @returns An object (hook) containing methods and states for deposit handling.
- * 
+ *
  * How to use it:
  * - Import the hook.
  * - Call the hook to get access to the deposit method, deposit transaciton hash, and transaction status
@@ -16,17 +16,17 @@
  * - Check the depositHash state to obtain the hash of the deposit transaction.
  * - Check the isDepositing state to determine if the deposit process is in progress (Is Depositing).
  * - Check the depositError state to get and handle any errors that occur during depositing.
- * 
+ *
  * @example
- * 
+ *
  * Methods/States declaration:
- * 
+ *
  * const { deposit, depositHash, isDepositing, depositError } = useDeposit();
- * 
+ *
  * Methods/States usage:
- * 
+ *
  * deposit('100'); // To make a deposit of 100 USDc
- * 
+ *
  * if (isDepositing) {
  *      // Content displayed while depositing
  * } else if (depositError) {
@@ -98,7 +98,6 @@ export const useDeposit = () => {
               args: [depositVaultAddress, parseUnits(amount, tokenDecimals)],
             }),
           })) ?? '0x';
-        console.log('Approval Calldata', approvalCalldata);
         const approvalHash = await kernelClient.sendUserOperation({
           userOperation: {
             callData: approvalCalldata,

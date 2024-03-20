@@ -149,9 +149,7 @@ const ScanQR = ({ disableNav, step, setStep }: IProps) => {
           <Text style={{ fontSize: 17, fontFamily: 'Satoshi', marginTop: 16 }}>
             Waiting For Confirmation
           </Text>
-          <Pressable
-            style={styles.BOTONPROVISIONAL}
-            onPress={() => setStep(2)}>
+          <Pressable style={styles.BOTONPROVISIONAL} onPress={() => setStep(2)}>
             <Text style={styles.buttonText}>Next step</Text>
           </Pressable>
         </View>

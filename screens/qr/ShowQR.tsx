@@ -17,7 +17,7 @@ import { Skeleton } from 'moti/skeleton';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useTokenPrices } from '../../hooks/useTokenPrices';
-import { useAccount } from '../../store/SmartAccountContext';
+import { useSmartAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
 import Button from '../../components/UI/Button';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
@@ -29,11 +29,11 @@ interface IProps {
   setIsBottomSheetOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const ShowQR = ({isBottomSheetOpen, setIsBottomSheetOpen}: IProps ) => {
+const ShowQR = ({ isBottomSheetOpen, setIsBottomSheetOpen }: IProps) => {
   const changeAmountRef = useRef<BottomSheetRefProps>(null);
   const isActionTrayOpened = useSharedValue(false);
   const { userData, isFetchingUserData } = useUserData();
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [amountMXN, setAmountMXN] = useState('0.00');
@@ -106,7 +106,13 @@ const ShowQR = ({isBottomSheetOpen, setIsBottomSheetOpen}: IProps ) => {
           )}
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <View style={styles.qRPlaceHolder}>
-              <QRCode value={JSON.stringify({address: address, amountInMXN: new Number(amountMXN), amountInUSDc: new Number(amountUSDc)})} />
+              <QRCode
+                value={JSON.stringify({
+                  address: address,
+                  amountInMXN: new Number(amountMXN),
+                  amountInUSDc: new Number(amountUSDc),
+                })}
+              />
             </View>
             {isLoading ? (
               <Skeleton
