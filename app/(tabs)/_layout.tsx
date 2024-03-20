@@ -12,7 +12,12 @@ export default function TabLayout() {
   const [hide, setHide] = useState<boolean>(false);
 
   useEffect(() => {
-    if (segments.includes('qr') || segments.includes('send') || segments.includes('request')) {
+    if (
+      segments.includes('qr') ||
+      segments.includes('send') ||
+      segments.includes('request') ||
+      segments.includes('settingshelp')
+    ) {
       setHide(true);
     } else {
       setHide(false);
