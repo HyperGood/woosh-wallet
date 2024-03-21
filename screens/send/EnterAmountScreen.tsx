@@ -9,8 +9,8 @@ import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useDeposit } from '../../hooks/DepositVault/useDeposit';
 import { useSignDeposit } from '../../hooks/DepositVault/useSignDeposit';
-import { useUserBalance } from '../../hooks/useUserBalance';
 import { useTransaction } from '../../store/TransactionContext';
+import { useSendUSDc } from '../../hooks/Transactions/useSendUSDc';
 
 const EnterAmountScreen = () => {
   const [amount, setAmount] = useState('0');
@@ -18,28 +18,33 @@ const EnterAmountScreen = () => {
   const { deposit, isDepositing, depositError, depositHash } = useDeposit();
   const [isSaving, setIsSaving] = useState(false);
   const { signDeposit } = useSignDeposit();
-  const { refetchBalance } = useUserBalance();
   const { transactionData, setTransactionData } = useTransaction();
+  const { sendUSDc, transactionHash: sendHash } = useSendUSDc();
 
   useEffect(() => {
     (async () => {
-      if (depositHash && transactionData) {
+      if ((depositHash || sendHash) && transactionData) {
         setIsSaving(true);
-        refetchBalance();
-        const updatedTransactionData = await signDeposit();
-        if (typeof updatedTransactionData === 'object' && updatedTransactionData !== null) {
-          setTransactionData({
-            ...updatedTransactionData,
-            transactionHash: depositHash,
-            type: transactionData?.type,
-          });
-        } else {
-          console.log('Updated transaction is not an object: ', updatedTransactionData);
+        console.log('Saving');
+        if (depositHash) {
+          console.log('Signing deposit');
+          const updatedTransactionData = await signDeposit();
+          if (typeof updatedTransactionData === 'object' && updatedTransactionData !== null) {
+            console.log('Deposit signed');
+            setTransactionData({
+              ...updatedTransactionData,
+              transactionHash: depositHash,
+              type: transactionData?.type,
+              description,
+            });
+          }
+        } else if (sendHash) {
+          setTransactionData({ ...transactionData, transactionHash: sendHash, description });
         }
-        router.push('/send/success');
+        router.push('/(tabs)/(home)/send/success');
       }
     })();
-  }, [depositHash]);
+  }, [depositHash, sendHash]);
 
   useEffect(() => {
     setTransactionData(
@@ -55,6 +60,16 @@ const EnterAmountScreen = () => {
           }
     );
   }, [amount]);
+
+  function handleSendPress() {
+    if (transactionData?.type === 'depositVault') {
+      console.log('Depositing');
+      deposit(amount);
+    } else if (transactionData?.type === 'ethAddress') {
+      console.log('Sending');
+      sendUSDc(amount, transactionData.recipientInfo as `0x${string}`);
+    }
+  }
 
   return (
     <ScrollView style={{ flex: 1, width: '100%' }}>
@@ -84,14 +99,7 @@ const EnterAmountScreen = () => {
                 <Button
                   title={i18n.t('send')}
                   type="secondary"
-                  onPress={() => {
-                    if (transactionData?.type === 'depositVault') {
-                      deposit(amount);
-                    } else {
-                      console.log('Send a normal usdc transaction');
-                    }
-                    setDescription('');
-                  }}
+                  onPress={handleSendPress}
                   disabled={parseFloat(amount) <= 0}
                 />
               </View>

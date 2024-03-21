@@ -93,6 +93,7 @@ export const useSignDeposit = () => {
             depositIndex: Number(depositIndex),
             type: prevData?.type || 'depositVault',
           };
+          resolve(updatedData);
           return updatedData;
         });
 

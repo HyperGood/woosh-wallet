@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 import { encodeFunctionData, parseUnits } from 'viem';
 
 import { chain } from '../../constants/viemPublicClient';
-import { usdcAddress, AUSDCTokenAddresses } from '../../references/tokenAddresses';
+import { AUSDCTokenAddresses, aUSDcAddress } from '../../references/tokenAddresses';
 import { useSmartAccount } from '../../store/SmartAccountContext';
 
 export const useSendUSDc = () => {
@@ -14,7 +14,7 @@ export const useSendUSDc = () => {
   const [transactionError, setTransactionError] = useState<any>(null);
   const { kernelClient, account } = useSmartAccount();
   const chainId = chain.id;
-  const tokenAddress = usdcAddress[chainId as keyof AUSDCTokenAddresses][0];
+  const tokenAddress = aUSDcAddress[chainId as keyof AUSDCTokenAddresses][0];
   const tokenDecimals = 6;
 
   const sendUSDc = async (amount: string, recipientAddress: `0x${string}`) => {
