@@ -2,13 +2,10 @@ import { Feather } from '@expo/vector-icons';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import * as Sentry from '@sentry/react-native';
-import { signerToEcdsaValidator } from '@zerodev/ecdsa-validator';
-import { KernelAccountClient, createKernelAccount, createKernelAccountClient } from '@zerodev/sdk';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
+import { useAtomValue } from 'jotai';
 import LottieView from 'lottie-react-native';
-import { type UserOperation } from 'permissionless';
-import { createPimlicoPaymasterClient } from 'permissionless/clients/pimlico';
 import { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, Pressable, Image, ScrollView } from 'react-native';
 import Animated, {
@@ -18,18 +15,14 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Hex, http } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
-import { sepolia } from 'viem/chains';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import publicClient from '../../constants/viemPublicClient';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
-import { useSession } from '../../store/AuthContext';
-import { useSmartAccount } from '../../store/SmartAccountContext';
+import { useAuthentication } from '../../hooks/useAuthentication';
+import { userAddressAtom } from '../../store/store';
 import { minMaxScale, scale } from '../../utils/scalingFunctions';
 
 interface OnboardingScreenProps {
@@ -44,11 +37,9 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingState, setLoadingState] = useState(`${i18n.t('settingUpAccountLabel')}`);
-  const [address, setAddress] = useState<`0x${string}` | null>(null);
-  const { authenticate } = useSession();
-  const { setKernelClient, kernelClient } = useSmartAccount();
+  const { authenticate } = useAuthentication();
+  const address = useAtomValue(userAddressAtom);
   const { withdraw } = useWithdraw();
-  const reference = storage().ref(`avatars/${address}.jpg`);
 
   const fadeOutAnim = useSharedValue(1);
   const fadeInAnim = useSharedValue(0);
@@ -71,52 +62,9 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
 
     setIsLoading(true);
     try {
-      //Generate new private key
-      const token = await authenticate();
-      console.log('Authenticated');
-      //Wait for token to be set
-      if (!token) {
-        console.log('No token');
-        setIsLoading(false);
-        return;
-      }
-      console.log('Token: ', token);
-      const signer = privateKeyToAccount(token as Hex);
-      const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-        signer,
-      });
-      const account = await createKernelAccount(publicClient, {
-        plugins: {
-          sudo: ecdsaValidator,
-        },
-      });
+      await authenticate();
 
-      const kernelClient = createKernelAccountClient({
-        account,
-        chain: sepolia,
-        transport: http(process.env.EXPO_PUBLIC_BUNDLER_URL),
-        sponsorUserOperation: async ({ userOperation }): Promise<UserOperation> => {
-          const paymasterClient = createPimlicoPaymasterClient({
-            chain: sepolia,
-            transport: http(process.env.EXPO_PUBLIC_PAYMASTER_URL),
-          });
-          return paymasterClient.sponsorUserOperation({
-            userOperation,
-            entryPoint: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-          });
-        },
-      });
-
-      setKernelClient(kernelClient as KernelAccountClient);
-      const address = await kernelClient.account.address;
-      console.log('Zerodev Provider set');
-      console.log('Address: ', address);
-
-      //Wait for address to be set
-      //Save user data to Firestore
-
-      console.log('Saving profile picture');
-
+      const reference = storage().ref(`avatars/${address}.jpg`);
       const task = await reference.putFile(image);
       task.state === 'success' && console.log('Profile picture uploaded');
       const url = await reference.getDownloadURL();
@@ -128,7 +76,6 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         profilePicture: url,
       });
       console.log('Database set');
-      setAddress(address);
     } catch (error) {
       console.error('Error in onboarding screen', error);
       Sentry.captureException(error);
@@ -199,10 +146,8 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);

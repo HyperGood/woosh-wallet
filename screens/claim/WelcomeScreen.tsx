@@ -6,7 +6,7 @@ import Button from '../../components/UI/Button';
 import DefaultTransactionCard from '../../components/transactions/UI/DefaultTransactionCard';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import { useSession } from '../../store/AuthContext';
+import { useAuthentication } from '../../hooks/useAuthentication';
 import { minMaxScale } from '../../utils/scalingFunctions';
 
 interface WelcomeScreenProps {
@@ -20,7 +20,7 @@ const WelcomeScreen = ({
   nextScreenFunction,
   loadingTransactionData,
 }: WelcomeScreenProps) => {
-  const { authenticate } = useSession();
+  const { authenticate } = useAuthentication();
   console.log('transactionData', transactionData);
   const onButtonClick = async () => {
     if (transactionData.claimedBy) {

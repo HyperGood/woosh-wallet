@@ -1,4 +1,5 @@
 import { Link, useFocusEffect } from 'expo-router';
+import { useAtomValue } from 'jotai';
 import { Skeleton } from 'moti/skeleton';
 import { useCallback, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -17,12 +18,12 @@ import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
 import { useToggleBottomSheet } from '../hooks/BottomSheet/useToggleBottomSheet';
 import { Transaction } from '../models/Transaction';
-import { useSmartAccount } from '../store/SmartAccountContext';
+import { userAddressAtom } from '../store/store';
 import { scale } from '../utils/scalingFunctions';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
   const [transactions, setTransactions] = useState<Transaction[]>();
   const [transactionInfo, setTransactionInfo] = useState<Transaction>();
   const transactionDetailsRefs = useRef<BottomSheetRefProps>(null);

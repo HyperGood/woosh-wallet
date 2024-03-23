@@ -1,4 +1,5 @@
 import { Link, useFocusEffect } from 'expo-router';
+import { useAtomValue } from 'jotai';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
@@ -6,11 +7,11 @@ import { fetchTransactionsByEthAddress } from '../api/firestoreService';
 import TransactionCard from '../components/transactions/UI/CompactTransactionCard';
 import { COLORS } from '../constants/global-styles';
 import { Transaction } from '../models/Transaction';
-import { useSmartAccount } from '../store/SmartAccountContext';
+import { userAddressAtom } from '../store/store';
 
 const AllTransactionsScreen = () => {
   const [transactions, setTransactions] = useState<Partial<Transaction>[]>([]);
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
 
   useFocusEffect(
     useCallback(() => {

@@ -1,9 +1,10 @@
+import { useAtomValue } from 'jotai';
 import { Skeleton } from 'moti/skeleton';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS, SkeletonCommonProps } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
-import { useSmartAccount } from '../../../store/SmartAccountContext';
+import { userAddressAtom } from '../../../store/store';
 import { scale } from '../../../utils/scalingFunctions';
 
 interface TranscationCardProps {
@@ -23,7 +24,7 @@ const DefaultTransactionCard: React.FC<TranscationCardProps> = ({
   date,
   sender,
 }) => {
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
 
   return (
     <Skeleton height={200} width={200} {...SkeletonCommonProps}>

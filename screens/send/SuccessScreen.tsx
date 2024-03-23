@@ -2,6 +2,7 @@ import firestore from '@react-native-firebase/firestore';
 import * as Sentry from '@sentry/react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import { useAtomValue } from 'jotai';
 import { useEffect } from 'react';
 import { SafeAreaView, Share, StyleSheet, Text, View } from 'react-native';
 
@@ -10,13 +11,13 @@ import Button from '../../components/UI/Button';
 import DefaultTransactionCard from '../../components/transactions/UI/DefaultTransactionCard';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import { useSmartAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
 import { useUserData } from '../../store/UserDataContext';
+import { userAddressAtom } from '../../store/store';
 
 const SuccessScreen = () => {
   const { transactionData, signature } = useTransaction();
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
   const { userData } = useUserData();
 
   const onShare = async () => {

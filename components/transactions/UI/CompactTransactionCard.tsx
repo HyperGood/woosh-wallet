@@ -1,7 +1,8 @@
+import { useAtomValue } from 'jotai';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
-import { useSmartAccount } from '../../../store/SmartAccountContext';
+import { userAddressAtom } from '../../../store/store';
 
 interface TranscationCardProps {
   amount: number;
@@ -19,7 +20,7 @@ const TransactionCard: React.FC<TranscationCardProps> = ({
   sender,
   date,
 }) => {
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
 
   console.log(date.toLocaleDateString());
   const formattedTime = new Intl.DateTimeFormat('en-US', {

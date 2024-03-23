@@ -1,16 +1,18 @@
 import * as Sentry from '@sentry/react-native';
+import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { encodeFunctionData, isHex } from 'viem';
 
 import { chain } from '../../constants/viemPublicClient';
 import { depositVaultAbi, contractAddress, Addresses } from '../../references/depositVault-abi';
-import { useSmartAccount } from '../../store/SmartAccountContext';
+import { kernelClientAtom, smartAccountAtom } from '../../store/store';
 
 export const useWithdraw = () => {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [withdrawError, setWithdrawError] = useState<any>(null);
-  const { kernelClient, account } = useSmartAccount();
+  const kernelClient = useAtomValue(kernelClientAtom);
+  const account = useAtomValue(smartAccountAtom);
   const chainId = chain.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';

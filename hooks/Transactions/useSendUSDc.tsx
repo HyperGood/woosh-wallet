@@ -1,18 +1,20 @@
 import * as Sentry from '@sentry/react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { encodeFunctionData, parseUnits } from 'viem';
 
 import { chain } from '../../constants/viemPublicClient';
 import { AUSDCTokenAddresses, aUSDcAddress } from '../../references/tokenAddresses';
-import { useSmartAccount } from '../../store/SmartAccountContext';
+import { kernelClientAtom, smartAccountAtom } from '../../store/store';
 
 export const useSendUSDc = () => {
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [transactionError, setTransactionError] = useState<any>(null);
-  const { kernelClient, account } = useSmartAccount();
+  const kernelClient = useAtomValue(kernelClientAtom);
+  const account = useAtomValue(smartAccountAtom);
   const chainId = chain.id;
   const tokenAddress = aUSDcAddress[chainId as keyof AUSDCTokenAddresses][0];
   const tokenDecimals = 6;

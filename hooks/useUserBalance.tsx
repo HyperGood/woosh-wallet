@@ -1,9 +1,11 @@
 // hooks/useUserBalance.tsx
 import firestore from '@react-native-firebase/firestore';
 import * as Sentry from '@sentry/react-native';
+import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 
+import { useTokenPrices } from '../api/queries';
 import { storage } from '../app/_layout';
 import publicClient, { chain } from '../constants/viemPublicClient';
 import {
@@ -12,8 +14,7 @@ import {
   aUSDcAddress,
   usdcAddress,
 } from '../references/tokenAddresses';
-import { useSmartAccount } from '../store/SmartAccountContext';
-import { useTokenPrices } from '../api/queries';
+import { userAddressAtom } from '../store/store';
 
 interface Token {
   name: string;
@@ -42,7 +43,7 @@ export const useUserBalance = () => {
   const [fiatBalances, setFiatBalances] = useState<Balance>({ usdc: 0, ausdc: 0 });
   const [isFetchingBalance, setIsFetchingBalance] = useState<boolean>(true);
   const [errorFetchingBalance, setErrorFetchingBalance] = useState<string | null>(null);
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
   const tokenPricesQuery = useTokenPrices();
   const usdcPrice = tokenPricesQuery.data?.['usd-coin'].mxn;
   const chainId = chain.id;

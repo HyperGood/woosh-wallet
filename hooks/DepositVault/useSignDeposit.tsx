@@ -33,19 +33,20 @@
  * }
  */
 import * as Sentry from '@sentry/react-native';
+import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 
 import publicClient, { chain } from '../../constants/viemPublicClient';
 import { Addresses, contractAddress } from '../../references/depositVault-abi';
-import { useSmartAccount } from '../../store/SmartAccountContext';
 import { useTransaction } from '../../store/TransactionContext';
+import { kernelClientAtom } from '../../store/store';
 
 export const useSignDeposit = () => {
   const { setSignature, setTransactionData } = useTransaction();
   const [isSigning, setIsSigning] = useState(false);
   const [signError, setSignError] = useState<any>(null);
-  const { kernelClient } = useSmartAccount();
+  const kernelClient = useAtomValue(kernelClientAtom);
   const chainId = chain.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';

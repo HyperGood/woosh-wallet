@@ -7,10 +7,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import Button from '../components/UI/Button';
 import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
-import { useSession } from '../store/AuthContext';
+import { useAuthentication } from '../hooks/useAuthentication';
 
 export default function Page() {
-  const { authenticate } = useSession();
+  const { authenticate } = useAuthentication();
   const [id, setID] = useState<any>('');
 
   useEffect(() => {

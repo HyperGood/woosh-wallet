@@ -1,3 +1,6 @@
+import { BlurView } from 'expo-blur';
+import { useAtomValue } from 'jotai';
+import { Skeleton } from 'moti/skeleton';
 import React, { useState, useEffect, useCallback, useRef, Dispatch, SetStateAction } from 'react';
 import {
   Dimensions,
@@ -8,19 +11,17 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSharedValue } from 'react-native-reanimated';
 import QRCode from 'react-qr-code';
-import { BlurView } from 'expo-blur';
-import { Skeleton } from 'moti/skeleton';
 
-import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
-import i18n from '../../constants/i18n';
-import { useSmartAccount } from '../../store/SmartAccountContext';
-import { useUserData } from '../../store/UserDataContext';
+import { useTokenPrices } from '../../api/queries';
 import Button from '../../components/UI/Button';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
-import { useTokenPrices } from '../../api/queries';
+import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
+import i18n from '../../constants/i18n';
+import { useUserData } from '../../store/UserDataContext';
+import { userAddressAtom } from '../../store/store';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -33,7 +34,7 @@ const ShowQR = ({ isBottomSheetOpen, setIsBottomSheetOpen }: IProps) => {
   const changeAmountRef = useRef<BottomSheetRefProps>(null);
   const isActionTrayOpened = useSharedValue(false);
   const { userData, isFetchingUserData } = useUserData();
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [amountMXN, setAmountMXN] = useState('0.00');
@@ -108,7 +109,7 @@ const ShowQR = ({ isBottomSheetOpen, setIsBottomSheetOpen }: IProps) => {
             <View style={styles.qRPlaceHolder}>
               <QRCode
                 value={JSON.stringify({
-                  address: address,
+                  address,
                   amountInMXN: new Number(amountMXN),
                   amountInUSDc: new Number(amountUSDc),
                 })}

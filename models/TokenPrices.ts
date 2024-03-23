@@ -1,4 +1,4 @@
-type TokenPrices = {
+export type TokenPrices = {
   ethereum: {
     mxn: number;
     usd: number;

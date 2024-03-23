@@ -38,6 +38,7 @@
  */
 import * as Sentry from '@sentry/react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { useAtomValue } from 'jotai';
 import { bundlerActions } from 'permissionless';
 import { useState } from 'react';
 import { Alert } from 'react-native';
@@ -46,13 +47,14 @@ import { encodeFunctionData, parseUnits } from 'viem';
 import { chain } from '../../constants/viemPublicClient';
 import { depositVaultAbi, contractAddress, Addresses } from '../../references/depositVault-abi';
 import { aUSDcAddress, AUSDCTokenAddresses } from '../../references/tokenAddresses';
-import { useSmartAccount } from '../../store/SmartAccountContext';
+import { kernelClientAtom, smartAccountAtom } from '../../store/store';
 
 export const useDeposit = () => {
   const [depositHash, setDepositHash] = useState<string | null>(null);
   const [isDepositing, setIsDepositing] = useState(false);
   const [depositError, setDepositError] = useState<any>(null);
-  const { kernelClient, account } = useSmartAccount();
+  const kernelClient = useAtomValue(kernelClientAtom);
+  const account = useAtomValue(smartAccountAtom);
   const chainId = chain.id;
   const depositVaultAddress =
     chainId && chainId in contractAddress ? contractAddress[chainId as keyof Addresses][0] : '0x12';

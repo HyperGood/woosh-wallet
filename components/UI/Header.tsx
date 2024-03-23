@@ -1,22 +1,20 @@
-import { Feather } from '@expo/vector-icons';
 import storage from '@react-native-firebase/storage';
 import * as Sentry from '@sentry/react-native';
+import { Link, router } from 'expo-router';
+import { useAtomValue } from 'jotai';
 import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import placeholderUser from '../../assets/images/profile.png';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
-import { useSession } from '../../store/AuthContext';
-import { useSmartAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
+import { userAddressAtom } from '../../store/store';
 import { scale } from '../../utils/scalingFunctions';
-import { Link, router } from 'expo-router';
 
 const Header = () => {
   const { userData, isFetchingUserData } = useUserData();
-  const { address } = useSmartAccount();
-  const { logout } = useSession();
+  const address = useAtomValue(userAddressAtom);
   const [username, setUsername] = useState('');
 
   const [isLoading, setIsLoading] = useState(true);
@@ -70,11 +68,7 @@ const Header = () => {
         </Skeleton>
       </View>
 
-      <View>
-        <Pressable onPress={logout}>
-          <Feather name="log-out" color={COLORS.light} size={24} />
-        </Pressable>
-      </View>
+      <View />
     </View>
   );
 };

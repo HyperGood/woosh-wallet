@@ -6,8 +6,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { MMKV } from 'react-native-mmkv';
 
-import SessionProvider from '../store/AuthContext';
-import SmartAccountProvider from '../store/SmartAccountContext';
 import UserDataProvider from '../store/UserDataContext';
 
 export const storage = new MMKV();
@@ -60,16 +58,12 @@ function Layout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SessionProvider>
-        <SmartAccountProvider>
-          <UserDataProvider>
-            <Stack>
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            </Stack>
-          </UserDataProvider>
-        </SmartAccountProvider>
-      </SessionProvider>
+      <UserDataProvider>
+        <Stack>
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </UserDataProvider>
     </QueryClientProvider>
   );
 }

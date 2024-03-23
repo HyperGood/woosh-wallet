@@ -5,6 +5,7 @@ import * as Sentry from '@sentry/react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
+import { useAtomValue } from 'jotai';
 import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
 import { Pressable, Image, StyleSheet, Text, View, TextInput, Alert } from 'react-native';
@@ -13,14 +14,14 @@ import placeholderUser from '../../assets/images/profile.png';
 import SettingsOption from '../../components/settings/SettingsOption';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import { useSession } from '../../store/AuthContext';
-import { useSmartAccount } from '../../store/SmartAccountContext';
+import { useAuthentication } from '../../hooks/useAuthentication';
 import { useUserData } from '../../store/UserDataContext';
+import { userAddressAtom } from '../../store/store';
 
 const SettingsScreen = () => {
-  const { logout } = useSession();
+  const { logout } = useAuthentication();
   const { userData, isFetchingUserData } = useUserData();
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
   const [username, setUsername] = useState('');
   const [joinedOn, setJoinedOn] = useState('');
   const name = userData?.name;

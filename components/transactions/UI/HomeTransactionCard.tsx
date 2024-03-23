@@ -1,8 +1,9 @@
+import { useAtomValue } from 'jotai';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
-import { useSmartAccount } from '../../../store/SmartAccountContext';
+import { userAddressAtom } from '../../../store/store';
 
 interface TranscationCardProps {
   amount: string;
@@ -24,7 +25,7 @@ const HomeTransactionCard: React.FC<TranscationCardProps> = ({
   claimed,
   sender,
 }) => {
-  const { address } = useSmartAccount();
+  const address = useAtomValue(userAddressAtom);
 
   const claimedTextStyles = claimed ? { opacity: 1 } : { opacity: 0.5 };
 
