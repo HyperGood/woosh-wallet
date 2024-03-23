@@ -21,6 +21,27 @@ export const fetchTransactions = async (): Promise<Partial<Transaction>[]> => {
   }
 };
 
+export const fetchLastUnclaimedTransaction = async () => {
+  try {
+    const transactionsQuery = await firestore()
+      .collection('transactions')
+      .where('type', '==', 'depositVault')
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    const unclaimedTransactions = transactionsQuery.docs.filter((doc) => !doc.data().claimedAt);
+    if (unclaimedTransactions.length > 0) {
+      return unclaimedTransactions[0].id;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching last unclaimed transaction: ', error);
+    Sentry.captureException(error);
+    return null;
+  }
+};
+
 export const fetchTransactionsByEthAddress = async (
   userAddress: string
 ): Promise<Transaction[]> => {

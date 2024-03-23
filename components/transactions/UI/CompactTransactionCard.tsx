@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   amount: {
-    fontFamily: 'Satoshi-Bold',
+    fontFamily: 'FHOscar',
     fontSize: 24,
     letterSpacing: -0.02,
     color: COLORS.gray[600],

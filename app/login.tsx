@@ -1,9 +1,9 @@
-import firestore from '@react-native-firebase/firestore';
 import * as Sentry from '@sentry/react-native';
 import { Link, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { fetchLastUnclaimedTransaction } from '../api/firestoreService';
 import Button from '../components/UI/Button';
 import { COLORS } from '../constants/global-styles';
 import i18n from '../constants/i18n';
@@ -14,15 +14,9 @@ export default function Page() {
   const [id, setID] = useState<any>('');
 
   useEffect(() => {
-    //Get the last transaction from firestore
     (async () => {
-      const lastTransaction = await firestore()
-        .collection('transactions')
-        .orderBy('createdAt', 'desc')
-        .limit(1)
-        .get();
-      const id = lastTransaction.docs[0].id;
-      setID(id);
+      const lastTransactionID = await fetchLastUnclaimedTransaction();
+      setID(lastTransactionID);
     })();
   }, []);
 
