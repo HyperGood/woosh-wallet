@@ -7,19 +7,19 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { fetchUsersByField } from '../../api/firestoreService';
 import PageHeader from '../../components/UI/PageHeader';
 import SearchInput from '../../components/UI/SearchInput';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
+import PhoneContactsList from '../../components/modals/BottomSheetContent/PhoneContactsList';
 import ContactListItem from '../../components/request/ContactListItem';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useToggleBottomSheet } from '../../hooks/BottomSheet/useToggleBottomSheet';
 import { usePhoneContacts } from '../../store/ContactsContext';
 import { useTransaction } from '../../store/TransactionContext';
-import { minMaxScale } from '../../utils/scalingFunctions';
 import { fetchAddressFromENS } from '../../utils/ethereumUtils';
-import { fetchUsersByField } from '../../api/firestoreService';
-import PhoneContactsList from '../../components/modals/BottomSheetContent/PhoneContactsList';
+import { minMaxScale } from '../../utils/scalingFunctions';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 

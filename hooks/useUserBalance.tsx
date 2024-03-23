@@ -4,11 +4,16 @@ import * as Sentry from '@sentry/react-native';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 
-import { useTokenPrices } from './useTokenPrices';
 import { storage } from '../app/_layout';
 import publicClient, { chain } from '../constants/viemPublicClient';
-import { AUSDCTokenAddresses, USDCTokenAddresses, aUSDcAddress, usdcAddress } from '../references/tokenAddresses';
+import {
+  AUSDCTokenAddresses,
+  USDCTokenAddresses,
+  aUSDcAddress,
+  usdcAddress,
+} from '../references/tokenAddresses';
 import { useSmartAccount } from '../store/SmartAccountContext';
+import { useTokenPrices } from '../api/queries';
 
 interface Token {
   name: string;
@@ -38,21 +43,25 @@ export const useUserBalance = () => {
   const [isFetchingBalance, setIsFetchingBalance] = useState<boolean>(true);
   const [errorFetchingBalance, setErrorFetchingBalance] = useState<string | null>(null);
   const { address } = useSmartAccount();
-  const { tokenPrices } = useTokenPrices();
-  const usdcPrice = tokenPrices?.['usd-coin'].mxn;
+  const tokenPricesQuery = useTokenPrices();
+  const usdcPrice = tokenPricesQuery.data?.['usd-coin'].mxn;
   const chainId = chain.id;
 
   const USDC: Token = {
     name: 'USDc',
     address:
-      chainId && chainId in usdcAddress ? usdcAddress[chainId as keyof USDCTokenAddresses][0] : '0x12',
+      chainId && chainId in usdcAddress
+        ? usdcAddress[chainId as keyof USDCTokenAddresses][0]
+        : '0x12',
     decimals: 6,
   };
 
   const AUSDC: Token = {
     name: 'aUSDc',
     address:
-      chainId && chainId in aUSDcAddress ? aUSDcAddress[chainId as keyof AUSDCTokenAddresses][0] : '0x12',
+      chainId && chainId in aUSDcAddress
+        ? aUSDcAddress[chainId as keyof AUSDCTokenAddresses][0]
+        : '0x12',
     decimals: 6,
   };
 

@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -55,17 +56,21 @@ function Layout() {
     return null;
   }
 
+  const queryClient = new QueryClient();
+
   return (
-    <SessionProvider>
-      <SmartAccountProvider>
-        <UserDataProvider>
-          <Stack>
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          </Stack>
-        </UserDataProvider>
-      </SmartAccountProvider>
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider>
+        <SmartAccountProvider>
+          <UserDataProvider>
+            <Stack>
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+          </UserDataProvider>
+        </SmartAccountProvider>
+      </SessionProvider>
+    </QueryClientProvider>
   );
 }
 

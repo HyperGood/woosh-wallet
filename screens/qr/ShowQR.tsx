@@ -16,11 +16,11 @@ import { Skeleton } from 'moti/skeleton';
 
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
-import { useTokenPrices } from '../../hooks/useTokenPrices';
 import { useSmartAccount } from '../../store/SmartAccountContext';
 import { useUserData } from '../../store/UserDataContext';
 import Button from '../../components/UI/Button';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
+import { useTokenPrices } from '../../api/queries';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -39,8 +39,8 @@ const ShowQR = ({ isBottomSheetOpen, setIsBottomSheetOpen }: IProps) => {
   const [amountMXN, setAmountMXN] = useState('0.00');
   const [amountUSDc, setAmountUSDc] = useState('0.00');
   const [usingMXN, setUsingMXN] = useState(true);
-  const { tokenPrices } = useTokenPrices();
-  const usdcPrice = tokenPrices?.['usd-coin'].mxn;
+  const tokenPricesQuery = useTokenPrices();
+  const usdcPrice = tokenPricesQuery.data?.['usd-coin'].mxn;
 
   useEffect(() => {
     setIsLoading(isFetchingUserData);

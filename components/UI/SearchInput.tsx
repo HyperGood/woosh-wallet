@@ -14,9 +14,10 @@ const SearchInput: FC<SearchInputProps> = ({ searchInput, setSearchInput, isSear
   return (
     <View style={{ position: 'relative', justifyContent: 'center' }}>
       <Input
-        placeholder="Username, ETH address, or ENS"
+        placeholder="Search username, ETH address, or ENS"
         value={searchInput}
         onChangeText={setSearchInput}
+        icon
       />
       <ActivityIndicator
         style={styles.activityIndicator}

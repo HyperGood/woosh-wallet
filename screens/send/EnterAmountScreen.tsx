@@ -9,8 +9,8 @@ import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useDeposit } from '../../hooks/DepositVault/useDeposit';
 import { useSignDeposit } from '../../hooks/DepositVault/useSignDeposit';
-import { useTransaction } from '../../store/TransactionContext';
 import { useSendUSDc } from '../../hooks/Transactions/useSendUSDc';
+import { useTransaction } from '../../store/TransactionContext';
 
 const EnterAmountScreen = () => {
   const [amount, setAmount] = useState('0');
