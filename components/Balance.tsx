@@ -84,10 +84,15 @@ const Balance = () => {
           <YieldIcon />
           <Text style={styles.yieldText}>
             +$
-            {yieldForPeriod.toLocaleString('en', {
-              maximumFractionDigits: 7,
-              minimumFractionDigits: 2,
-            })}{' '}
+            {yieldForPeriod > 0.0099
+              ? yieldForPeriod.toLocaleString('en', {
+                  maximumFractionDigits: 3,
+                  minimumFractionDigits: 2,
+                })
+              : yieldForPeriod.toLocaleString('en', {
+                  maximumFractionDigits: 7,
+                  minimumFractionDigits: 2,
+                })}{' '}
             USD/{periods[currentPeriodIndex]}
           </Text>
         </Pressable>
@@ -112,7 +117,7 @@ const styles = StyleSheet.create({
     color: COLORS.dark,
   },
   decimal: {
-    fontSize: 48,
+    fontSize: 36,
     fontFamily: 'FHOscar',
   },
   mainCurrency: {

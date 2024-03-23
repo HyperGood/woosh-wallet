@@ -12,8 +12,9 @@ export interface Transaction {
   transactionHash: string;
   claimed: boolean;
   claimedBy?: string;
-  createdAt: Date;
-  claimedAt?: Date | null;
+  createdAt: any;
+  claimedAt?: any;
   txId: string;
   description?: string;
+  type: 'ethAddress' | 'depositVault';
 }

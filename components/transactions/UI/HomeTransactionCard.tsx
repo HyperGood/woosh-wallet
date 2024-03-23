@@ -3,60 +3,42 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
+import { Transaction } from '../../../models/Transaction';
 import { userAddressAtom } from '../../../store/store';
 
-interface TranscationCardProps {
-  amount: string;
-  recipientName?: string;
-  senderName?: string;
-  recipientImage?: any;
-  description?: string;
-  date: Date;
-  claimed?: boolean;
-  sender?: string;
-}
-const HomeTransactionCard: React.FC<TranscationCardProps> = ({
-  amount,
-  recipientName,
-  senderName,
-  recipientImage,
-  description,
-  date,
-  claimed,
-  sender,
-}) => {
+const HomeTransactionCard = ({ transaction }: { transaction: Transaction }) => {
   const address = useAtomValue(userAddressAtom);
 
-  const claimedTextStyles = claimed ? { opacity: 1 } : { opacity: 0.5 };
+  const claimedTextStyles = transaction.claimed ? { opacity: 1 } : { opacity: 0.5 };
 
   const formattedTime = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
     minute: 'numeric',
-  }).format(date);
+  }).format(transaction.createdAt.toDate());
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.amount, sender !== address && styles.positive]}>
-        {sender !== address ? '+' : '-'}$
-        {Number(amount).toLocaleString('us', {
+      <Text style={[styles.amount, transaction.senderAddress !== address && styles.positive]}>
+        {transaction.senderAddress !== address ? '+' : '-'}$
+        {Number(transaction.amount).toLocaleString('us', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 5,
         })}
       </Text>
-      {recipientImage && <Image source={recipientImage} style={styles.userImage} />}
+
       <Text style={styles.recipientName}>
-        {sender !== address
-          ? `${i18n.t('from')}: ${senderName}`
-          : `${i18n.t('to')}: ${recipientName}`}
+        {transaction.senderAddress !== address
+          ? `${i18n.t('from')}: ${transaction.sender}`
+          : `${i18n.t('to')}: ${transaction.recipientName}`}
       </Text>
-      <Text style={styles.description}>{description}</Text>
+      <Text style={styles.description}>{transaction.description}</Text>
       <View>
-        <Text style={styles.date}>{date.toDateString()}</Text>
+        <Text style={styles.date}>{transaction.createdAt.toDate().toDateString()}</Text>
         <Text style={styles.date}>{formattedTime}</Text>
       </View>
-      {sender === address && (
+      {transaction.senderAddress === address && transaction.type !== 'ethAddress' && (
         <Text style={[styles.claimedText, claimedTextStyles]}>
-          {claimed ? i18n.t('claimed') : i18n.t('unclaimed')}
+          {transaction.claimed ? i18n.t('claimed') : i18n.t('unclaimed')}
         </Text>
       )}
     </View>
@@ -71,7 +53,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   amount: {
-    fontFamily: 'Satoshi-Bold',
+    fontFamily: 'FHOscar',
     fontSize: 32,
     letterSpacing: -0.02,
     color: COLORS.gray[600],

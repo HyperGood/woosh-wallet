@@ -41,15 +41,7 @@ const PreviousTransactions = ({
               key={transaction.id}>
               <View style={[index === 0 && styles.rotateLeft]} key={transaction.id}>
                 {transaction.id ? (
-                  <TransactionCardHome
-                    amount={transaction.amount || '0'}
-                    recipientName={transaction.recipientName}
-                    description={transaction.description}
-                    date={transaction.createdAt?.toDate()}
-                    claimed={Boolean(transaction.claimedAt)}
-                    sender={transaction.senderAddress}
-                    senderName={transaction.sender}
-                  />
+                  <TransactionCardHome transaction={transaction} />
                 ) : (
                   <div>No transaction ID found</div>
                 )}
@@ -63,15 +55,7 @@ const PreviousTransactions = ({
               onPress={() => (toggleActionTray(), setTransactionInfo(transaction))}
               key={transaction.id}>
               <View style={[index === 1 && styles.rotateRight]} key={transaction.id}>
-                <TransactionCardHome
-                  amount={transaction.amount || '0'}
-                  recipientName={transaction.recipientName}
-                  description={transaction.description}
-                  date={transaction.createdAt?.toDate()}
-                  claimed={Boolean(transaction.claimedAt)}
-                  sender={transaction.senderAddress}
-                  senderName={transaction.sender}
-                />
+                <TransactionCardHome transaction={transaction} />
               </View>
             </Pressable>
           ))}
