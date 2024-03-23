@@ -4,6 +4,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useEffect } from 'react';
 
 import { fetchUserByEthAddress } from '../../../api/firestoreService';
+import { useUserBalance } from '../../../hooks/useUserBalance';
 import { ContactProvider } from '../../../store/ContactsContext';
 import { useUserData } from '../../../store/UserDataContext';
 import { authAtom, userAddressAtom } from '../../../store/store';
@@ -12,10 +13,11 @@ export default function Layout() {
   const address = useAtomValue(userAddressAtom);
   const [token] = useAtom(authAtom);
   const { setUserData, setIsFetchingUserData } = useUserData();
-
+  const { fetchBalance } = useUserBalance();
   useEffect(() => {
     if (address) {
       setIsFetchingUserData(true);
+      fetchBalance();
       fetchUserByEthAddress(address)
         .then((user) => {
           setUserData(user);

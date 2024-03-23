@@ -25,7 +25,7 @@ const SettingsScreen = () => {
   const [username, setUsername] = useState('');
   const [joinedOn, setJoinedOn] = useState('');
   const name = userData?.name;
-  const reference = storage().ref(`avatars/${name}.jpg`);
+  const reference = storage().ref(`avatars/${address}.jpg`);
   const [image, setImage] = useState<any>(placeholderUser);
 
   useEffect(() => {

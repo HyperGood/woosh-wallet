@@ -1,11 +1,10 @@
 // hooks/useUserBalance.tsx
 import firestore from '@react-native-firebase/firestore';
 import * as Sentry from '@sentry/react-native';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 
-import { useTokenPrices } from '../api/queries';
 import { storage } from '../app/_layout';
 import publicClient, { chain } from '../constants/viemPublicClient';
 import {
@@ -14,7 +13,7 @@ import {
   aUSDcAddress,
   usdcAddress,
 } from '../references/tokenAddresses';
-import { userAddressAtom } from '../store/store';
+import { totalBalanceAtom, userAddressAtom } from '../store/store';
 
 interface Token {
   name: string;
@@ -40,13 +39,11 @@ interface BalanceUpdateData {
 
 export const useUserBalance = () => {
   const [tokenBalances, setTokenBalances] = useState<Balance>({ usdc: 0, ausdc: 0 });
-  const [fiatBalances, setFiatBalances] = useState<Balance>({ usdc: 0, ausdc: 0 });
   const [isFetchingBalance, setIsFetchingBalance] = useState<boolean>(true);
   const [errorFetchingBalance, setErrorFetchingBalance] = useState<string | null>(null);
   const address = useAtomValue(userAddressAtom);
-  const tokenPricesQuery = useTokenPrices();
-  const usdcPrice = tokenPricesQuery.data?.['usd-coin'].mxn;
   const chainId = chain.id;
+  const [, setTotalBalance] = useAtom(totalBalanceAtom);
 
   const USDC: Token = {
     name: 'USDc',
@@ -159,23 +156,8 @@ export const useUserBalance = () => {
           ausdc: formattedAusdcBalance,
         });
 
-        if (usdcPrice) {
-          setFiatBalances({
-            usdc: formattedUsdcBalance * usdcPrice,
-            ausdc: formattedAusdcBalance * usdcPrice,
-          });
-          storage.set('usdcPrice', usdcPrice);
-        } else {
-          const storedUsdcPrice = storage.getNumber('usdcPrice');
-          if (storedUsdcPrice) {
-            setFiatBalances({
-              usdc: formattedUsdcBalance * storedUsdcPrice,
-              ausdc: formattedAusdcBalance * storedUsdcPrice,
-            });
-          } else {
-            throw new Error("Couldn't fetch balance and no stored balance found");
-          }
-        }
+        setTotalBalance(formattedUsdcBalance + formattedAusdcBalance);
+
         return { usdc: formattedUsdcBalance, ausdc: formattedAusdcBalance };
       } else {
         setErrorFetchingBalance("There's no address! Couldn't fetch balance");
@@ -202,13 +184,12 @@ export const useUserBalance = () => {
         },
       });
     }
-  }, [address, usdcPrice]);
+  }, [address]);
 
   return {
     tokenBalances,
-    fiatBalances,
     isFetchingBalance,
     errorFetchingBalance,
-    refetchBalance: fetchBalance,
+    fetchBalance,
   };
 };

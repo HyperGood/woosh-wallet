@@ -32,12 +32,15 @@ const Header = () => {
     }
   }, [userData, address]);
 
-  const reference = storage().ref(`avatars/${address}.jpg`);
   const [imageSrc, setImageSrc] = useState<any>(placeholderUser);
 
   useEffect(() => {
+    if (!address) {
+      return;
+    }
     const fetchImage = async () => {
       try {
+        const reference = storage().ref(`avatars/${address}.jpg`);
         const url = await reference.getDownloadURL();
         setImageSrc(url);
       } catch (error) {
@@ -48,7 +51,7 @@ const Header = () => {
     };
 
     fetchImage();
-  }, [reference]);
+  }, [address]);
 
   return (
     <View style={styles.container}>

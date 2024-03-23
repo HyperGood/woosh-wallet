@@ -1,11 +1,13 @@
+import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
+import { useTokenPrices } from '../api/queries';
 import YieldIcon from '../assets/images/icons/YieldIcon';
 import { COLORS } from '../constants/global-styles';
 import { useAaveData } from '../hooks/AAVE/useAaveData';
-import { useUserBalance } from '../hooks/useUserBalance';
+import { totalBalanceAtom } from '../store/store';
 import { scale } from '../utils/scalingFunctions';
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -13,51 +15,82 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const Balance = () => {
   const token = 'USD';
   const mainCurrency = 'MXN';
-  const { fiatBalances, tokenBalances } = useUserBalance();
-  const [totalFiatBalance, setTotalFiatBalance] = useState<number>(0);
-  const [totalTokenBalance, setTotalTokenBalance] = useState<number>(0);
-  const [interestPerBlock, setInterestPerBlock] = useState<number>(0);
-  const usdcApy = useAaveData();
+  const totalBalance = useAtomValue(totalBalanceAtom);
+  const [fiatBalance, setFiatBalance] = useState<number>(0);
 
-  function calculateInterest(principal: number, apy: number): number {
+  const usdcApy = useAaveData();
+  const tokenPricesQuery = useTokenPrices();
+  const usdcPrice = tokenPricesQuery.data?.['usd-coin'].mxn || 1;
+
+  const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
+  const periods = ['minute', 'day', 'week', 'month', 'year'] as const;
+  const [yieldForPeriod, setYieldForPeriod] = useState<number>(0);
+
+  const calculateYieldForPeriod = (
+    principal: number,
+    apy: number,
+    period: 'minute' | 'day' | 'week' | 'month' | 'year'
+  ): number => {
     const apyDecimal = apy / 100;
-    console.log('apyDecimal', apyDecimal);
     const annualInterest = principal * apyDecimal;
-    console.log('annualInterest', annualInterest);
-    const interestPerSecond = annualInterest / 31536000;
-    console.log('interestPerSecond', interestPerSecond);
-    return interestPerSecond;
-  }
+    const interest = annualInterest / (365 * 24 * 60);
+    const minutesInPeriod = {
+      minute: 1,
+      day: 1440,
+      week: 10080,
+      month: 43200,
+      year: 525600,
+    };
+
+    return interest * minutesInPeriod[period];
+  };
 
   useEffect(() => {
-    if (fiatBalances) {
-      setTotalFiatBalance(fiatBalances.ausdc + fiatBalances.usdc);
+    if (totalBalance) {
+      setFiatBalance(totalBalance * usdcPrice);
+      const currentPeriod = periods[currentPeriodIndex];
+      setYieldForPeriod(calculateYieldForPeriod(totalBalance || 0, usdcApy, currentPeriod));
     }
-    if (tokenBalances) {
-      console.log('tokenBalances', tokenBalances);
-      setTotalTokenBalance(tokenBalances.ausdc + tokenBalances.usdc);
-      setInterestPerBlock(calculateInterest(tokenBalances.ausdc, usdcApy));
-    }
-  }, [fiatBalances]);
+  }, [totalBalance, usdcApy]);
+
+  const handlePress = () => {
+    setCurrentPeriodIndex((currentPeriodIndex + 1) % periods.length);
+  };
+
+  useEffect(() => {
+    const currentPeriod = periods[currentPeriodIndex];
+    setYieldForPeriod(calculateYieldForPeriod(totalBalance || 0, usdcApy, currentPeriod));
+  }, [currentPeriodIndex]);
 
   return (
     <View style={styles.wrapper}>
       <Animated.View layout={Layout} entering={FadeIn.duration(1500)} style={styles.container}>
         <Text style={styles.number}>
-          ${totalFiatBalance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.
-          <Text style={styles.decimal}>{(totalFiatBalance % 1).toFixed(2).slice(2)}</Text>
+          ${fiatBalance?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.
+          <Text style={styles.decimal}>{(fiatBalance % 1).toFixed(2).slice(2)}</Text>
         </Text>
         <Text style={styles.mainCurrency}>{mainCurrency}</Text>
       </Animated.View>
 
       <View style={styles.bottomWrapper}>
         <Text style={styles.tokenBalance}>
-          {totalTokenBalance} {token}
+          {totalBalance?.toLocaleString('en', {
+            maximumFractionDigits: 8,
+            minimumFractionDigits: 2,
+          }) || 0}{' '}
+          {token}
         </Text>
-        <View style={styles.yieldWrapper}>
+        <Pressable style={styles.yieldWrapper} onPress={handlePress}>
           <YieldIcon />
-          <Text style={styles.yieldText}>+{interestPerBlock.toFixed(7)} USD/s</Text>
-        </View>
+          <Text style={styles.yieldText}>
+            +$
+            {yieldForPeriod.toLocaleString('en', {
+              maximumFractionDigits: 7,
+              minimumFractionDigits: 2,
+            })}{' '}
+            USD/{periods[currentPeriodIndex]}
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -74,7 +107,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   number: {
-    fontSize: 80,
+    fontSize: 72,
     fontFamily: 'FHOscar',
     color: COLORS.dark,
   },

@@ -8,6 +8,8 @@ import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useUserBalance } from '../../hooks/useUserBalance';
 import { scale } from '../../utils/scalingFunctions';
+import { useAtomValue } from 'jotai';
+import { totalBalanceAtom } from '../../store/store';
 
 interface NumberPadProps {
   onChange: (amount: string) => void;
@@ -32,6 +34,7 @@ const NumberPad = ({
   const [isDecimal, setIsDecimal] = useState(false);
   const currency = '🇺🇸 USD';
   const { tokenBalances } = useUserBalance();
+  const totalBalance = useAtomValue(totalBalanceAtom);
 
   const onNumberPress = (number: string) => {
     if (number === '.') {
@@ -53,10 +56,7 @@ const NumberPad = ({
         if (type === 'request') {
           finalAmount = newAmount; // allow any number if type is "request"
         } else {
-          finalAmount =
-            parseFloat(newAmount) <= tokenBalances.ausdc
-              ? newAmount
-              : prevAmount;
+          finalAmount = parseFloat(newAmount) <= tokenBalances.ausdc ? newAmount : prevAmount;
         }
         onChange(finalAmount); // call the passed callback function
         return finalAmount;
@@ -104,7 +104,7 @@ const NumberPad = ({
         {type === 'send' && (
           <Pressable onPress={setAmountToMax}>
             <Text style={styles.balance}>
-              {i18n.t('youHave')} ${tokenBalances.ausdc}
+              {i18n.t('youHave')} ${totalBalance?.toFixed(2)}
             </Text>
           </Pressable>
         )}

@@ -35,6 +35,7 @@ export default function Page() {
           onPress={async () => {
             try {
               await authenticate();
+
               router.replace('/');
             } catch (error) {
               console.error(error);
