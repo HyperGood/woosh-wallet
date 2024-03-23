@@ -7,6 +7,6 @@ export const useTokenPrices = () => {
     queryKey: ['tokenPrices'],
     queryFn: getTokenPrices,
     refetchOnWindowFocus: false,
-    refetchInterval: 60000,
+    refetchInterval: 60000 * 5,
   });
 };

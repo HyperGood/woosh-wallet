@@ -1,5 +1,4 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
@@ -14,7 +13,7 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const Balance = () => {
   const token = 'USD';
   const mainCurrency = 'MXN';
-  const { fiatBalances, tokenBalances, refetchBalance } = useUserBalance();
+  const { fiatBalances, tokenBalances } = useUserBalance();
   const [totalFiatBalance, setTotalFiatBalance] = useState<number>(0);
   const [totalTokenBalance, setTotalTokenBalance] = useState<number>(0);
   const [interestPerBlock, setInterestPerBlock] = useState<number>(0);
@@ -29,12 +28,6 @@ const Balance = () => {
     console.log('interestPerSecond', interestPerSecond);
     return interestPerSecond;
   }
-
-  useFocusEffect(
-    useCallback(() => {
-      refetchBalance();
-    }, [])
-  );
 
   useEffect(() => {
     if (fiatBalances) {
