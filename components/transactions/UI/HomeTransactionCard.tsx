@@ -1,10 +1,11 @@
 import { useAtomValue } from 'jotai';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from '../../../constants/global-styles';
 import i18n from '../../../constants/i18n';
 import { Transaction } from '../../../models/Transaction';
 import { userAddressAtom } from '../../../store/store';
+import { truncateAddress } from '../../../utils/ethereumUtils';
 
 const HomeTransactionCard = ({ transaction }: { transaction: Transaction }) => {
   const address = useAtomValue(userAddressAtom);
@@ -29,7 +30,7 @@ const HomeTransactionCard = ({ transaction }: { transaction: Transaction }) => {
       <Text style={styles.recipientName}>
         {transaction.senderAddress !== address
           ? `${i18n.t('from')}: ${transaction.sender}`
-          : `${i18n.t('to')}: ${transaction.recipientName}`}
+          : `${i18n.t('to')}: ${transaction.recipientName ? transaction.recipientName : transaction.type === 'ethAddress' ? truncateAddress(transaction.recipientInfo || '') : transaction.recipientInfo}`}
       </Text>
       <Text style={styles.description}>{transaction.description}</Text>
       <View>

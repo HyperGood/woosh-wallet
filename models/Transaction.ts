@@ -7,6 +7,7 @@ export interface Transaction {
   sender: string;
   senderAddress: string;
   recipientName?: string;
+  recipientInfo?: string;
   recipientPhone?: string;
   amountInUSD: number;
   transactionHash: string;

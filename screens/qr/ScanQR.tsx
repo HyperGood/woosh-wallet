@@ -8,7 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Button from '../../components/UI/Button';
 import i18n from '../../constants/i18n';
 import { useSendUSDc } from '../../hooks/Transactions/useSendUSDc';
-import LoadingIndicator from '../../components/UI/LoadingIndicator';
+import LoadingIndicator from '../../components/UI/LoadingSpinner';
 import { COLORS } from '../../constants/global-styles';
 import BottomSheet, { BottomSheetRefProps } from '../../components/modals/BottomSheet';
 
@@ -145,7 +145,7 @@ const ScanQR = ({ disableNav, step, setStep }: IProps) => {
       )}
       {step === 1 && (
         <View style={[styles.contentContainer, { backgroundColor: COLORS.light }]}>
-          <LoadingIndicator isLoading={true} />
+          <LoadingIndicator />
           <Text style={{ fontSize: 17, fontFamily: 'Satoshi', marginTop: 16 }}>
             Waiting For Confirmation
           </Text>

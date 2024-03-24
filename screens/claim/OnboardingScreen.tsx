@@ -5,7 +5,6 @@ import * as Sentry from '@sentry/react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useAtomValue } from 'jotai';
-import LottieView from 'lottie-react-native';
 import { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, Pressable, Image, ScrollView } from 'react-native';
 import Animated, {
@@ -18,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
+import LoadingSpinner from '../../components/UI/LoadingSpinner';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
@@ -173,12 +173,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
             ]}>
             <View style={{ alignItems: 'center', gap: 8 }}>
               {/*It would be cool to have two progress bars one for each state */}
-              <LottieView
-                source={require('../../assets/animations/loading.json')}
-                autoPlay
-                loop
-                style={{ width: 40, height: 40 }}
-              />
+              <LoadingSpinner />
               <Text style={{ color: COLORS.light, fontSize: 24, marginTop: 16 }}>
                 {loadingState}...
               </Text>

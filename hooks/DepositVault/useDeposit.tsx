@@ -65,9 +65,6 @@ export const useDeposit = () => {
   const tokenDecimals = 6;
 
   const deposit = async (amount: string) => {
-    setIsDepositing(true);
-    console.log('Deposit Vault', depositVaultAddress);
-    console.log('Token Address', tokenAddress);
     try {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       if (hasHardware) {
@@ -76,6 +73,7 @@ export const useDeposit = () => {
           Alert.alert('Authentication Failed!!');
           return;
         }
+        setIsDepositing(true);
         if (!kernelClient) throw new Error('No Kernel Client');
         if (!account) throw new Error('No Account');
         console.log('Approving token spend');
@@ -132,7 +130,7 @@ export const useDeposit = () => {
       setDepositError(e);
       console.log('Error: ', e);
       Sentry.captureException(e);
-      Alert.alert('Transaction Failed!!');
+      Alert.alert('Transaction Failed!! ');
     } finally {
       setIsDepositing(false);
     }

@@ -12,7 +12,7 @@ export const COLORS = {
   secondary: {
     400: '#EBEBEB',
   },
-  dark: '#0B100C',
+  dark: '#0B0C10',
   light: '#F4F5F3',
   white: '#FFFFFF',
 };

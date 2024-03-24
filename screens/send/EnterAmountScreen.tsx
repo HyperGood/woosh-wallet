@@ -1,9 +1,11 @@
 import { router } from 'expo-router';
-import LottieView from 'lottie-react-native';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
+import LoadingSpinner from '../../components/UI/LoadingSpinner';
 import NumberPad from '../../components/UI/NumberPad';
 import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
@@ -11,15 +13,17 @@ import { useDeposit } from '../../hooks/DepositVault/useDeposit';
 import { useSignDeposit } from '../../hooks/DepositVault/useSignDeposit';
 import { useSendUSDc } from '../../hooks/Transactions/useSendUSDc';
 import { useTransaction } from '../../store/TransactionContext';
+import { truncateAddress } from '../../utils/ethereumUtils';
 
 const EnterAmountScreen = () => {
+  const insets = useSafeAreaInsets();
   const [amount, setAmount] = useState('0');
   const [description, setDescription] = useState('');
   const { deposit, isDepositing, depositError, depositHash } = useDeposit();
   const [isSaving, setIsSaving] = useState(false);
   const { signDeposit } = useSignDeposit();
   const { transactionData, setTransactionData } = useTransaction();
-  const { sendUSDc, transactionHash: sendHash } = useSendUSDc();
+  const { sendUSDc, transactionHash: sendHash, isSending, transactionError } = useSendUSDc();
 
   useEffect(() => {
     (async () => {
@@ -72,40 +76,41 @@ const EnterAmountScreen = () => {
   }
 
   return (
-    <ScrollView style={{ flex: 1, width: '100%' }}>
-      <View style={styles.wrapper}>
-        <View>
-          <View style={styles.recipient}>
-            <Text style={styles.recipientName}>
-              {i18n.t('sendingTo')} {transactionData?.recipientName}
-            </Text>
+    <ScrollView style={{ flex: 1, width: '100%' }} centerContent>
+      <View style={[styles.wrapper, { paddingTop: insets.top, position: 'relative' }]}>
+        <View style={styles.recipient}>
+          {(isDepositing || isSaving || isSending) && !depositError && !transactionError ? null : (
+            <BackButton />
+          )}
+          <Text style={styles.recipientName}>
+            {i18n.t('sendingTo')}{' '}
+            {transactionData?.recipientName
+              ? transactionData?.recipientName
+              : truncateAddress(transactionData?.recipientInfo || '')}
+          </Text>
+          {transactionData?.recipientPhone && (
             <Text style={styles.recipientPhone}>{transactionData?.recipientPhone}</Text>
-          </View>
-          {(isDepositing || isSaving) && !depositError ? (
-            <LottieView
-              source={require('../../assets/animations/loading.json')}
-              autoPlay
-              loop
-              style={{ width: 40, height: 40 }}
-            />
-          ) : (
-            <>
-              <NumberPad
-                onChange={setAmount}
-                description={description}
-                setDescription={setDescription}
-              />
-              <View style={styles.buttonWrapper}>
-                <Button
-                  title={i18n.t('send')}
-                  type="secondary"
-                  onPress={handleSendPress}
-                  disabled={parseFloat(amount) <= 0}
-                />
-              </View>
-            </>
           )}
         </View>
+        {(isDepositing || isSaving || isSending) && !depositError && !transactionError ? (
+          <LoadingSpinner />
+        ) : (
+          <View style={{ flex: 1, width: '100%' }}>
+            <NumberPad
+              onChange={setAmount}
+              description={description}
+              setDescription={setDescription}
+            />
+            <View style={styles.buttonWrapper}>
+              <Button
+                title={i18n.t('send')}
+                type="secondary"
+                onPress={handleSendPress}
+                disabled={parseFloat(amount) <= 0}
+              />
+            </View>
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -116,17 +121,20 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     paddingBottom: 40,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   recipient: {
-    marginHorizontal: 16,
+    paddingHorizontal: 16,
     gap: 4,
     marginBottom: 8,
+    width: '100%',
   },
   recipientName: {
     fontSize: 24,
     fontFamily: 'Satoshi-Bold',
     color: COLORS.light,
+    textAlign: 'center',
   },
   recipientPhone: {
     fontSize: 16,

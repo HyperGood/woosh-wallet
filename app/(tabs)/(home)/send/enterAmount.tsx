@@ -1,15 +1,13 @@
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import PageHeader from '../../../../components/UI/PageHeader';
 import { COLORS } from '../../../../constants/global-styles';
 import EnterAmountScreen from '../../../../screens/send/EnterAmountScreen';
 
 const enterAmount = () => {
   return (
-    <SafeAreaView style={styles.wrapper}>
-      <PageHeader pageTitle="Send Funds" />
+    <View style={styles.wrapper}>
       <EnterAmountScreen />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -18,6 +16,5 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     backgroundColor: COLORS.dark,
-    paddingTop: 24,
   },
 });

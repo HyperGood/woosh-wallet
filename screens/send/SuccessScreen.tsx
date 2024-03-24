@@ -36,7 +36,7 @@ const SuccessScreen = () => {
   };
 
   useEffect(() => {
-    if (!transactionData) {
+    if (!transactionData || !signature) {
       console.log('No transaction data found');
       return;
     }
@@ -53,7 +53,7 @@ const SuccessScreen = () => {
       .then(() => {
         console.log('Transaction added!');
       });
-  }, [transactionData, signature]);
+  }, [signature]);
 
   if (!transactionData) {
     return null;

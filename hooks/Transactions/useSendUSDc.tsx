@@ -20,7 +20,6 @@ export const useSendUSDc = () => {
   const tokenDecimals = 6;
 
   const sendUSDc = async (amount: string, recipientAddress: `0x${string}`) => {
-    setIsSending(true);
     try {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       if (hasHardware) {
@@ -29,6 +28,7 @@ export const useSendUSDc = () => {
           Alert.alert('Authentication Failed!!');
           return;
         }
+        setIsSending(true);
         if (!kernelClient) throw new Error('No Kernel Client');
         if (!account) throw new Error('No Account');
         console.log('Sending ');
