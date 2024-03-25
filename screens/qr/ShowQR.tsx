@@ -100,20 +100,34 @@ const ShowQR = ({ isBottomSheetOpen, setIsBottomSheetOpen }: IProps) => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
-      <SafeAreaView style={{ flex: 1, width: '100%' }}>
+      <View style={{ flex: 1, width: '100%' }}>
         <View style={styles.container}>
           {isBottomSheetOpen && (
             <BlurView style={styles.blurBackground} intensity={20} tint="dark" />
           )}
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={styles.qRPlaceHolder}>
-              <QRCode
-                value={JSON.stringify({
-                  address,
-                  amountInMXN: new Number(amountMXN),
-                  amountInUSDc: new Number(amountUSDc),
-                })}
-              />
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 16,
+                backgroundColor: COLORS.white,
+                borderRadius: 16,
+              }}>
+              <View style={styles.qRPlaceHolder}>
+                <QRCode
+                  value={JSON.stringify({
+                    address,
+                    amountInMXN: new Number(amountMXN),
+                    amountInUSDc: new Number(amountUSDc),
+                  })}
+                />
+              </View>
             </View>
             {isLoading ? (
               <Skeleton
@@ -127,7 +141,7 @@ const ShowQR = ({ isBottomSheetOpen, setIsBottomSheetOpen }: IProps) => {
                   styles.accountName,
                   parseFloat(amountMXN) !== 0 ? { fontSize: 24 } : { fontSize: 32 },
                 ]}>
-                {username}
+                ${username}
               </Text>
             )}
             {parseFloat(amountMXN) !== 0 && (
@@ -169,6 +183,7 @@ const ShowQR = ({ isBottomSheetOpen, setIsBottomSheetOpen }: IProps) => {
                       value={usingMXN ? amountMXN : amountUSDc}
                       keyboardType="number-pad"
                       selectTextOnFocus={true}
+                      returnKeyType="done"
                     />
                     <Text style={{ fontSize: 16, paddingBottom: 16 }}>
                       {usingMXN ? ' MXN' : ' USDc'}
@@ -185,7 +200,7 @@ const ShowQR = ({ isBottomSheetOpen, setIsBottomSheetOpen }: IProps) => {
             </BottomSheet>
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     </GestureHandlerRootView>
   );
 };
@@ -195,6 +210,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary[400],
     width: '100%',
+    padding: 16,
   },
   backButton: {
     backgroundColor: COLORS.light,
@@ -207,14 +223,12 @@ const styles = StyleSheet.create({
   qRPlaceHolder: {
     height: 257,
     width: 257,
-    backgroundColor: COLORS.light,
-    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   accountName: {
     fontSize: 32,
-    fontFamily: 'Satoshi',
+    fontFamily: 'Satoshi-bold',
     fontWeight: '700',
     color: COLORS.dark,
     marginVertical: 20,
@@ -240,7 +254,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    width: 230,
     marginTop: 24,
     flexDirection: 'row',
   },

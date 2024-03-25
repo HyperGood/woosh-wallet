@@ -6,6 +6,7 @@ import { Skeleton } from 'moti/skeleton';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import QRIcon from '../../assets/images/icons/QRIcon';
 import placeholderUser from '../../assets/images/profile.png';
 import { COLORS, SkeletonCommonProps } from '../../constants/global-styles';
 import { useUserData } from '../../store/UserDataContext';
@@ -71,7 +72,9 @@ const Header = () => {
         </Skeleton>
       </View>
 
-      <View />
+      <Pressable onPress={() => router.push('/(tabs)/(home)/qr')}>
+        <QRIcon color={COLORS.dark} />
+      </Pressable>
     </View>
   );
 };
@@ -82,7 +85,7 @@ const styles = StyleSheet.create({
     gap: 8,
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     width: '100%',
     marginBottom: scale(24),
     paddingTop: 16,

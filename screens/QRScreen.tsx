@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { COLORS } from '../constants/global-styles';
-import i18n from '../constants/i18n';
 import ScanQR from './qr/ScanQR';
 import ShowQR from './qr/ShowQR';
-import QRShow from '../assets/images/icons/QRShow';
 import QRScan from '../assets/images/icons/QRScan';
+import QRShow from '../assets/images/icons/QRShow';
+import { COLORS } from '../constants/global-styles';
+import i18n from '../constants/i18n';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const DEVICE_WIDTH = Dimensions.get('window').width;
 
 const QRScreen = () => {
   const [showScanQR, setShowScanQR] = useState(true);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [scanQRStep, setScanQRStep] = useState(0);
+  const insets = useSafeAreaInsets();
 
   const showScanQRScreen = () => {
     setShowScanQR(true);
@@ -35,7 +39,7 @@ const QRScreen = () => {
         style={{
           position: 'absolute',
           zIndex: 9999,
-          top: 45,
+          top: insets.top,
           left: 16,
           display: scanQRStep === 1 ? 'none' : 'flex',
         }}>
@@ -84,7 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backButton: {
-    backgroundColor: COLORS.light,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     width: 48,
     height: 48,
     borderRadius: 24,
@@ -94,8 +98,10 @@ const styles = StyleSheet.create({
   navigation: {
     position: 'absolute',
     bottom: 24,
+    left: 16,
+    right: 16,
     flexDirection: 'row',
-    width: 400,
+    width: DEVICE_WIDTH - 32,
     height: 72,
     backgroundColor: COLORS.light,
     borderRadius: 50,
@@ -103,7 +109,7 @@ const styles = StyleSheet.create({
   },
   navigationButton: {
     flexDirection: 'row',
-    width: 200,
+    width: '50%',
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',

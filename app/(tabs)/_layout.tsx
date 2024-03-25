@@ -3,7 +3,7 @@ import { Tabs, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import HomeIcon from '../../assets/images/icons/HomeIcon';
-import QRIcon from '../../assets/images/icons/QRIcon';
+//import QRIcon from '../../assets/images/icons/QRIcon';
 import TransactionIcon from '../../assets/images/icons/TransactionIcon';
 import { COLORS } from '../../constants/global-styles';
 
@@ -57,14 +57,14 @@ export default function TabLayout() {
           tabBarShowLabel: false,
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="qr"
         options={{
           tabBarIcon: ({ color }) => <QRIcon color={color} />,
           headerShown: false,
           tabBarShowLabel: false,
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="transactions"
         options={{
