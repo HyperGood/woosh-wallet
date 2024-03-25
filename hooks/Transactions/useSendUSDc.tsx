@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useAtomValue } from 'jotai';
+//import { bundlerActions } from 'permissionless';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { encodeFunctionData, parseUnits } from 'viem';
@@ -65,6 +66,10 @@ export const useSendUSDc = () => {
           },
           account,
         });
+        // const bundlerClient = kernelClient.extend(bundlerActions);
+        // await bundlerClient.waitForUserOperationReceipt({
+        //   hash: sendHash,
+        // });
         setTransactionHash(sendHash);
         setIsSending(false);
       }

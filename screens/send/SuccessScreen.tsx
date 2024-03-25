@@ -36,7 +36,7 @@ const SuccessScreen = () => {
   };
 
   useEffect(() => {
-    if (!transactionData || !signature) {
+    if (!transactionData || (transactionData.type === 'depositVault' && !signature)) {
       console.log('No transaction data found');
       return;
     }

@@ -64,7 +64,7 @@ const EnterRecipientScreen = () => {
       } else if (searchInput.startsWith('0x') && searchInput.length === 42) {
         results = [{ id: searchInput, ethAddress: searchInput }];
       } else {
-        const usernameResults = await fetchUsersByField('username', searchInput);
+        const usernameResults = await fetchUsersByField('username', searchInput.toLowerCase());
         const nameResults = await fetchUsersByField('name', searchInput);
         const combinedResults = [...usernameResults, ...nameResults];
         results = Array.from(new Map(combinedResults.map((user) => [user.id, user])).values());
