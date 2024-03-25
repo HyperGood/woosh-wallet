@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
-import { useTokenPrices } from '../api/queries';
 import YieldIcon from '../assets/images/icons/YieldIcon';
 import { COLORS } from '../constants/global-styles';
 import { useAaveData } from '../hooks/AAVE/useAaveData';
-import { totalBalanceAtom } from '../store/store';
+import { fiatBalanceAtom, totalBalanceAtom } from '../store/store';
 import { scale } from '../utils/scalingFunctions';
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -16,11 +15,9 @@ const Balance = () => {
   const token = 'USD';
   const mainCurrency = 'MXN';
   const totalBalance = useAtomValue(totalBalanceAtom);
-  const [fiatBalance, setFiatBalance] = useState<number>(0);
+  const fiatBalance = useAtomValue(fiatBalanceAtom);
 
   const usdcApy = useAaveData();
-  const tokenPricesQuery = useTokenPrices();
-  const usdcPrice = tokenPricesQuery.data?.['usd-coin'].mxn || 1;
 
   const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
   const periods = ['minute', 'day', 'week', 'month', 'year'] as const;
@@ -47,7 +44,6 @@ const Balance = () => {
 
   useEffect(() => {
     if (totalBalance) {
-      setFiatBalance(totalBalance * usdcPrice);
       const currentPeriod = periods[currentPeriodIndex];
       setYieldForPeriod(calculateYieldForPeriod(totalBalance || 0, usdcApy, currentPeriod));
     }

@@ -5,6 +5,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'viem';
 
+import { useTokenPrices } from '../api/queries';
 import { storage } from '../app/_layout';
 import publicClient, { chain } from '../constants/viemPublicClient';
 import {
@@ -13,7 +14,7 @@ import {
   aUSDcAddress,
   usdcAddress,
 } from '../references/tokenAddresses';
-import { totalBalanceAtom, userAddressAtom } from '../store/store';
+import { fiatBalanceAtom, totalBalanceAtom, userAddressAtom } from '../store/store';
 
 interface Token {
   name: string;
@@ -43,7 +44,10 @@ export const useUserBalance = () => {
   const [errorFetchingBalance, setErrorFetchingBalance] = useState<string | null>(null);
   const address = useAtomValue(userAddressAtom);
   const chainId = chain.id;
-  const [, setTotalBalance] = useAtom(totalBalanceAtom);
+  const [totalBalance, setTotalBalance] = useAtom(totalBalanceAtom);
+  const [, setFiatBalance] = useAtom(fiatBalanceAtom);
+  const tokenPricesQuery = useTokenPrices();
+  const usdcPrice = tokenPricesQuery.data?.['usd-coin'].mxn || 1;
 
   const USDC: Token = {
     name: 'USDc',
@@ -169,6 +173,12 @@ export const useUserBalance = () => {
       setIsFetchingBalance(false);
     }
   };
+
+  useEffect(() => {
+    if (totalBalance) {
+      setFiatBalance(totalBalance * usdcPrice);
+    }
+  }, [totalBalance]);
 
   useEffect(() => {
     setIsFetchingBalance(true);
