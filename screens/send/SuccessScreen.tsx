@@ -1,10 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
 import * as Sentry from '@sentry/react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useAtomValue } from 'jotai';
 import { useEffect } from 'react';
-import { SafeAreaView, Share, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, SafeAreaView, Share, StyleSheet, Text, View } from 'react-native';
 
 import BackButton from '../../components/UI/BackButton';
 import Button from '../../components/UI/Button';
@@ -19,6 +19,15 @@ const SuccessScreen = () => {
   const { transactionData, signature } = useTransaction();
   const address = useAtomValue(userAddressAtom);
   const { userData } = useUserData();
+
+  useFocusEffect(() => {
+    const handleBackButton = () => {
+      router.push('/');
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => handleBackButton());
+    return () => backHandler.remove();
+  })
 
   const onShare = async () => {
     try {
