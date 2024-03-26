@@ -58,9 +58,12 @@ function Layout() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserDataProvider>
-        <Stack>
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <Stack.Screen name="login" />
+          <Stack.Screen name="(tabs)" />
         </Stack>
       </UserDataProvider>
     </QueryClientProvider>
