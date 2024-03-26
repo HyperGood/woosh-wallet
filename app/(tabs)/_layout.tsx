@@ -57,14 +57,14 @@ export default function TabLayout() {
           tabBarShowLabel: false,
         }}
       />
-      {/* <Tabs.Screen
-        name="qr"
+      <Tabs.Screen
+        name="(marketplace)/index"
         options={{
-          tabBarIcon: ({ color }) => <QRIcon color={color} />,
+          // tabBarIcon: ({ color }) => <QRIcon color={color} />,
           headerShown: false,
           tabBarShowLabel: false,
         }}
-      /> */}
+      />
       <Tabs.Screen
         name="transactions"
         options={{

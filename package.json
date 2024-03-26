@@ -79,7 +79,8 @@
     "react-native-web": "~0.19.6",
     "react-qr-code": "^2.0.12",
     "viem": "^2.8.6",
-    "wagmi": "^1.4.8"
+    "wagmi": "^1.4.8",
+    "expo-image": "~1.10.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
