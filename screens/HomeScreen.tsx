@@ -2,7 +2,7 @@ import { Link, useFocusEffect } from 'expo-router';
 import { useAtomValue } from 'jotai';
 import { Skeleton } from 'moti/skeleton';
 import { useCallback, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -49,13 +49,36 @@ const HomeScreen = () => {
     }, [address])
   );
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchTrasactionsRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (!address) {
+      console.log('No address found');
+      return;
+    }
+    (async () => {
+      const transactions = await fetchTransactionsByEthAddress(address);
+      setTransactions(transactions);
+    })();
+    setRefreshing(false);
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1, width: '100%' }}>
       <View style={styles.wrapper}>
         <ScrollView
           style={styles.container}
           contentContainerStyle={{ paddingTop: insets.top }}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              tintColor={COLORS.light}
+              titleColor={COLORS.light}
+              refreshing={refreshing}
+              onRefresh={fetchTrasactionsRefresh}
+            />
+          }>
           <Header />
           <Balance />
           <Skeleton show={!transactions} height={120} width="100%">
@@ -96,6 +119,7 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     width: '100%',
+    backgroundColor: COLORS.primary[400],
   },
   container: {
     flex: 1,
