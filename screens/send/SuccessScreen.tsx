@@ -45,6 +45,10 @@ const SuccessScreen = () => {
       .collection('transactions')
       .add({
         ...transactionData,
+        recipientInfo:
+          transactionData.type === 'depositVault'
+            ? transactionData.recipientInfo?.replace(/[\s-()]/g, '')
+            : transactionData.recipientInfo,
         sender: userData.name || address,
         senderAddress: address,
         createdAt: new Date(),
