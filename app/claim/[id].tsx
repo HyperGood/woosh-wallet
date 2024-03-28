@@ -18,7 +18,6 @@ export default function Page() {
   const goToIntro = () => setActiveScreen('intro');
   const goToOnboarding = () => setActiveScreen('onboarding');
 
-  //Use a useEffect to fetch the data from Firestore
   useEffect(() => {
     (async () => {
       const txId = Array.isArray(id) ? id[0] : id;

@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BackButton from '../../components/UI/BackButton';
@@ -12,6 +12,7 @@ import i18n from '../../constants/i18n';
 import { useDeposit } from '../../hooks/DepositVault/useDeposit';
 import { useSignDeposit } from '../../hooks/DepositVault/useSignDeposit';
 import { useSendUSDc } from '../../hooks/Transactions/useSendUSDc';
+import { usePreventRemove } from '../../hooks/usePreventRemove';
 import { useTransaction } from '../../store/TransactionContext';
 import { truncateAddress } from '../../utils/ethereumUtils';
 
@@ -24,6 +25,23 @@ const EnterAmountScreen = () => {
   const { signDeposit } = useSignDeposit();
   const { transactionData, setTransactionData } = useTransaction();
   const { sendUSDc, transactionHash: sendHash, isSending, transactionError } = useSendUSDc();
+
+  const navigation = useNavigation();
+
+  usePreventRemove(isDepositing || isSaving || isSending, ({ data }) => {
+    Alert.alert(
+      'Discard changes?',
+      'You have unsaved changes. Discard them and leave the screen?',
+      [
+        { text: "Don't leave", style: 'cancel', onPress: () => {} },
+        {
+          text: 'Discard',
+          style: 'destructive',
+          onPress: () => navigation.dispatch(data.action),
+        },
+      ]
+    );
+  });
 
   useEffect(() => {
     (async () => {

@@ -14,12 +14,13 @@ interface IntroScreenProps {
   backFuncion: () => void;
 }
 
-const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: IntroScreenProps) => {
+const PhoneScreen = ({ transactionData, nextScreenFunction, backFuncion }: IntroScreenProps) => {
   const [countryCode, setCountryCode] = useState('+52');
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const onButtonClick = () => {
-    if (countryCode + phoneNumber === transactionData.recipientPhone) {
+    const recipientPhone = transactionData.recipientPhone || transactionData.recipientInfo;
+    if (countryCode + phoneNumber === recipientPhone || recipientPhone === phoneNumber) {
       console.log('Phone number is correct');
       nextScreenFunction();
     } else {
@@ -34,15 +35,16 @@ const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: Intro
         <View style={styles.textContainer}>
           <Text style={styles.welcomeTitle}>Welcome to Woosh!</Text>
           <Text style={styles.title}>
+            Claim the{' '}
+            <Text style={styles.title}>
+              $
+              {parseFloat(transactionData.amount).toLocaleString('en-US', {
+                maximumFractionDigits: 5,
+                minimumFractionDigits: 2,
+              })}{' '}
+              USD
+            </Text>{' '}
             {transactionData.sender} {i18n.t('sentYou')}
-          </Text>
-          <Text style={styles.title}>
-            $
-            {parseFloat(transactionData.amount).toLocaleString('en-US', {
-              maximumFractionDigits: 5,
-              minimumFractionDigits: 2,
-            })}{' '}
-            USD
           </Text>
           <Text style={styles.description}>{i18n.t('claimIntroScreenDescription')}</Text>
         </View>
@@ -65,7 +67,7 @@ const IntroScreen = ({ transactionData, nextScreenFunction, backFuncion }: Intro
     </SafeAreaView>
   );
 };
-export default IntroScreen;
+export default PhoneScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

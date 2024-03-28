@@ -7,54 +7,11 @@ import { COLORS } from '../../constants/global-styles';
 interface ButtonProps {
   onPress: () => void;
   title: string;
-  type?: 'primary' | 'secondary';
+  type?: 'primary' | 'secondary' | 'destructive' | 'main';
   icon?: string;
   swapIcon?: boolean;
   disabled?: boolean;
 }
-
-const Button = forwardRef((props: ButtonProps, ref) => {
-  const { onPress, title, type, icon, swapIcon = false, disabled } = props;
-
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      style={[
-        styles.buttonContainer,
-        type === 'primary' && styles.primaryButton,
-        !disabled &&
-          type === 'primary' && {
-            elevation: 8,
-            shadowColor: '#09EE49',
-            shadowOpacity: 0.3,
-            shadowRadius: 20,
-            shadowOffset: {
-              width: 0,
-              height: 5,
-            },
-          },
-        swapIcon && styles.swapIcon,
-        type === 'secondary' && styles.secondaryButton,
-        disabled && { backgroundColor: COLORS.gray[600] },
-      ]}>
-      <Text
-        style={[
-          styles.buttonText,
-          type === 'primary' ? styles.primaryButtonText : styles.secondaryButtonText,
-        ]}>
-        {title}
-      </Text>
-      {icon && (
-        <Feather
-          name={icon as any}
-          size={20}
-          color={type === 'primary' ? COLORS.light : COLORS.dark}
-        />
-      )}
-    </Pressable>
-  );
-});
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -67,21 +24,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     width: '100%',
-    flex: 1,
   },
   swapIcon: {
     flexDirection: 'row-reverse',
   },
   buttonText: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'Satoshi-Medium',
     alignSelf: 'center',
     lineHeight: 24,
   },
-  primaryButtonText: {
+  lightButtonText: {
     color: COLORS.light,
   },
-  secondaryButtonText: {
+  darkButtonText: {
     color: COLORS.dark,
   },
   primaryButton: {
@@ -90,6 +46,64 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: COLORS.secondary[400],
   },
+  destructiveButton: {
+    backgroundColor: '#ED2038',
+  },
+  mainButton: {
+    backgroundColor: COLORS.primary[400],
+  },
+});
+
+const buttonTypeStyles = {
+  primary: styles.primaryButton,
+  secondary: styles.secondaryButton,
+  destructive: styles.destructiveButton,
+  main: styles.mainButton,
+};
+
+const Button = forwardRef((props: ButtonProps, ref) => {
+  const { onPress, title, type = 'primary', icon, swapIcon = false, disabled } = props;
+
+  const baseButtonStyle = buttonTypeStyles[type] || styles.primaryButton;
+
+  const buttonStyle = [
+    styles.buttonContainer,
+    baseButtonStyle,
+    disabled && { backgroundColor: COLORS.gray[600] },
+    !disabled &&
+      type === 'main' && {
+        elevation: 8,
+        shadowColor: '#09EE49',
+        shadowOpacity: 0.3,
+        shadowRadius: 20,
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+      },
+    swapIcon && styles.swapIcon,
+  ];
+
+  return (
+    <Pressable onPress={onPress} disabled={disabled} style={buttonStyle}>
+      <Text
+        style={[
+          styles.buttonText,
+          type === 'primary' || type === 'destructive'
+            ? styles.lightButtonText
+            : styles.darkButtonText,
+        ]}>
+        {title}
+      </Text>
+      {icon && (
+        <Feather
+          name={icon as any}
+          size={20}
+          color={type === 'primary' || type === 'destructive' ? COLORS.light : COLORS.dark}
+        />
+      )}
+    </Pressable>
+  );
 });
 
 export default Button;

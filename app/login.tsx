@@ -10,7 +10,7 @@ import i18n from '../constants/i18n';
 import { useAuthentication } from '../hooks/useAuthentication';
 
 export default function Page() {
-  const { authenticate } = useAuthentication();
+  const { authenticate, deletePrivateKey } = useAuthentication();
   const [id, setID] = useState<any>('');
 
   useEffect(() => {
@@ -45,6 +45,7 @@ export default function Page() {
           asChild>
           <Button title="Go to most recent transaction" onPress={() => {}} />
         </Link>
+        <Button type="destructive" onPress={deletePrivateKey} title="Delete Private Key" />
       </View>
     </View>
   );
@@ -53,17 +54,17 @@ export default function Page() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: COLORS.dark,
+    backgroundColor: COLORS.gray[400],
     justifyContent: 'center',
     padding: 24,
   },
   buttonContainer: {
-    flexDirection: 'row',
     width: '100%',
+    gap: 16,
   },
   title: {
     fontSize: 48,
-    color: COLORS.light,
+    color: COLORS.dark,
     fontFamily: 'Satoshi-Bold',
     textAlign: 'center',
     lineHeight: 50,
