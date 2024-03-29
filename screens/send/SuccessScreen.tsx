@@ -20,6 +20,9 @@ const SuccessScreen = () => {
   const address = useAtomValue(userAddressAtom);
   const { userData } = useUserData();
 
+  //Only working on Android, it resolves back navigation functionality.
+  //When you press back button or use going back gesture it replaces the native functionality
+  //with a redirection to home screen
   useFocusEffect(() => {
     const handleBackButton = () => {
       router.push('/');

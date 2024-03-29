@@ -20,6 +20,9 @@ const startRotationAnimation = (durationMs: number, rotationDegree: Animated.Val
 const LoadingSpinner = ({ color = '#ffffff' }: Props): JSX.Element => {
   const rotationDegree = useRef(new Animated.Value(0)).current;
 
+  //Only working on Android, it resolves back navigation functionality
+  //When you press back button or use going back gesture it removes enterily the native functionality
+  //and does nothing
   useFocusEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
     return () => backHandler.remove();
