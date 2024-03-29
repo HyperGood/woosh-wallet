@@ -72,14 +72,9 @@ const styles = StyleSheet.create({
     opacity: 0.25,
   },
   progress: {
-    width: '100%',
-    height: '100%',
+    ...StyleSheet.absoluteFillObject,
     borderRadius: height / 2,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'transparent',
     borderWidth: 4,
-    position: 'absolute',
   },
 });
 
