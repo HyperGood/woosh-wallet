@@ -27,7 +27,7 @@ const SuccessScreen = () => {
     };
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => handleBackButton());
     return () => backHandler.remove();
-  })
+  });
 
   const onShare = async () => {
     try {

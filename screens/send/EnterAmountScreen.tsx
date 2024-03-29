@@ -30,12 +30,12 @@ const EnterAmountScreen = () => {
 
   usePreventRemove(isDepositing || isSaving || isSending, ({ data }) => {
     Alert.alert(
-      'Discard changes?',
-      'You have unsaved changes. Discard them and leave the screen?',
+      'Cancel transaction?',
+      'Youre transaction is still sending. Are you sure you want to cancel?',
       [
         { text: "Don't leave", style: 'cancel', onPress: () => {} },
         {
-          text: 'Discard',
+          text: 'Cancel Transaction',
           style: 'destructive',
           onPress: () => navigation.dispatch(data.action),
         },
@@ -63,7 +63,8 @@ const EnterAmountScreen = () => {
         } else if (sendHash) {
           setTransactionData({ ...transactionData, transactionHash: sendHash, description });
         }
-        router.push('/(tabs)/(home)/send/success');
+        setIsSaving(false);
+        router.replace('/(tabs)/(home)/send/success');
       }
     })();
   }, [depositHash, sendHash]);
