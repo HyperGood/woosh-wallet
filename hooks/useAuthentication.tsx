@@ -71,8 +71,11 @@ export const useAuthentication = () => {
           },
         });
         setAddress(kernelClient.account.address);
+        console.log('Address is set');
         setKernelClient(kernelClient as KernelAccountClient);
+        console.log('Kernel client is set');
         setSmartAccount(account);
+        console.log('Smart account is set');
       });
     });
   }

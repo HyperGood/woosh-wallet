@@ -22,7 +22,7 @@ import { COLORS } from '../../constants/global-styles';
 import i18n from '../../constants/i18n';
 import { useWithdraw } from '../../hooks/DepositVault/useWithdraw';
 import { useAuthentication } from '../../hooks/useAuthentication';
-import { userAddressAtom } from '../../store/store';
+import { kernelClientAtom, userAddressAtom } from '../../store/store';
 import { minMaxScale, scale } from '../../utils/scalingFunctions';
 
 interface OnboardingScreenProps {
@@ -39,6 +39,7 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   const [loadingState, setLoadingState] = useState(`${i18n.t('settingUpAccountLabel')}`);
   const { authenticate } = useAuthentication();
   const address = useAtomValue(userAddressAtom);
+  const kernelClient = useAtomValue(kernelClientAtom);
   const { withdraw } = useWithdraw();
 
   const fadeOutAnim = useSharedValue(1);
@@ -57,18 +58,16 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   });
 
   const onButtonClick = async () => {
-    fadeOutAnim.value = withTiming(0, { duration: 500 }); // Start fade out
-    fadeInAnim.value = withDelay(500, withTiming(1, { duration: 200 })); // Start fade in
+    fadeOutAnim.value = withTiming(0, { duration: 500 });
+    fadeInAnim.value = withDelay(500, withTiming(1, { duration: 200 }));
 
-    setIsLoading(true);
     try {
       await authenticate();
-
       const reference = storage().ref(`avatars/${address}.jpg`);
       const task = await reference.putFile(image);
       task.state === 'success' && console.log('Profile picture uploaded');
       const url = await reference.getDownloadURL();
-      firestore().collection('users').add({
+      await firestore().collection('users').add({
         name,
         username,
         ethAddress: address,
@@ -80,18 +79,16 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
       console.error('Error in onboarding screen', error);
       Sentry.captureException(error);
       setIsLoading(false);
-      // Handle error
     }
   };
 
   const claimFunction = async () => {
-    fadeOutAnim.value = withTiming(0, { duration: 500 }); // Start fade out
-    fadeInAnim.value = withDelay(500, withTiming(1, { duration: 200 })); // Start fade in
+    fadeOutAnim.value = withTiming(0, { duration: 500 });
+    fadeInAnim.value = withDelay(500, withTiming(1, { duration: 200 }));
 
     setIsLoading(true);
     setLoadingState(`${i18n.t('claimingFundsLabel')}`);
     try {
-      //Claim the transaction
       console.log('Claiming...');
       console.log('Transaction data: ', transactionData);
       if (!address) {
@@ -111,10 +108,9 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
         transactionData.signature as `0x${string}`,
         address
       );
-      //wait for transaction
+
       firestore()
         .collection('transactions')
-        //transaction data doesn't have the id.
         .doc(id)
         .update({
           claimedBy: address,
@@ -134,12 +130,9 @@ const OnboardingScreen = ({ transactionData, id }: OnboardingScreenProps) => {
   };
 
   useEffect(() => {
-    if (!address) {
-      console.log('No address');
-      return;
-    }
+    if (!kernelClient) return;
     claimFunction();
-  }, [address]);
+  }, [kernelClient]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

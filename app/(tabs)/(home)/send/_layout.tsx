@@ -8,6 +8,7 @@ export default function Layout() {
       <Stack
         screenOptions={{
           headerShown: false,
+          headerBackButtonMenuEnabled: false,
         }}
       />
     </TransactionProvider>

@@ -103,7 +103,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary[400],
   },
   buttonsContainer: {
-    flexDirection: 'row',
     gap: 8,
     width: '100%',
     marginBottom: scale(48),

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { StyleSheet, View, ColorValue, Animated, Easing } from 'react-native';
+import { BackHandler, StyleSheet, View, ColorValue, Animated, Easing } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Props {
   color?: ColorValue;
@@ -18,6 +19,11 @@ const startRotationAnimation = (durationMs: number, rotationDegree: Animated.Val
 
 const LoadingSpinner = ({ color = '#ffffff' }: Props): JSX.Element => {
   const rotationDegree = useRef(new Animated.Value(0)).current;
+
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => backHandler.remove();
+  })
 
   useEffect(() => {
     startRotationAnimation(1000, rotationDegree);

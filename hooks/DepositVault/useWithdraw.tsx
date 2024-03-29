@@ -20,7 +20,7 @@ export const useWithdraw = () => {
   const withdraw = async (depositIndex: number, secret: `0x${string}`, address: `0x${string}`) => {
     setIsWithdrawing(true);
     try {
-      if (!kernelClient) throw new Error('No ecdsaProvider');
+      if (!kernelClient) throw new Error('No kernel client');
       if (!account) throw new Error('No Account');
       if (!isHex(secret)) throw new Error('Secret is not a hexadecimal string');
       console.log('Withdrawing');
@@ -42,6 +42,7 @@ export const useWithdraw = () => {
       return withdrawHash;
     } catch (e) {
       setWithdrawError(e);
+      console.error('Error in withdraw', e);
       Sentry.captureException(e);
       Alert.alert('Transaction Failed!!');
     } finally {
