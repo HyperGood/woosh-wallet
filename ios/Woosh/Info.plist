@@ -50,7 +50,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your camera</string>
+	<string>Allow Woosh to access your camera so you can scan QR codes</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Woosh to access your contacts so you can send funds to anyone in your contacts list.</string>
 	<key>NSFaceIDUsageDescription</key>
